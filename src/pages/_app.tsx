@@ -1,14 +1,16 @@
 import "@/styles/globals.css";
+import { AppPropsWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "next-themes";
-import type { AppProps } from "next/app";
 
-function App({ Component, pageProps }: AppProps) {
+function App({ Component, pageProps }: AppPropsWithLayout) {
+  const getLayout = Component.getLayout ?? ((page) => page);
+
   return (
     <ThemeProvider attribute="class" enableSystem>
       <ClerkProvider {...pageProps}>
-        <Component {...pageProps} />
+        {getLayout(<Component {...pageProps} />)}
       </ClerkProvider>
     </ThemeProvider>
   );
