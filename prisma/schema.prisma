@@ -16,7 +16,6 @@ model Chatbot {
   updatedAt      DateTime @updatedAt
   name           String   @db.VarChar(32)
   slug           String   @unique @db.VarChar(32)
-  description    String?  @db.VarChar(300)
   image          String?
   metadata       Json?
   organizationId String

@@ -1,7 +1,8 @@
-import { protectedProcedure, publicProcedure, router } from "../trpc";
+import { router } from "../trpc";
+import { chatbotRouter } from "./chatbot";
 
 export const appRouter = router({
-  user: protectedProcedure.query(({ ctx }) => ctx.auth),
+  chatbot: chatbotRouter,
 });
 
 export type AppRouter = typeof appRouter;

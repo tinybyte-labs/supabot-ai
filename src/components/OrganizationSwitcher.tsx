@@ -30,7 +30,7 @@ import {
   Settings,
   UserPlus,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 import { useState } from "react";
 
 const OrganizationSwitcher = ({ className }: { className?: string }) => {
@@ -44,7 +44,7 @@ const OrganizationSwitcher = ({ className }: { className?: string }) => {
   if (
     !(activeOrg && authLoaded && orgLoaded && sessionLoaded && sessionsLoaded)
   ) {
-    return <Skeleton className="h-10 w-full" />;
+    return <Skeleton className={cn("h-10 min-w-[180px]", className)} />;
   }
 
   return (
@@ -84,7 +84,7 @@ const OrganizationSwitcher = ({ className }: { className?: string }) => {
                       organization: org.organization.id,
                     });
                     setOpen(false);
-                    router.refresh();
+                    router.reload();
                   }}
                 >
                   <Avatar className="mr-2 h-6 w-6">

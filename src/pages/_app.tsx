@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/ui/toaster";
 import "@/styles/globals.css";
 import { AppPropsWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
@@ -11,6 +12,7 @@ function App({ Component, pageProps }: AppPropsWithLayout) {
     <ThemeProvider attribute="class" enableSystem>
       <ClerkProvider {...pageProps}>
         {getLayout(<Component {...pageProps} />)}
+        <Toaster />
       </ClerkProvider>
     </ThemeProvider>
   );
