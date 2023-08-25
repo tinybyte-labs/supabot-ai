@@ -1,5 +1,12 @@
+import MarketingHeader from "@/components/MarketingHeader";
+
 const Page = () => {
-  return <div>Page</div>;
+  return (
+    <>
+      <MarketingHeader />
+      Page 2
+    </>
+  );
 };
 
 export default Page;
