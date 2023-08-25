@@ -1,0 +1,97 @@
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  directUrl  = env("DIRECT_URL")
+  extensions = [vector]
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+model Chatbot {
+  id             String   @id @default(cuid())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  name           String   @db.VarChar(32)
+  slug           String   @unique @db.VarChar(32)
+  description    String?  @db.VarChar(300)
+  image          String?
+  metadata       Json?
+  organizationId String
+
+  links        Link[]
+  documents    Document[]
+  quickPrompts QuickPrompt[]
+
+  @@index([organizationId])
+  @@index([updatedAt])
+  @@index([name])
+}
+
+enum LinkStatus {
+  QUEUE
+  TRAINING
+  TRAINED
+  ERROR
+  CANCELED
+}
+
+model Link {
+  id            String     @id @default(cuid())
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  lastTrainedAt DateTime?
+  canceledAt    DateTime?
+  url           String
+  chatbotId     String
+  status        LinkStatus @default(QUEUE)
+  error         String?
+  metadata      Json?
+
+  chatbot   Chatbot    @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
+  documents Document[]
+
+  @@unique([chatbotId, url])
+  @@index([updatedAt])
+  @@index([lastTrainedAt])
+}
+
+model Document {
+  id        String                      @id @default(cuid())
+  createdAt DateTime                    @default(now())
+  updatedAt DateTime                    @updatedAt
+  content   String
+  metadata  Json?
+  embedding Unsupported("vector(1536)")
+  linkId    String?
+  chatbotId String
+
+  link    Link?   @relation(fields: [linkId], references: [id], onDelete: Cascade)
+  chatbot Chatbot @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
+
+  @@index([updatedAt])
+}
+
+enum QuickPromptStatus {
+  DRAFT
+  PUBLISHED
+  UNPUBLISHED
+}
+
+model QuickPrompt {
+  id        String            @id @default(cuid())
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  title     String            @db.VarChar(80)
+  prompt    String            @db.VarChar(500)
+  chatbotId String
+  metadata  Json?
+  status    QuickPromptStatus @default(DRAFT)
+
+  chatbot Chatbot @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
+
+  @@index([updatedAt])
+  @@index([title])
+}
