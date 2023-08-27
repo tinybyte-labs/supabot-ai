@@ -4,9 +4,9 @@ import { NextPageWithLayout } from "@/types/next";
 
 const ChatbotOverviewPage: NextPageWithLayout = () => {
   return (
-    <div>
+    <>
       <PageHeader title="Overview" />
-    </div>
+    </>
   );
 };
 

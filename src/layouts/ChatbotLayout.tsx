@@ -1,6 +1,7 @@
 import ChatbotSwitcher from "@/components/ChatbotSwitcher";
 import FullUserDropdownButton from "@/components/FullUserDropdownButton";
 import SideBarNav, { SideBarNavProps } from "@/components/SideBarNav";
+import { ChatbotProvider } from "@/providers/ChatbotProvider";
 import { APP_NAME } from "@/utils/constants";
 import {
   LayoutGrid,
@@ -18,10 +19,10 @@ import { ReactNode } from "react";
 
 const ChatbotLayout = ({ children }: { children: ReactNode }) => {
   return (
-    <>
+    <ChatbotProvider>
       <SideBar />
       <main className="ml-64">{children}</main>
-    </>
+    </ChatbotProvider>
   );
 };
 

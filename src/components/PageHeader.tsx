@@ -1,12 +1,16 @@
+import { ReactNode } from "react";
+
 export interface PageHeaderProps {
   title: string;
+  children?: ReactNode;
 }
 
-const PageHeader = ({ title }: PageHeaderProps) => {
+const PageHeader = ({ title, children }: PageHeaderProps) => {
   return (
-    <header className="pb-8 pt-16">
+    <header className="my-16">
       <div className="container flex items-center gap-4">
-        <h1 className="text-3xl font-semibold">{title}</h1>
+        <h1 className="flex-1 text-3xl font-semibold">{title}</h1>
+        {children}
       </div>
     </header>
   );

@@ -30,7 +30,7 @@ model Chatbot {
 }
 
 enum LinkStatus {
-  QUEUE
+  QUEUED
   TRAINING
   TRAINED
   ERROR
@@ -45,7 +45,7 @@ model Link {
   canceledAt    DateTime?
   url           String
   chatbotId     String
-  status        LinkStatus @default(QUEUE)
+  status        LinkStatus @default(QUEUED)
   error         String?
   metadata      Json?
 

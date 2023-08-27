@@ -45,6 +45,7 @@ const Page: NextPageWithLayout = (props) => {
   return (
     <>
       <PageHeader title="Chatbots" />
+
       <div className="container">
         <Tabs value={new Set(["grid", "list"]).has(view) ? view : "grid"}>
           <div className="flex items-center gap-6">
