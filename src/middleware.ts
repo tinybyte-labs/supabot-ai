@@ -2,7 +2,14 @@ import { authMiddleware, redirectToSignIn } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 
 export default authMiddleware({
-  publicRoutes: ["/", "/home", "/pricing", "/about", "/blog(.*)"],
+  publicRoutes: [
+    "/",
+    "/home",
+    "/pricing",
+    "/about",
+    "/blog(.*)",
+    "/api/avatar.svg(.*)",
+  ],
   beforeAuth: (req) => {
     if (req.nextUrl.pathname === "/home") {
       return NextResponse.rewrite(new URL("/", req.url));

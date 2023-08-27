@@ -1,5 +1,8 @@
 import MarketingHeader from "@/components/MarketingHeader";
-import { trpc } from "@/utils/trpc";
+
+export const config = {
+  runtime: "edge",
+};
 
 const Page = () => {
   return (
