@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/popover";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { trpc } from "@/utils/trpc";
 import {
   useAuth,
   useOrganization,
@@ -40,6 +41,22 @@ const OrganizationSwitcher = ({ className }: { className?: string }) => {
   const { isLoaded: authLoaded, signOut } = useAuth();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+
+  const handleOrgChange = async ({
+    sessionId,
+    orgId,
+  }: {
+    sessionId: string;
+    orgId: string;
+  }) => {
+    if (!sessionsLoaded) return;
+    await setActive({
+      session: sessionId,
+      organization: orgId,
+    });
+    setOpen(false);
+    router.reload();
+  };
 
   if (
     !(activeOrg && authLoaded && orgLoaded && sessionLoaded && sessionsLoaded)
@@ -78,14 +95,12 @@ const OrganizationSwitcher = ({ className }: { className?: string }) => {
                 <CommandItem
                   key={org.organization.id}
                   value={`${session.user?.primaryEmailAddress?.emailAddress}-${org.organization.slug}`}
-                  onSelect={() => {
-                    setActive({
-                      session: session.id,
-                      organization: org.organization.id,
-                    });
-                    setOpen(false);
-                    router.reload();
-                  }}
+                  onSelect={() =>
+                    handleOrgChange({
+                      sessionId: session.id,
+                      orgId: org.organization.id,
+                    })
+                  }
                 >
                   <Avatar className="mr-2 h-6 w-6">
                     {org.organization?.imageUrl && (

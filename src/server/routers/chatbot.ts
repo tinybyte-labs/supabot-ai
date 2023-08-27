@@ -1,28 +1,23 @@
-import { Prisma } from "@prisma/client";
 import { prisma } from "../prisma";
 import { protectedProcedure, router } from "../trpc";
 import { createChatbotValidator } from "@/utils/validators";
 import { TRPCError } from "@trpc/server";
-
-const chatbotListSelect = Prisma.validator<Prisma.ChatbotSelect>()({
-  id: true,
-  slug: true,
-  name: true,
-  createdAt: true,
-  updatedAt: true,
-  image: true,
-  organizationId: true,
-});
+import * as z from "zod";
 
 export const chatbotRouter = router({
   list: protectedProcedure.query(async ({ ctx }) => {
-    const chatbots = await prisma.chatbot.findMany({
+    return prisma.chatbot.findMany({
       where: { organizationId: ctx.auth.orgId },
       orderBy: { updatedAt: "desc" },
-      select: chatbotListSelect,
     });
-    return chatbots;
   }),
+  findBySlug: protectedProcedure
+    .input(z.string())
+    .query(async ({ ctx, input }) => {
+      return prisma.chatbot.findUnique({
+        where: { organizationId: ctx.auth.orgId, slug: input },
+      });
+    }),
   create: protectedProcedure
     .input(createChatbotValidator)
     .mutation(async ({ ctx, input }) => {

@@ -3,8 +3,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
-import { buildClerkProps } from "@clerk/nextjs/server";
-import { GetServerSideProps } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
@@ -103,7 +101,7 @@ const Page: NextPageWithLayout = (props) => {
                       {chatbot.image && <AvatarImage src={chatbot.image} />}
                       <AvatarFallback>
                         <Image
-                          src={`/api/avatar?seed=${chatbot.id}&initials=${chatbot.slug}&size=128`}
+                          src={`/api/avatar.svg?seed=${chatbot.id}&initials=${chatbot.slug}&size=128`}
                           width={128}
                           height={128}
                           alt=""
@@ -142,7 +140,7 @@ const Page: NextPageWithLayout = (props) => {
                         {chatbot.image && <AvatarImage src={chatbot.image} />}
                         <AvatarFallback>
                           <Image
-                            src={`/api/avatar?seed=${chatbot.id}&initials=${chatbot.slug}&size=128`}
+                            src={`/api/avatar.svg?seed=${chatbot.id}&initials=${chatbot.slug}&size=128`}
                             width={128}
                             height={128}
                             alt=""

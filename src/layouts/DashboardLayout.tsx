@@ -20,7 +20,7 @@ export default DashboardLayout;
 
 const SideBar = () => {
   return (
-    <aside className="fixed top-0 left-0 bottom-0 w-64 bg-card text-card-foreground border-r flex flex-col">
+    <aside className="fixed bottom-0 left-0 top-0 flex w-64 flex-col border-r bg-card text-card-foreground">
       <header className="p-4">
         <Link href="/dashboard">
           <Image
@@ -28,12 +28,12 @@ const SideBar = () => {
             width={504}
             height={407}
             alt={`${APP_NAME} Logo`}
-            className="w-12 h-12 object-contain"
+            className="h-12 w-12 object-contain"
           />
         </Link>
       </header>
       <div className="p-4">
-        <p className="pl-4 text-xs text-muted-foreground pb-1 uppercase">
+        <p className="pb-1 pl-4 text-xs uppercase text-muted-foreground">
           organization
         </p>
         <OrganizationSwitcher className="w-full" />
