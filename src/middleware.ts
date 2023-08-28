@@ -9,8 +9,8 @@ export default authMiddleware({
     "/about",
     "/blog(.*)",
     "/api/avatar.svg",
+    "/api/qstash(.*)",
   ],
-  apiRoutes: ["/api/avatar.svg"],
   beforeAuth: (req) => {
     if (req.nextUrl.pathname === "/home") {
       return NextResponse.rewrite(new URL("/", req.url));
