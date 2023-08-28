@@ -10,6 +10,23 @@ export const chatbotRouter = router({
       orderBy: { updatedAt: "desc" },
     });
   }),
+  stats: protectedProcedure.input(z.string()).query(async ({ ctx, input }) => {
+    const chatbot = await ctx.db.chatbot.findUnique({
+      where: { id: input, organizationId: ctx.auth.orgId },
+      select: {
+        _count: {
+          select: {
+            links: true,
+            quickPrompts: true,
+          },
+        },
+      },
+    });
+    return {
+      linksCount: chatbot?._count.links || 0,
+      quickPromptCount: chatbot?._count.quickPrompts || 0,
+    };
+  }),
   findBySlug: protectedProcedure
     .input(z.string())
     .query(async ({ ctx, input }) => {

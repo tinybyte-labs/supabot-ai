@@ -4,6 +4,7 @@ import { AppPropsWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "next-themes";
+import NextNProgress from "nextjs-progressbar";
 
 function App({ Component, pageProps }: AppPropsWithLayout) {
   const getLayout = Component.getLayout ?? ((page) => page);
@@ -11,6 +12,11 @@ function App({ Component, pageProps }: AppPropsWithLayout) {
   return (
     <ThemeProvider attribute="class" enableSystem>
       <ClerkProvider {...pageProps}>
+        <NextNProgress
+          color="#2563EB"
+          height={2}
+          options={{ showSpinner: false }}
+        />
         {getLayout(<Component {...pageProps} />)}
         <Toaster />
       </ClerkProvider>
