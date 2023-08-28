@@ -58,12 +58,12 @@ model Link {
 }
 
 model Document {
-  id        String                      @id @default(cuid())
-  createdAt DateTime                    @default(now())
-  updatedAt DateTime                    @updatedAt
+  id        String                       @id @default(cuid())
+  createdAt DateTime                     @default(now())
+  updatedAt DateTime                     @updatedAt
   content   String
   metadata  Json?
-  embedding Unsupported("vector(1536)")
+  embedding Unsupported("vector(1536)")?
   linkId    String?
   chatbotId String
 
