@@ -74,7 +74,6 @@ model Document {
 }
 
 enum QuickPromptStatus {
-  DRAFT
   PUBLISHED
   UNPUBLISHED
 }
@@ -87,7 +86,7 @@ model QuickPrompt {
   prompt    String            @db.VarChar(500)
   chatbotId String
   metadata  Json?
-  status    QuickPromptStatus @default(DRAFT)
+  status    QuickPromptStatus @default(PUBLISHED)
 
   chatbot Chatbot @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
 

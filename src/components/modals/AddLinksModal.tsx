@@ -24,7 +24,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "../ui/form";
 import { useForm } from "react-hook-form";
@@ -32,18 +31,19 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../ui/input";
 import { trpc } from "@/utils/trpc";
-import { Loader, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useToast } from "../ui/use-toast";
 
-const AddLinksModal: ModalFn = ({ onOpenChage, open }) => {
+const AddLinksModal: ModalFn = ({ onOpenChange, open }) => {
   const { isLoaded, chatbot } = useChatbot();
-
   const { toast } = useToast();
+  const utils = trpc.useContext();
 
   const addLinks = trpc.link.createMany.useMutation({
     onSuccess: (data) => {
-      onOpenChage(false);
+      onOpenChange(false);
       toast({ title: `${data.length} links added` });
+      utils.link.list.invalidate({ chatbotId: chatbot?.id });
     },
     onError: (error) => {
       toast({
@@ -59,7 +59,7 @@ const AddLinksModal: ModalFn = ({ onOpenChage, open }) => {
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChage}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="flex flex-col overflow-hidden">
         <DialogHeader>
           <DialogTitle>Add Links</DialogTitle>
@@ -99,7 +99,6 @@ const LinksFromWebsite = ({
 }) => {
   const [urls, setUrls] = useState<string[]>([]);
   const [selectedUrls, setSelectedUrls] = useState<string[]>([]);
-
   const form = useForm<z.infer<typeof linksFromWebsiteSchema>>({
     resolver: zodResolver(linksFromWebsiteSchema),
     defaultValues: {

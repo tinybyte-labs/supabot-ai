@@ -21,23 +21,15 @@ import { trpc } from "@/utils/trpc";
 import { Link as LinkTable } from "@prisma/client";
 import {
   ColumnDef,
-  RowSelectionState,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
-import {
-  Loader,
-  Loader2,
-  MoreHorizontal,
-  Plus,
-  RotateCw,
-  Trash2,
-} from "lucide-react";
+import { Loader2, MoreHorizontal, Plus, RotateCw, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
 const LinksPage: NextPageWithLayout = () => {
   const [Modal, { openModal }] = useModal(AddLinksModal);
@@ -55,7 +47,7 @@ const LinksPage: NextPageWithLayout = () => {
     },
     onError: (error) => {
       toast({
-        title: "Failed",
+        title: "Error",
         description: error.message,
         variant: "destructive",
       });
@@ -70,7 +62,7 @@ const LinksPage: NextPageWithLayout = () => {
     },
     onError: (error) => {
       toast({
-        title: "Failed",
+        title: "Error",
         description: error.message,
         variant: "destructive",
       });
@@ -104,19 +96,13 @@ const LinksPage: NextPageWithLayout = () => {
   const onRetrainMany = () => {
     if (!chatbot) return;
     const links = table.getSelectedRowModel().rows;
-    retrainMany.mutate({
-      chatbotId: chatbot.id,
-      linkIds: links.map((link) => link.original.id),
-    });
+    retrainMany.mutate(links.map((link) => link.original.id));
   };
 
   const onDeleteMany = () => {
     if (!chatbot) return;
     const links = table.getSelectedRowModel().rows;
-    deleteMany.mutate({
-      chatbotId: chatbot.id,
-      linkIds: links.map((link) => link.original.id),
-    });
+    deleteMany.mutate(links.map((link) => link.original.id));
   };
 
   return (
@@ -130,8 +116,8 @@ const LinksPage: NextPageWithLayout = () => {
             </>
           ) : table.getSelectedRowModel().rows.length > 0 ? (
             <>
-              <p className="text-sm text-muted-foreground">
-                {table.getSelectedRowModel().rows.length} rows selected
+              <p className="mr-2 text-sm text-muted-foreground">
+                {table.getSelectedRowModel().rows.length} row(s) selected
               </p>
               <Button
                 disabled={isBusey}
@@ -201,6 +187,8 @@ export default LinksPage;
 export const columns: ColumnDef<LinkTable>[] = [
   {
     id: "select",
+    enableSorting: false,
+    enableHiding: false,
     header: ({ table }) => (
       <Checkbox
         checked={table.getIsAllPageRowsSelected()}
@@ -215,8 +203,6 @@ export const columns: ColumnDef<LinkTable>[] = [
         aria-label="Select row"
       />
     ),
-    enableSorting: false,
-    enableHiding: false,
   },
   {
     accessorKey: "url",
@@ -232,16 +218,13 @@ export const columns: ColumnDef<LinkTable>[] = [
   {
     accessorKey: "status",
     header: () => <div>STATUS</div>,
-    cell: ({ row }) => {
-      return <p>{row.original.status}</p>;
-    },
   },
   {
     accessorKey: "lastTrainedAt",
-    header: () => <div>LAST TRAINED AT</div>,
+    header: () => <div className="whitespace-nowrap">LAST TRAINED AT</div>,
     cell: ({ row }) => {
       return (
-        <p>
+        <p className="whitespace-nowrap">
           {row.original.lastTrainedAt
             ? formatDistanceToNow(row.original.lastTrainedAt, {
                 addSuffix: true,
@@ -266,7 +249,7 @@ const ActionButton = ({ link }: { link: LinkTable }) => {
   const { toast } = useToast();
   const deleteLink = trpc.link.delete.useMutation({
     onSuccess: () => {
-      utils.link.list.invalidate();
+      utils.link.list.invalidate({ chatbotId: link.chatbotId });
       toast({ title: "Link delete success" });
     },
     onError: (error) => {
@@ -279,7 +262,7 @@ const ActionButton = ({ link }: { link: LinkTable }) => {
   });
   const retrainLink = trpc.link.retrain.useMutation({
     onSuccess: () => {
-      utils.link.list.invalidate();
+      utils.link.list.invalidate({ chatbotId: link.chatbotId });
       toast({ title: "Successfully added to queue" });
     },
     onError: (error) => {
@@ -308,17 +291,13 @@ const ActionButton = ({ link }: { link: LinkTable }) => {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           disabled={deleteLink.isLoading || retrainLink.isLoading}
-          onClick={() =>
-            retrainLink.mutate({ chatbotId: link.chatbotId, linkId: link.id })
-          }
+          onClick={() => retrainLink.mutate(link.id)}
         >
           Retrain
         </DropdownMenuItem>
         <DropdownMenuItem
           disabled={deleteLink.isLoading || retrainLink.isLoading}
-          onClick={() =>
-            deleteLink.mutate({ chatbotId: link.chatbotId, linkId: link.id })
-          }
+          onClick={() => deleteLink.mutate(link.id)}
         >
           Delete
         </DropdownMenuItem>

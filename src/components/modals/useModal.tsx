@@ -15,7 +15,7 @@ export const useModal = (
 ] => {
   const [open, setOpen] = useState(options?.defaultOpen || false);
   const _modal = useCallback(
-    () => <Modal open={open} onOpenChage={setOpen} />,
+    () => <Modal open={open} onOpenChange={setOpen} />,
     [Modal, open],
   );
   const openModal = () => setOpen(true);
