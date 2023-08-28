@@ -67,7 +67,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
                 {statusQuery.data.quickPromptCount.toLocaleString()}
               </div>
               <Link
-                href={`/dashboard/chatbots/${chatbot?.slug}/quick-prompt`}
+                href={`/dashboard/chatbots/${chatbot?.slug}/quick-prompts`}
                 className="mt-2 inline-flex items-center text-sm text-muted-foreground underline-offset-4 hover:text-accent-foreground hover:underline"
               >
                 All Quick Prompts
