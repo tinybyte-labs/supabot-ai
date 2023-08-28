@@ -18,10 +18,18 @@ import { useChatbot } from "@/providers/ChatbotProvider";
 import { NextPageWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
 import { Link as LinkTable } from "@prisma/client";
-import { ColumnDef } from "@tanstack/react-table";
+import {
+  ColumnDef,
+  RowSelectionState,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
-import { Loader2, MoreHorizontal } from "lucide-react";
+import { Loader, Loader2, MoreHorizontal } from "lucide-react";
 import Link from "next/link";
+import { useMemo, useState } from "react";
 
 const LinksPage: NextPageWithLayout = () => {
   const [Modal, { openModal }] = useModal(AddLinksModal);
@@ -30,26 +38,113 @@ const LinksPage: NextPageWithLayout = () => {
     { chatbotId: chatbot?.id || "" },
     { enabled: isLoaded },
   );
+  const data = useMemo(() => linksQuery.data || [], [linksQuery.data]);
 
-  if (linksQuery.isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin" />
-      </div>
-    );
-  }
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+  });
+  const { toast } = useToast();
 
-  if (linksQuery.isError) {
-    return <p>{linksQuery.error.message}</p>;
-  }
+  const retrainMany = trpc.link.retrainMany.useMutation({
+    onSuccess: (data) => {
+      toast({ title: `${data.length} links added to training` });
+      table.resetRowSelection();
+      linksQuery.refetch();
+    },
+    onError: (error) => {
+      toast({
+        title: "Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteMany = trpc.link.deleteMany.useMutation({
+    onSuccess: (data) => {
+      toast({ title: `${data.count} links deleted` });
+      table.resetRowSelection();
+      linksQuery.refetch();
+    },
+    onError: (error) => {
+      toast({
+        title: "Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const onRetrainMany = () => {
+    if (!chatbot) return;
+    const links = table.getSelectedRowModel().rows;
+    retrainMany.mutate({
+      chatbotId: chatbot.id,
+      linkIds: links.map((link) => link.original.id),
+    });
+  };
+
+  const onDeleteMany = () => {
+    if (!chatbot) return;
+    const links = table.getSelectedRowModel().rows;
+    deleteMany.mutate({
+      chatbotId: chatbot.id,
+      linkIds: links.map((link) => link.original.id),
+    });
+  };
 
   return (
     <>
       <PageHeader title="Links">
-        <Button onClick={openModal}>Add Link</Button>
+        <div className="flex items-center gap-2">
+          {table.getSelectedRowModel().rows.length > 0 ? (
+            <>
+              <p className="text-sm text-muted-foreground">
+                {table.getSelectedRowModel().rows.length} rows selected
+              </p>
+              <Button
+                disabled={retrainMany.isLoading || deleteMany.isLoading}
+                variant="secondary"
+                onClick={onRetrainMany}
+              >
+                {retrainMany.isLoading && (
+                  <Loader2 size={18} className="-ml-1 mr-2 animate-spin" />
+                )}
+                Retrain Link(s)
+              </Button>
+              <Button
+                disabled={retrainMany.isLoading || deleteMany.isLoading}
+                variant="destructive"
+                onClick={onDeleteMany}
+              >
+                {deleteMany.isLoading && (
+                  <Loader2 size={18} className="-ml-1 mr-2 animate-spin" />
+                )}
+                Delete Link(s)
+              </Button>
+            </>
+          ) : (
+            <Button
+              disabled={retrainMany.isLoading || deleteMany.isLoading}
+              onClick={openModal}
+            >
+              Add Link
+            </Button>
+          )}
+        </div>
       </PageHeader>
       <div className="container my-16 space-y-8">
-        <DataTable columns={columns} data={linksQuery.data} />
+        {linksQuery.isLoading ? (
+          <div className="flex items-center justify-center rounded-lg border py-32">
+            <Loader2 size={24} className="animate-spin" />
+          </div>
+        ) : (
+          <DataTable table={table} />
+        )}
       </div>
       <Modal />
     </>

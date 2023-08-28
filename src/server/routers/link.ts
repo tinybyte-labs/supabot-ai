@@ -33,6 +33,9 @@ export const linkRouter = router({
         where: {
           chatbotId: input.chatbotId,
         },
+        orderBy: {
+          updatedAt: "desc",
+        },
       });
     }),
   createOne: protectedProcedure
