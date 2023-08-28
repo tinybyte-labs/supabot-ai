@@ -12,6 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
 import ChatbotLayout from "@/layouts/ChatbotLayout";
 import { useChatbot } from "@/providers/ChatbotProvider";
@@ -27,7 +28,14 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
-import { Loader, Loader2, MoreHorizontal } from "lucide-react";
+import {
+  Loader,
+  Loader2,
+  MoreHorizontal,
+  Plus,
+  RotateCw,
+  Trash2,
+} from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 
@@ -38,16 +46,6 @@ const LinksPage: NextPageWithLayout = () => {
     { chatbotId: chatbot?.id || "" },
     { enabled: isLoaded },
   );
-  const data = useMemo(() => linksQuery.data || [], [linksQuery.data]);
-
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-  });
-  const { toast } = useToast();
 
   const retrainMany = trpc.link.retrainMany.useMutation({
     onSuccess: (data) => {
@@ -79,6 +77,30 @@ const LinksPage: NextPageWithLayout = () => {
     },
   });
 
+  const isBusey = useMemo(
+    () =>
+      retrainMany.isLoading ||
+      deleteMany.isLoading ||
+      linksQuery.isRefetching ||
+      linksQuery.isLoading,
+    [
+      deleteMany.isLoading,
+      linksQuery.isLoading,
+      linksQuery.isRefetching,
+      retrainMany.isLoading,
+    ],
+  );
+  const data = useMemo(() => linksQuery.data || [], [linksQuery.data]);
+
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+  });
+  const { toast } = useToast();
+
   const onRetrainMany = () => {
     if (!chatbot) return;
     const links = table.getSelectedRowModel().rows;
@@ -101,39 +123,60 @@ const LinksPage: NextPageWithLayout = () => {
     <>
       <PageHeader title="Links">
         <div className="flex items-center gap-2">
-          {table.getSelectedRowModel().rows.length > 0 ? (
+          {linksQuery.isLoading ? (
+            <>
+              <Skeleton className="h-10 w-24" />
+              <Skeleton className="h-10 w-24" />
+            </>
+          ) : table.getSelectedRowModel().rows.length > 0 ? (
             <>
               <p className="text-sm text-muted-foreground">
                 {table.getSelectedRowModel().rows.length} rows selected
               </p>
               <Button
-                disabled={retrainMany.isLoading || deleteMany.isLoading}
+                disabled={isBusey}
                 variant="secondary"
                 onClick={onRetrainMany}
               >
-                {retrainMany.isLoading && (
+                {retrainMany.isLoading ? (
                   <Loader2 size={18} className="-ml-1 mr-2 animate-spin" />
+                ) : (
+                  <RotateCw size={18} className="-ml-1 mr-2" />
                 )}
                 Retrain Link(s)
               </Button>
               <Button
-                disabled={retrainMany.isLoading || deleteMany.isLoading}
+                disabled={isBusey}
                 variant="destructive"
                 onClick={onDeleteMany}
               >
-                {deleteMany.isLoading && (
+                {deleteMany.isLoading ? (
                   <Loader2 size={18} className="-ml-1 mr-2 animate-spin" />
+                ) : (
+                  <Trash2 size={18} className="-ml-1 mr-2" />
                 )}
                 Delete Link(s)
               </Button>
             </>
           ) : (
-            <Button
-              disabled={retrainMany.isLoading || deleteMany.isLoading}
-              onClick={openModal}
-            >
-              Add Link
-            </Button>
+            <>
+              <Button
+                disabled={isBusey}
+                variant="outline"
+                onClick={() => linksQuery.refetch()}
+              >
+                {linksQuery.isRefetching ? (
+                  <Loader2 size={18} className="-ml-1 mr-2 animate-spin" />
+                ) : (
+                  <RotateCw size={18} className="-ml-1 mr-2" />
+                )}
+                Refresh
+              </Button>
+              <Button disabled={isBusey} onClick={openModal}>
+                <Plus size={18} className="-ml-1 mr-2" />
+                Add Link
+              </Button>
+            </>
           )}
         </div>
       </PageHeader>
