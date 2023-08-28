@@ -28,7 +28,6 @@ import {
 } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
 import { Loader2, MoreHorizontal, Plus, RotateCw, Trash2 } from "lucide-react";
-import Link from "next/link";
 import { useMemo, useState } from "react";
 
 const QuickPromptsPage: NextPageWithLayout = () => {
@@ -88,7 +87,7 @@ const QuickPromptsPage: NextPageWithLayout = () => {
   return (
     <>
       <PageHeader title="Quick Prompts">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
           {quickPromptsQuery.isLoading ? (
             <>
               <Skeleton className="h-10 w-24" />
@@ -128,14 +127,14 @@ const QuickPromptsPage: NextPageWithLayout = () => {
               </Button>
               <Button disabled={isBusey} onClick={openModal}>
                 <Plus size={18} className="-ml-1 mr-2" />
-                Add Link
+                Add Quick Prompt
               </Button>
             </>
           )}
         </div>
       </PageHeader>
 
-      <div className="container my-16 space-y-8">
+      <div className="container my-12">
         {quickPromptsQuery.isLoading ? (
           <div className="flex items-center justify-center rounded-lg border py-32">
             <Loader2 size={24} className="animate-spin" />

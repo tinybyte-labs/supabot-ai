@@ -5,9 +5,33 @@ import { trpc } from "@/utils/trpc";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "next-themes";
 import NextNProgress from "nextjs-progressbar";
+import { Inter } from "next/font/google";
+import { cn } from "@/lib/utils";
+import { useCallback, useEffect } from "react";
+import { useRouter } from "next/router";
+import { useAtom } from "jotai";
+import { sidebarOpenAtom } from "@/atoms/sidebarOpen";
+
+const inter = Inter({ subsets: ["latin"] });
 
 function App({ Component, pageProps }: AppPropsWithLayout) {
   const getLayout = Component.getLayout ?? ((page) => page);
+  const router = useRouter();
+  const [sidebarOpen, setSidebarOpen] = useAtom(sidebarOpenAtom);
+
+  const closeSidebar = useCallback(() => {
+    setSidebarOpen(false);
+  }, [setSidebarOpen]);
+
+  useEffect(() => {
+    if (!sidebarOpen) return;
+    router.events.on("routeChangeStart", closeSidebar);
+    window.addEventListener("resize", closeSidebar);
+    return () => {
+      router.events.off("routeChangeStart", closeSidebar);
+      window.removeEventListener("resize", closeSidebar);
+    };
+  }, [closeSidebar, router.events, sidebarOpen]);
 
   return (
     <ThemeProvider attribute="class" enableSystem>
@@ -17,7 +41,9 @@ function App({ Component, pageProps }: AppPropsWithLayout) {
           height={2}
           options={{ showSpinner: false }}
         />
-        {getLayout(<Component {...pageProps} />)}
+        <div className={cn(inter.className, "antialiased")}>
+          {getLayout(<Component {...pageProps} />)}
+        </div>
         <Toaster />
       </ClerkProvider>
     </ThemeProvider>

@@ -26,7 +26,7 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   return (
     <div>
-      <div className="flex items-center py-4">
+      <div className="flex items-center gap-4 py-4">
         <Input
           placeholder="Search..."
           onChange={(event) => table.setGlobalFilter(event.target.value)}

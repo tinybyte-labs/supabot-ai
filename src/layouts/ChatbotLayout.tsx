@@ -1,8 +1,11 @@
+import { sidebarOpenAtom } from "@/atoms/sidebarOpen";
 import ChatbotSwitcher from "@/components/ChatbotSwitcher";
 import FullUserDropdownButton from "@/components/FullUserDropdownButton";
 import SideBarNav, { SideBarNavProps } from "@/components/SideBarNav";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { ChatbotProvider } from "@/providers/ChatbotProvider";
 import { APP_NAME } from "@/utils/constants";
+import { useAtom } from "jotai";
 import {
   LayoutGrid,
   Users,
@@ -18,10 +21,19 @@ import { useRouter } from "next/router";
 import { ReactNode } from "react";
 
 const ChatbotLayout = ({ children }: { children: ReactNode }) => {
+  const [sidebarOpen, setSidebarOpen] = useAtom(sidebarOpenAtom);
+
   return (
     <ChatbotProvider>
-      <SideBar />
-      <main className="ml-64">{children}</main>
+      <div className="fixed bottom-0 left-0 top-0 w-64 border-r bg-card text-card-foreground max-lg:hidden">
+        <SideBar />
+      </div>
+      <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+        <SheetContent className="p-0" side="left">
+          <SideBar />
+        </SheetContent>
+      </Sheet>
+      <main className="lg:ml-64">{children}</main>
     </ChatbotProvider>
   );
 };
@@ -86,8 +98,8 @@ const SideBar = () => {
   ];
 
   return (
-    <aside className="fixed bottom-0 left-0 top-0 flex w-64 flex-col border-r bg-card text-card-foreground">
-      <header className="p-4">
+    <aside className="flex h-full w-full flex-col">
+      <header className="flex justify-start p-4">
         <Link href="/dashboard">
           <Image
             src="/logo.svg"
@@ -104,7 +116,9 @@ const SideBar = () => {
         </p>
         <ChatbotSwitcher className="w-full" />
       </div>
-      <SideBarNav list={list} />
+      <div className="flex-1 overflow-y-auto p-4">
+        <SideBarNav list={list} />
+      </div>
       <div className="p-4">
         <FullUserDropdownButton />
       </div>

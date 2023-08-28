@@ -46,9 +46,12 @@ const Page: NextPageWithLayout = (props) => {
     <>
       <PageHeader title="Chatbots" />
 
-      <div className="container">
-        <Tabs value={new Set(["grid", "list"]).has(view) ? view : "grid"}>
-          <div className="flex items-center gap-6">
+      <div className="container my-12">
+        <Tabs
+          value={new Set(["grid", "list"]).has(view) ? view : "grid"}
+          className="space-y-8"
+        >
+          <div className="flex gap-4">
             <form className="relative flex-1">
               <Input
                 type="text"
@@ -60,7 +63,7 @@ const Page: NextPageWithLayout = (props) => {
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
               />
             </form>
-            <TabsList>
+            <TabsList className="max-md:hidden">
               <TabsTrigger value="grid" asChild>
                 <Link
                   href={{
@@ -82,15 +85,22 @@ const Page: NextPageWithLayout = (props) => {
                 </Link>
               </TabsTrigger>
             </TabsList>
-            <Button asChild>
+            <Button asChild className="whitespace-nowrap max-sm:hidden">
               <Link href="/dashboard/chatbots/new">
                 <Plus size={20} className="-ml-1 mr-2" />
                 Create Chatbot
               </Link>
             </Button>
+            <Button asChild size="icon" className="whitespace-nowrap sm:hidden">
+              <Link href="/dashboard/chatbots/new">
+                <p className="sr-only">Create Chatbot</p>
+                <Plus size={20} />
+              </Link>
+            </Button>
           </div>
+
           <TabsContent value="grid">
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {chatbots.map((chatbot) => (
                 <Link
                   key={chatbot.id}

@@ -108,7 +108,7 @@ const LinksPage: NextPageWithLayout = () => {
   return (
     <>
       <PageHeader title="Links">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
           {linksQuery.isLoading ? (
             <>
               <Skeleton className="h-10 w-24" />
@@ -166,7 +166,7 @@ const LinksPage: NextPageWithLayout = () => {
           )}
         </div>
       </PageHeader>
-      <div className="container my-16 space-y-8">
+      <div className="container my-12">
         {linksQuery.isLoading ? (
           <div className="flex items-center justify-center rounded-lg border py-32">
             <Loader2 size={24} className="animate-spin" />

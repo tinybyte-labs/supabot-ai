@@ -13,6 +13,20 @@ export const createChatbotValidator = z.object({
     .max(32, "Slug must be at most 32 characters.")
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Invlid slug"),
 });
+export const updateChatbotValidator = z.object({
+  id: z.string(),
+  name: z
+    .string({ required_error: "Name is required" })
+    .min(2, "Name must be at least 2 characters.")
+    .max(32, "Slug must be at most 32 characters.")
+    .optional(),
+  slug: z
+    .string({ required_error: "Slug is required" })
+    .min(2, "Slug must be at least 2 characters.")
+    .max(32, "Slug must be at most 32 characters.")
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Invlid slug")
+    .optional(),
+});
 
 export const createQuickPromptValidator = z.object({
   chatbotId: z.string(),

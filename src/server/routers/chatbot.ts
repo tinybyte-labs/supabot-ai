@@ -1,5 +1,8 @@
 import { protectedProcedure, router } from "../trpc";
-import { createChatbotValidator } from "@/utils/validators";
+import {
+  createChatbotValidator,
+  updateChatbotValidator,
+} from "@/utils/validators";
 import { TRPCError } from "@trpc/server";
 import * as z from "zod";
 
@@ -62,4 +65,44 @@ export const chatbotRouter = router({
         },
       });
     }),
+  update: protectedProcedure
+    .input(updateChatbotValidator)
+    .mutation(async ({ ctx, input: { id, ...data } }) => {
+      if (!ctx.auth.orgId) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "No organization selected",
+        });
+      }
+      const chatbot = await ctx.db.chatbot.findUnique({
+        where: { id, organizationId: ctx.auth.orgId },
+      });
+      if (!chatbot) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Chatbot not found!",
+        });
+      }
+      if (data.slug) {
+        const alreadyExists = await ctx.db.chatbot.findUnique({
+          where: { slug: data.slug },
+          select: { slug: true },
+        });
+        if (alreadyExists) {
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: "Slug is already taken",
+          });
+        }
+      }
+      return ctx.db.chatbot.update({
+        where: { id },
+        data,
+      });
+    }),
+  delete: protectedProcedure.input(z.string()).mutation(({ ctx, input }) => {
+    return ctx.db.chatbot.delete({
+      where: { id: input, organizationId: ctx.auth.orgId },
+    });
+  }),
 });

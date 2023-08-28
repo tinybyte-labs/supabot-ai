@@ -3,10 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ChatbotLayout from "@/layouts/ChatbotLayout";
 import { useChatbot } from "@/providers/ChatbotProvider";
 import { NextPageWithLayout } from "@/types/next";
-import { sleep } from "@/utils/sleep";
 import { trpc } from "@/utils/trpc";
 import { ArrowRight, FileText, LinkIcon, Loader2 } from "lucide-react";
-import { GetServerSideProps } from "next";
 import Link from "next/link";
 
 const ChatbotOverviewPage: NextPageWithLayout = () => {
@@ -34,8 +32,8 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
   return (
     <>
       <PageHeader title="Overview" />
-      <div className="container">
-        <div className="grid grid-cols-3 gap-6">
+      <div className="container my-12">
+        <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Links</CardTitle>

@@ -20,11 +20,11 @@ export default function SideBarNav({ list }: SideBarNavProps) {
   const { asPath } = useRouter();
 
   return (
-    <nav className="p-4 space-y-6 flex-1 overflow-y-auto">
+    <nav className="space-y-6">
       {list.map((group, i) => (
         <div key={i}>
           {group.title && (
-            <div className="pl-4 text-xs text-muted-foreground pb-2">
+            <div className="pb-2 pl-4 text-xs text-muted-foreground">
               {group.title}
             </div>
           )}
@@ -42,7 +42,7 @@ export default function SideBarNav({ list }: SideBarNavProps) {
               >
                 <Link href={item.href}>
                   {item.icon}
-                  <p className="flex-1 truncate ml-2">{item.label}</p>
+                  <p className="ml-2 flex-1 truncate">{item.label}</p>
                 </Link>
               </Button>
             ))}
