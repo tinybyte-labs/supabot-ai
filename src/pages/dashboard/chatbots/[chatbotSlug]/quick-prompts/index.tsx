@@ -2,7 +2,7 @@ import PageHeader from "@/components/PageHeader";
 import AddQuickPromptModal from "@/components/modals/AddQuickPrompt";
 import UpdateQuickPromptModal from "@/components/modals/UpdateQuickPromptModal";
 import { useModal } from "@/components/modals/useModal";
-import { DataTable } from "@/components/tables/LinksTable";
+import { DataTable } from "@/components/tables/DataTable";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -134,7 +134,7 @@ const QuickPromptsPage: NextPageWithLayout = () => {
         </div>
       </PageHeader>
 
-      <div className="container my-12">
+      <div className="container mb-32 mt-16">
         {quickPromptsQuery.isLoading ? (
           <div className="flex items-center justify-center rounded-lg border py-32">
             <Loader2 size={24} className="animate-spin" />

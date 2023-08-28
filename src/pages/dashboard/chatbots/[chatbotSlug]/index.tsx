@@ -32,7 +32,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
   return (
     <>
       <PageHeader title="Overview" />
-      <div className="container my-12">
+      <div className="container mb-32 mt-16">
         <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

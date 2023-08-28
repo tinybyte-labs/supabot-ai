@@ -46,7 +46,7 @@ const Page: NextPageWithLayout = (props) => {
     <>
       <PageHeader title="Chatbots" />
 
-      <div className="container my-12">
+      <div className="container mb-32 mt-16">
         <Tabs
           value={new Set(["grid", "list"]).has(view) ? view : "grid"}
           className="space-y-8"
@@ -105,7 +105,7 @@ const Page: NextPageWithLayout = (props) => {
                 <Link
                   key={chatbot.id}
                   href={`/dashboard/chatbots/${chatbot.slug}`}
-                  className="flex flex-col gap-4 rounded-lg border bg-card p-4 text-card-foreground shadow-sm transition-all hover:shadow-lg"
+                  className="flex flex-col gap-4 rounded-lg border bg-card p-4 text-card-foreground shadow-sm transition-all hover:border-foreground/20 hover:shadow-lg"
                 >
                   <div className="flex items-center gap-4">
                     <Avatar className="h-10 w-10">

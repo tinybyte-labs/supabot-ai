@@ -30,7 +30,7 @@ import { useRouter } from "next/router";
 
 const ChatbotAdvancedSettingsPage: NextPageWithLayout = () => {
   return (
-    <div className="max-w-2xl space-y-6">
+    <div className="space-y-6">
       <DeleteChatbotCard />
     </div>
   );

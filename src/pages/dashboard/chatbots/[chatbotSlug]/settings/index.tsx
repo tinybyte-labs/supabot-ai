@@ -34,7 +34,7 @@ import { APP_NAME, DOMAIN } from "@/utils/constants";
 
 const ChatbotSettingsPage: NextPageWithLayout = () => {
   return (
-    <div className="max-w-2xl space-y-6">
+    <div className="space-y-6">
       <UpdateNameFrom />
       <UpdateSlugFrom />
     </div>

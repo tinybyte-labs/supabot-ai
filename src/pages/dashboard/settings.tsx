@@ -6,6 +6,7 @@ const Page: NextPageWithLayout = () => {
   return (
     <>
       <PageHeader title="Settings" />
+      <div className="container mb-32 mt-16"></div>
     </>
   );
 };

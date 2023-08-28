@@ -1,7 +1,7 @@
 import PageHeader from "@/components/PageHeader";
 import AddLinksModal from "@/components/modals/AddLinksModal";
 import { useModal } from "@/components/modals/useModal";
-import { DataTable } from "@/components/tables/LinksTable";
+import { DataTable } from "@/components/tables/DataTable";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -166,7 +166,7 @@ const LinksPage: NextPageWithLayout = () => {
           )}
         </div>
       </PageHeader>
-      <div className="container my-12">
+      <div className="container mb-32 mt-16">
         {linksQuery.isLoading ? (
           <div className="flex items-center justify-center rounded-lg border py-32">
             <Loader2 size={24} className="animate-spin" />
