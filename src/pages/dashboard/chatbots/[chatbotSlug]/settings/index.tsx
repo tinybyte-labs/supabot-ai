@@ -35,6 +35,7 @@ import { APP_NAME, DOMAIN } from "@/utils/constants";
 const ChatbotSettingsPage: NextPageWithLayout = () => {
   return (
     <div className="space-y-6">
+      <ChatbotIdCard />
       <UpdateNameFrom />
       <UpdateSlugFrom />
     </div>
@@ -47,8 +48,35 @@ ChatbotSettingsPage.getLayout = (page) => (
 
 export default ChatbotSettingsPage;
 
+const ChatbotIdCard = () => {
+  const { isLoaded, chatbot } = useChatbot();
+
+  if (!isLoaded) {
+    return <Skeleton className="h-64" />;
+  }
+
+  if (!chatbot) {
+    return null;
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Update Id</CardTitle>
+        <CardDescription>
+          This is the id of your chatbot on {APP_NAME}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Input placeholder="Id" defaultValue={chatbot.id} readOnly />
+      </CardContent>
+    </Card>
+  );
+};
+
 const UpdateNameFrom = () => {
   const { isLoaded, chatbot } = useChatbot();
+
   const form = useForm<z.infer<typeof updateChatbotValidator>>({
     resolver: zodResolver(updateChatbotValidator),
     defaultValues: {
@@ -94,7 +122,7 @@ const UpdateNameFrom = () => {
       <CardHeader>
         <CardTitle>Update Name</CardTitle>
         <CardDescription>
-          This is the name of your project on {APP_NAME}
+          This is the name of your chatbot on {APP_NAME}
         </CardDescription>
       </CardHeader>
       <Form {...form}>
@@ -181,7 +209,7 @@ const UpdateSlugFrom = () => {
       <CardHeader>
         <CardTitle>Update Slug</CardTitle>
         <CardDescription>
-          This is your project&apos;s unique slug on {APP_NAME}
+          This is your chatbot&apos;s unique slug on {APP_NAME}
         </CardDescription>
       </CardHeader>
       <Form {...form}>

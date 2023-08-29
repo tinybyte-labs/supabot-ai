@@ -1,21 +1,16 @@
 import { embedTextArray } from "./openai";
 import { prisma } from "./prisma";
-
-export interface Document {
-  metadata?: Record<string, any>;
-  content: string;
-}
+import { Document } from "@prisma/client";
 
 export async function addVectors(
   vectors: number[][],
-  docs: Document[],
+  docs: string[],
   chatbotId: string,
   linkId?: string,
 ) {
   const rows = vectors.map((embedding, idx) => ({
     embedding,
-    content: docs[idx]!.content,
-    metadata: docs[idx]!.metadata,
+    content: docs[idx],
     chatbotId,
     ...(linkId ? { linkId } : {}),
   }));
@@ -44,41 +39,36 @@ export async function addVectors(
 }
 
 export async function addDocuments(
-  docs: Document[],
+  docs: string[],
   chatbotId: string,
   linkId?: string,
 ) {
-  const texts = docs.map(({ content }) => content);
-  const vectors = await embedTextArray(texts);
+  const vectors = await embedTextArray(docs);
   return addVectors(vectors, docs, chatbotId, linkId);
 }
 
-// export async function getDocuments(
-//   projectId: string,
-//   embedding: number[],
-//   threshold = 0.78,
-//   limit = 5,
-// ) {
-//   const sections = await db
-//     .select({
-//       id: embeddingsTable.id,
-//       content: embeddingsTable.content,
-//       link: {
-//         id: linksTable.id,
-//         url: linksTable.url,
-//       },
-//       dot_product: sql<number>`(${maxInnerProduct(
-//         embeddingsTable.embedding,
-//         embedding,
-//       )}) * -1`,
-//     })
-//     .from(embeddingsTable)
-//     .leftJoin(linksTable, eq(linksTable.id, embeddingsTable.linkId))
-//     .where(({ dot_product }) =>
-//       and(eq(embeddingsTable.projectId, projectId), gt(dot_product, threshold)),
-//     )
-//     .orderBy(({ dot_product }) => desc(dot_product))
-//     .limit(limit);
-
-//   return sections;
-// }
+export async function getDocuments(
+  chatbotId: string,
+  embedding: number[],
+  threshold = 0.78,
+  limit = 5,
+) {
+  const documents = await prisma.$queryRaw`
+    SELECT 
+      "Document"."id", 
+      "Document"."createdAt",
+      "Document"."updatedAt",
+      "Document"."content", 
+      "Document"."linkId",
+      "Document"."chatbotId",
+      "Document"."metadata",
+      "Link"."url" as "source",
+      1 - ("Document"."embedding" <=> ${embedding}::vector) as "similarity" 
+    FROM "Document"
+    LEFT JOIN "Link" ON "Link"."id" = "Document"."linkId"
+    WHERE "Document"."chatbotId" = ${chatbotId} AND 1 - ("Document"."embedding" <=> ${embedding}::vector) > ${threshold}
+    ORDER BY "similarity" DESC
+    LIMIT ${limit};
+  `;
+  return documents as Array<Document & { similarity: number; source?: string }>;
+}

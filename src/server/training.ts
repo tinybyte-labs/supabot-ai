@@ -1,25 +1,23 @@
 import { prisma } from "./prisma";
-import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-import { CheerioWebBaseLoader } from "langchain/document_loaders/web/cheerio";
-import { HtmlToTextTransformer } from "langchain/document_transformers/html_to_text";
-import { type Document, addDocuments } from "@/server/vector-store";
+import { addDocuments } from "@/server/vector-store";
+import { convert } from "html-to-text";
+import { splitDocumentIntoChunks } from "@/utils/splitDocumentIntoChunks";
 
-const getDocumentsFromWeb = async (url: string): Promise<Document[]> => {
-  const loader = new CheerioWebBaseLoader(url);
-  const htmlDocs = await loader.load();
-
-  const splitter = RecursiveCharacterTextSplitter.fromLanguage("html");
-  const transformer = new HtmlToTextTransformer();
-
-  const sequence = splitter.pipe(transformer);
-
-  const docs = await sequence.invoke(htmlDocs);
-  return docs
-    .filter((doc) => Boolean(doc.pageContent))
-    .map((doc) => ({
-      content: doc.pageContent,
-      metadata: doc.metadata,
-    }));
+const getDocumentsFromWeb = async (url: URL) => {
+  const res = await fetch(url);
+  const htmlText = await res.text();
+  const rawText = convert(htmlText, {
+    selectors: [
+      {
+        selector: "a",
+        options: {
+          baseUrl: url.origin,
+        },
+      },
+    ],
+  });
+  const chunks = splitDocumentIntoChunks(rawText, 500, 50);
+  return chunks;
 };
 
 export const trainLink = async (linkId: string) => {
@@ -45,8 +43,12 @@ export const trainLink = async (linkId: string) => {
     await prisma.document.deleteMany({ where: { linkId: link.id } });
 
     // fetch the website
-    const docs = await getDocumentsFromWeb(link.url);
-    console.log(docs);
+    const docs = await getDocumentsFromWeb(new URL(link.url));
+    for (const doc of docs) {
+      console.log("-----------------");
+      console.log(doc);
+      console.log("-----------------");
+    }
     await addDocuments(docs, link.chatbotId, linkId);
 
     // update the link status to success.

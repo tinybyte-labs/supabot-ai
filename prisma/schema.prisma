@@ -20,9 +20,11 @@ model Chatbot {
   metadata       Json?
   organizationId String
 
-  links        Link[]
-  documents    Document[]
-  quickPrompts QuickPrompt[]
+  links         Link[]
+  documents     Document[]
+  quickPrompts  QuickPrompt[]
+  conversations Conversation[]
+  users         ChatbotUser[]
 
   @@index([organizationId])
   @@index([updatedAt])
@@ -92,4 +94,68 @@ model QuickPrompt {
 
   @@index([updatedAt])
   @@index([title])
+}
+
+model ChatbotUser {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  email     String?
+  name      String?
+  chatbotId String
+
+  chatbot       Chatbot        @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
+  conversations Conversation[]
+  messages      Message[]
+
+  @@unique([chatbotId, email])
+}
+
+enum ConversationStatus {
+  OPEN
+  CLOSED
+}
+
+model Conversation {
+  id        String             @id @default(cuid())
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  title     String?
+  status    ConversationStatus @default(OPEN)
+  url       String?
+  chatbotId String
+  userId    String?
+
+  chatbot  Chatbot      @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
+  user     ChatbotUser? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages Message[]
+}
+
+enum MessageRole {
+  BOT
+  USER
+  AGENT
+}
+
+enum Reaction {
+  LIKE
+  DISLIKE
+}
+
+model Message {
+  id             String      @id @default(cuid())
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  body           String
+  role           MessageRole
+  reaction       Reaction?
+  conversationId String
+  agentId        String?
+  userId         String?
+  metadata       Json?
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         ChatbotUser? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([agentId])
 }

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { protectedProcedure, router } from "../trpc";
+import { protectedProcedure, publicProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import {
   createQuickPromptValidator,
@@ -7,7 +7,7 @@ import {
 } from "@/utils/validators";
 
 export const quickPromptRouter = router({
-  list: protectedProcedure
+  list: publicProcedure
     .input(
       z.object({
         chatbotId: z.string(),
@@ -15,7 +15,7 @@ export const quickPromptRouter = router({
     )
     .query(({ ctx, input: { chatbotId } }) => {
       return ctx.db.quickPrompt.findMany({
-        where: { chatbot: { id: chatbotId, organizationId: ctx.auth.orgId } },
+        where: { chatbot: { id: chatbotId } },
         orderBy: {
           updatedAt: "desc",
         },

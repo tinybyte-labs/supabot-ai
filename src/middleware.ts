@@ -10,6 +10,7 @@ export default authMiddleware({
     "/blog(.*)",
     "/api/avatar.svg",
     "/api/qstash(.*)",
+    "/widgets(.*)",
   ],
   beforeAuth: (req) => {
     if (req.nextUrl.pathname === "/home") {

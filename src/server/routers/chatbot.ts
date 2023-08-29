@@ -1,4 +1,4 @@
-import { protectedProcedure, router } from "../trpc";
+import { protectedProcedure, publicProcedure, router } from "../trpc";
 import {
   createChatbotValidator,
   updateChatbotValidator,
@@ -30,13 +30,29 @@ export const chatbotRouter = router({
       quickPromptCount: chatbot?._count.quickPrompts || 0,
     };
   }),
-  findBySlug: protectedProcedure
+  findBySlug: publicProcedure
     .input(z.string())
     .query(async ({ ctx, input }) => {
-      return ctx.db.chatbot.findUnique({
-        where: { organizationId: ctx.auth.orgId, slug: input },
+      const chatbot = await ctx.db.chatbot.findUnique({
+        where: { slug: input },
       });
+      if (!chatbot) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Chatbot not found!",
+        });
+      }
+      return chatbot;
     }),
+  findById: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
+    const chatbot = await ctx.db.chatbot.findUnique({
+      where: { id: input },
+    });
+    if (!chatbot) {
+      throw new TRPCError({ code: "NOT_FOUND", message: "Chatbot not found!" });
+    }
+    return chatbot;
+  }),
   create: protectedProcedure
     .input(createChatbotValidator)
     .mutation(async ({ ctx, input }) => {
