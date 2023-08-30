@@ -1,22 +1,20 @@
+import BotMessageBubble from "@/components/BotMessageBubble";
+import ChatboxInputBar from "@/components/ChatboxInputBar";
+import ChatboxStyle from "@/components/ChatboxStyle";
+import ChatboxWatermark from "@/components/ChatboxWatermark";
+import ThemeTogglerIconButton from "@/components/ThemeTogglerIconButton";
+import UserMessageBubble from "@/components/UserMessageBubble";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import ChatbotBoxLayout, { useChatbox } from "@/layouts/ChatboxLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
 import { Message } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
-import {
-  ArrowLeft,
-  Loader2,
-  SendIcon,
-  ThumbsDown,
-  ThumbsUp,
-} from "lucide-react";
+import { ArrowLeft, Loader2, RefreshCw, SendIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
-import ReactMarkdown from "react-markdown";
 
 const ConversationPage: NextPageWithLayout = () => {
   const router = useRouter();
@@ -177,157 +175,116 @@ const ConversationPage: NextPageWithLayout = () => {
   if (conversation.error) {
     return <div>{conversation.error.message}</div>;
   }
+
   return (
-    <div className="flex h-screen w-screen flex-col overflow-hidden">
-      <div className="flex items-center gap-3 border-b p-3">
-        <Button size="icon" variant="ghost" asChild>
-          <Link href={`/widgets/c/${chatbot.id}`}>
-            <ArrowLeft size={20} />
-          </Link>
-        </Button>
-        <p className="text-lg font-semibold">
-          {conversation.data.title || chatbot.name}
-        </p>
-      </div>
-      <div className="relative flex-1 overflow-y-auto" ref={scrollElRef}>
-        <div className="space-y-6 p-4">
-          {messages.isLoading ? (
-            <p>Loading messages..</p>
-          ) : messages.isError ? (
-            <p>Messages Error: {messages.error.message}</p>
-          ) : (
-            messages.data.map((message) => (
-              <Fragment key={message.id}>
-                {message.role === "BOT" ? (
-                  <div className="flex justify-start pr-12 sm:pr-24">
-                    <div className="flex flex-col items-start">
-                      <p className="mb-2 text-sm font-medium uppercase text-muted-foreground">
-                        BOT
-                      </p>
-                      <div className="relative rounded-lg rounded-tl-sm bg-secondary p-4 text-secondary-foreground">
-                        <ReactMarkdown className="prose max-w-none dark:prose-invert ">
-                          {message.body}
-                        </ReactMarkdown>
-                        <div className="absolute -bottom-6 right-4 mt-2 space-x-2">
-                          <Button
-                            size="icon"
-                            variant={
-                              message.reaction === "LIKE"
-                                ? "default"
-                                : "secondary"
-                            }
-                            className="h-8 w-8 border border-accent-foreground/10"
-                            onClick={() => handleMessageReact(message, "LIKE")}
-                          >
-                            <p className="sr-only">Like</p>
-                            <ThumbsUp size={16} />
-                          </Button>
-                          <Button
-                            size="icon"
-                            variant={
-                              message.reaction === "DISLIKE"
-                                ? "default"
-                                : "secondary"
-                            }
-                            className="h-8 w-8 border border-accent-foreground/10"
-                            onClick={() =>
-                              handleMessageReact(message, "DISLIKE")
-                            }
-                          >
-                            <p className="sr-only">Dislike</p>
-                            <ThumbsDown size={16} />
-                          </Button>
-                        </div>
-                      </div>
-                      {(message.metadata as any)?.sources?.length > 0 && (
-                        <div className="mt-2 space-y-2">
-                          <p className="text-sm text-muted-foreground">
-                            Sources:
-                          </p>
-                          <div className="flex flex-wrap gap-2">
-                            {(
-                              (message.metadata as any).sources as string[]
-                            ).map((source, i) => (
-                              <Button
-                                key={i}
-                                size="sm"
-                                variant="secondary"
-                                asChild
-                                className="h-fit px-2 py-1"
-                              >
-                                <Link href={source} target="_blank">
-                                  {source}
-                                </Link>
-                              </Button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ) : message.role === "USER" ? (
-                  <div className="flex justify-end pl-12 sm:pl-24">
-                    <div className="flex flex-col items-end">
-                      <p className="mb-2 text-sm font-medium uppercase text-muted-foreground">
-                        YOU
-                      </p>
-                      <div className="rounded-lg rounded-tr-sm bg-primary p-4 font-medium text-primary-foreground">
-                        {message.body}
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div>{message.body}</div>
+    <>
+      <ChatboxStyle {...((chatbot.settings as any) || {})} />
+      <div className="chatbox flex h-screen w-screen flex-col overflow-hidden">
+        <header className="flex items-center gap-3 border-b p-2">
+          <Button size="icon" variant="ghost" asChild>
+            <Link href={`/widgets/c/${chatbot.id}`}>
+              <p className="sr-only">go to home</p>
+              <ArrowLeft size={20} />
+            </Link>
+          </Button>
+
+          <h1 className="text-lg font-semibold">
+            {conversation.data.title || chatbot.name}
+          </h1>
+
+          <div className="flex flex-1 items-center justify-end gap-2">
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={() => {
+                conversation.refetch();
+                messages.refetch();
+              }}
+              disabled={conversation.isRefetching || messages.isRefetching}
+            >
+              <p className="sr-only">Refresh Conversation</p>
+              {conversation.isRefetching || messages.isRefetching ? (
+                <Loader2 size={20} className="animate-spin" />
+              ) : (
+                <RefreshCw size={20} />
+              )}
+            </Button>
+
+            <ThemeTogglerIconButton />
+          </div>
+        </header>
+
+        <div className="relative flex-1 overflow-y-auto" ref={scrollElRef}>
+          <div className="space-y-6 p-4">
+            {messages.isLoading ? (
+              <p>Loading messages...</p>
+            ) : messages.isError ? (
+              <p>Messages Error: {messages.error.message}</p>
+            ) : (
+              <>
+                {(chatbot.settings as any)?.welcomeMessage && (
+                  <BotMessageBubble
+                    name="BOT"
+                    message={(chatbot.settings as any)?.welcomeMessage}
+                    date={conversation.data.createdAt}
+                  />
                 )}
-              </Fragment>
-            ))
+                {messages.data.map((message) => (
+                  <Fragment key={message.id}>
+                    {message.role === "BOT" ? (
+                      <BotMessageBubble
+                        name="BOT"
+                        message={message.body}
+                        onReact={(value) => handleMessageReact(message, value)}
+                        reaction={message.reaction}
+                        sources={(message.metadata as any)?.sources as string[]}
+                        date={message.createdAt}
+                      />
+                    ) : message.role === "USER" ? (
+                      <UserMessageBubble
+                        name="YOU"
+                        message={message.body}
+                        date={message.createdAt}
+                      />
+                    ) : null}
+                  </Fragment>
+                ))}
+              </>
+            )}
+          </div>
+
+          {!sendMessage.isLoading && quickPrompts.isSuccess && (
+            <div className="flex flex-wrap justify-end gap-4 p-4">
+              {quickPrompts.data
+                .filter(
+                  (p) => p.isFollowUpPrompt !== (messages.data?.length === 0),
+                )
+                .map((prompt) => (
+                  <Button
+                    key={prompt.id}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleSubmit(prompt.prompt)}
+                  >
+                    {prompt.title}
+                  </Button>
+                ))}
+            </div>
           )}
         </div>
 
-        {!sendMessage.isLoading && quickPrompts.isSuccess && (
-          <div className="flex flex-wrap justify-end gap-4 p-4">
-            {quickPrompts.data
-              .filter(
-                (p) => p.isFollowUpPrompt !== (messages.data?.length === 0),
-              )
-              .map((prompt) => (
-                <Button
-                  key={prompt.id}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleSubmit(prompt.prompt)}
-                >
-                  {prompt.title}
-                </Button>
-              ))}
-          </div>
-        )}
+        <ChatboxInputBar
+          value={message}
+          onChange={setMessage}
+          onSubmit={handleSubmit}
+          isLoading={sendMessage.isLoading}
+          placeholderText={(chatbot.settings as any)?.placeholderText}
+          autoFocus
+        />
+
+        <ChatboxWatermark />
       </div>
-      <div className="border-t p-3">
-        <form
-          className="flex items-center gap-3"
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSubmit(message);
-          }}
-        >
-          <Input
-            placeholder="How can we help you?..."
-            autoFocus
-            className="flex-1"
-            value={message}
-            onChange={(e) => setMessage(e.currentTarget.value)}
-          />
-          <Button type="submit" size="icon" disabled={sendMessage.isLoading}>
-            {sendMessage.isLoading ? (
-              <Loader2 size={20} className="animate-spin" />
-            ) : (
-              <SendIcon size={20} />
-            )}
-          </Button>
-        </form>
-      </div>
-    </div>
+    </>
   );
 };
 

@@ -33,6 +33,7 @@
     "@trpc/next": "^10.38.0",
     "@trpc/react-query": "^10.38.0",
     "@trpc/server": "^10.38.0",
+    "@types/color": "^3.0.3",
     "@upstash/qstash": "^0.3.6",
     "@vercel/og": "^0.5.11",
     "autoprefixer": "10.4.15",
@@ -41,6 +42,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "cmdk": "^0.2.0",
+    "color": "^4.2.3",
     "date-fns": "^2.30.0",
     "gpt3-tokenizer": "^1.1.5",
     "html-to-text": "^9.0.5",
@@ -54,23 +56,24 @@
     "react-dom": "18.2.0",
     "react-hook-form": "^7.45.4",
     "react-markdown": "^8.0.7",
+    "react-textarea-autosize": "^8.5.3",
     "superjson": "^1.13.1",
     "tailwind-merge": "^1.14.0",
     "zod": "^3.22.2"
   },
   "devDependencies": {
-    "postcss": "8.4.28",
+    "@tailwindcss/typography": "^0.5.9",
+    "@types/html-to-text": "^9.0.1",
     "@types/node": "20.5.6",
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
     "eslint": "8.47.0",
     "eslint-config-next": "13.4.19",
+    "postcss": "8.4.28",
+    "prettier-plugin-tailwindcss": "^0.5.3",
+    "prisma": "^5.2.0",
     "tailwindcss": "3.3.3",
     "tailwindcss-animate": "^1.0.6",
-    "typescript": "5.2.2",
-    "@tailwindcss/typography": "^0.5.9",
-    "@types/html-to-text": "^9.0.1",
-    "prettier-plugin-tailwindcss": "^0.5.3",
-    "prisma": "^5.2.0"
+    "typescript": "5.2.2"
   }
 }

@@ -26,6 +26,12 @@ export const updateChatbotValidator = z.object({
     .max(32, "Slug must be at most 32 characters.")
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Invlid slug")
     .optional(),
+  settings: z.object({
+    welcomeMessage: z.string().max(300).optional(),
+    placeholderText: z.string().max(80).optional(),
+    primaryBgColor: z.string().max(32).optional(),
+    primaryFgColor: z.string().max(32).optional(),
+  }),
 });
 
 export const createQuickPromptValidator = z.object({

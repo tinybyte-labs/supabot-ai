@@ -62,7 +62,7 @@ const ChatbotIdCard = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Update Id</CardTitle>
+        <CardTitle>Chatbot Id</CardTitle>
         <CardDescription>
           This is the id of your chatbot on {APP_NAME}
         </CardDescription>
@@ -121,7 +121,7 @@ const UpdateNameFrom = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Update Name</CardTitle>
+        <CardTitle>Chatbot Name</CardTitle>
         <CardDescription>
           This is the name of your chatbot on {APP_NAME}
         </CardDescription>
@@ -212,7 +212,7 @@ const UpdateSlugFrom = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Update Slug</CardTitle>
+        <CardTitle>Chatbot Slug</CardTitle>
         <CardDescription>
           This is your chatbot&apos;s unique slug on {APP_NAME}
         </CardDescription>

@@ -19,6 +19,7 @@ model Chatbot {
   image          String?
   metadata       Json?
   organizationId String
+  settings       Json?
 
   links         Link[]
   documents     Document[]
