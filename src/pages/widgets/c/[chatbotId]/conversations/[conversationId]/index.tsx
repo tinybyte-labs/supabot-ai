@@ -8,7 +8,7 @@ import { Message } from "@prisma/client";
 import { ArrowLeft, Loader2, SendIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Fragment, useCallback, useState } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 
 const ConversationPage: NextPageWithLayout = () => {
@@ -17,6 +17,7 @@ const ConversationPage: NextPageWithLayout = () => {
   const [message, setMessage] = useState("");
   const { toast } = useToast();
   const utils = trpc.useContext();
+  const scrollElRef = useRef<HTMLDivElement | null>(null);
   const conversation = trpc.conversation.getById.useQuery(
     {
       id: (router.query.conversationId as string) || "",
@@ -40,6 +41,17 @@ const ConversationPage: NextPageWithLayout = () => {
     },
   );
 
+  const handleScrollToBottom = useCallback(
+    (behavior: ScrollBehavior = "smooth") => {
+      scrollElRef.current?.scrollTo({
+        top: scrollElRef.current.scrollHeight,
+        behavior,
+      });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [scrollElRef.current],
+  );
+
   const sendMessage = trpc.message.send.useMutation({
     onSuccess: ({ botMessage, userMessage }) => {
       utils.message.list.setData(
@@ -51,6 +63,7 @@ const ConversationPage: NextPageWithLayout = () => {
           botMessage,
         ],
       );
+      setTimeout(() => handleScrollToBottom(), 100);
     },
     onError: (error) =>
       toast({
@@ -93,17 +106,22 @@ const ConversationPage: NextPageWithLayout = () => {
         userId: user?.id,
       });
       setMessage("");
+      setTimeout(() => handleScrollToBottom(), 100);
     },
     [
       chatbot.id,
       conversation.data?.id,
       conversation.isSuccess,
+      handleScrollToBottom,
       sendMessage,
       toast,
       user?.id,
       utils.message.list,
     ],
   );
+  useEffect(() => {
+    handleScrollToBottom("instant");
+  }, [handleScrollToBottom]);
 
   if (conversation.isLoading) {
     return (
@@ -127,7 +145,7 @@ const ConversationPage: NextPageWithLayout = () => {
           {conversation.data.title || chatbot.name}
         </p>
       </div>
-      <div className="relative flex-1 overflow-y-auto">
+      <div className="relative flex-1 overflow-y-auto" ref={scrollElRef}>
         <div className="space-y-4 p-4">
           {messages.isLoading ? (
             <p>Loading messages..</p>
@@ -147,14 +165,29 @@ const ConversationPage: NextPageWithLayout = () => {
                           {message.body}
                         </ReactMarkdown>
                       </div>
-                      {(message.metadata as any)?.sources?.length > 0 &&
-                        ((message.metadata as any).sources as string[]).map(
-                          (source, i) => (
-                            <Button key={i} size="sm" variant="secondary">
-                              {source}
-                            </Button>
-                          ),
-                        )}
+                      {(message.metadata as any)?.sources?.length > 0 && (
+                        <div className="mt-2 space-y-2">
+                          <p className="text-sm text-muted-foreground">
+                            Sources:
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {(
+                              (message.metadata as any).sources as string[]
+                            ).map((source, i) => (
+                              <Button
+                                key={i}
+                                size="sm"
+                                variant="secondary"
+                                asChild
+                              >
+                                <Link href={source} target="_blank">
+                                  {source}
+                                </Link>
+                              </Button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ) : message.role === "USER" ? (
