@@ -29,7 +29,7 @@ const ChatbotSettingsLayout = ({ children }: { children: ReactNode }) => {
       <PageHeader title="Settings" />
       <div className="container mb-32 mt-16">
         <div className="flex gap-8 max-xl:flex-col xl:gap-12">
-          <nav className="sticky top-8 flex w-64 gap-px xl:flex-col">
+          <nav className="flex w-64 gap-px xl:flex-col">
             {menu.map((item) => (
               <Button
                 key={item.href}

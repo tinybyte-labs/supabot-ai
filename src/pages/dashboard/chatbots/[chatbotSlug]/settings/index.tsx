@@ -80,7 +80,8 @@ const UpdateNameFrom = () => {
   const form = useForm<z.infer<typeof updateChatbotValidator>>({
     resolver: zodResolver(updateChatbotValidator),
     defaultValues: {
-      name: chatbot?.name,
+      name: chatbot?.name || "",
+      id: chatbot?.id || "",
     },
   });
 
@@ -170,6 +171,10 @@ const UpdateSlugFrom = () => {
   const { isLoaded, chatbot } = useChatbot();
   const form = useForm<z.infer<typeof updateChatbotValidator>>({
     resolver: zodResolver(updateChatbotValidator),
+    defaultValues: {
+      slug: chatbot?.slug || "",
+      id: chatbot?.id || "",
+    },
   });
   const { toast } = useToast();
   const router = useRouter();
