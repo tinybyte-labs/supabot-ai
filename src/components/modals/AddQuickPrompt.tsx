@@ -11,6 +11,7 @@ import { Button } from "../ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -27,6 +28,7 @@ import { Loader2 } from "lucide-react";
 import { Textarea } from "../ui/textarea";
 import { useEffect } from "react";
 import { APP_NAME } from "@/utils/constants";
+import { Checkbox } from "../ui/checkbox";
 
 const AddQuickPromptModal: ModalFn = ({ onOpenChange, open }) => {
   const { isLoaded, chatbot } = useChatbot();
@@ -36,6 +38,7 @@ const AddQuickPromptModal: ModalFn = ({ onOpenChange, open }) => {
       chatbotId: "",
       prompt: "",
       title: "",
+      isFollowUpPrompt: false,
     },
   });
 
@@ -122,6 +125,34 @@ const AddQuickPromptModal: ModalFn = ({ onOpenChange, open }) => {
                       {...field}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="isFollowUpPrompt"
+              render={({ field }) => (
+                <FormItem className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        ref={field.ref}
+                        onBlur={field.onBlur}
+                        onChange={field.onChange}
+                        onCheckedChange={(value) =>
+                          form.setValue("isFollowUpPrompt", value === true)
+                        }
+                      />
+                    </FormControl>
+                    <FormLabel>Follow-up prompt</FormLabel>
+                  </div>
+                  <FormDescription>
+                    Follow-up prompts will be displayed after the first AI
+                    response
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

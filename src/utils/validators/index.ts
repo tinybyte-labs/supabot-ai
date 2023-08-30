@@ -32,12 +32,14 @@ export const createQuickPromptValidator = z.object({
   chatbotId: z.string(),
   title: z.string().max(80),
   prompt: z.string().max(500),
+  isFollowUpPrompt: z.boolean().optional(),
 });
 
 export const updateQuickPromptValidator = z.object({
   id: z.string(),
   title: z.string().optional(),
   prompt: z.string().optional(),
+  isFollowUpPrompt: z.boolean().optional(),
 });
 
 export const chatbotUserLogInValidator = z.object({

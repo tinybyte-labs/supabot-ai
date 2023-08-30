@@ -3,6 +3,7 @@ import AddQuickPromptModal from "@/components/modals/AddQuickPrompt";
 import UpdateQuickPromptModal from "@/components/modals/UpdateQuickPromptModal";
 import { useModal } from "@/components/modals/useModal";
 import { DataTable } from "@/components/tables/DataTable";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -28,7 +29,7 @@ import {
 } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
 import { Loader2, MoreHorizontal, Plus, RotateCw, Trash2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 const QuickPromptsPage: NextPageWithLayout = () => {
   const [Modal, { openModal }] = useModal(AddQuickPromptModal);
@@ -39,13 +40,9 @@ const QuickPromptsPage: NextPageWithLayout = () => {
   );
   const { toast } = useToast();
 
-  const data = useMemo(
-    () => quickPromptsQuery.data || [],
-    [quickPromptsQuery.data],
-  );
   const deleteMany = trpc.quickPrompt.deleteMany.useMutation({
     onSuccess: (data) => {
-      toast({ title: `${data.count} quick prompts deleted` });
+      toast({ title: `${data.count} prompt(s) deleted` });
       table.resetRowSelection();
       quickPromptsQuery.refetch();
     },
@@ -57,6 +54,11 @@ const QuickPromptsPage: NextPageWithLayout = () => {
       });
     },
   });
+
+  const quickPrompts = useMemo(
+    () => quickPromptsQuery.data || [],
+    [quickPromptsQuery.data],
+  );
 
   const isBusey = useMemo(
     () =>
@@ -70,19 +72,94 @@ const QuickPromptsPage: NextPageWithLayout = () => {
     ],
   );
 
+  const columns: ColumnDef<QuickPrompt>[] = useMemo(
+    () => [
+      {
+        id: "select",
+        enableSorting: false,
+        enableHiding: false,
+        header: ({ table }) => (
+          <Checkbox
+            checked={table.getIsAllPageRowsSelected()}
+            onCheckedChange={(value) =>
+              table.toggleAllPageRowsSelected(!!value)
+            }
+            aria-label="Select all"
+          />
+        ),
+        cell: ({ row }) => (
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label="Select row"
+          />
+        ),
+      },
+      {
+        accessorKey: "title",
+        header: () => <div className="whitespace-nowrap">TITLE</div>,
+        cell: ({ row }) => (
+          <p className="min-w-[160px] max-w-sm">{row.original.title}</p>
+        ),
+      },
+      {
+        accessorKey: "prompt",
+        header: () => <div className="whitespace-nowrap">PROMPT</div>,
+        cell: ({ row }) => (
+          <p className="min-w-[320px]">{row.original.prompt}</p>
+        ),
+      },
+      {
+        accessorKey: "status",
+        header: () => <div className="whitespace-nowrap">STATUS</div>,
+      },
+      {
+        accessorKey: "isFollowUpPrompt",
+        header: () => <div className="whitespace-nowrap">FOLLOW UP</div>,
+        cell: ({ row }) => (
+          <Checkbox checked={row.original.isFollowUpPrompt} aria-readonly />
+        ),
+      },
+      {
+        accessorKey: "updatedAt",
+        header: () => <div className="whitespace-nowrap">LAST UPDATED AT</div>,
+        cell: ({ row }) => {
+          return (
+            <p className="whitespace-nowrap">
+              {row.original.updatedAt
+                ? formatDistanceToNow(row.original.updatedAt, {
+                    addSuffix: true,
+                  })
+                : "-"}
+            </p>
+          );
+        },
+      },
+      {
+        id: "actions",
+        enableHiding: false,
+        enableSorting: false,
+        cell: ({ row }) => {
+          return <ActionButton quickPrompt={row.original} />;
+        },
+      },
+    ],
+    [],
+  );
+
   const table = useReactTable({
-    data,
+    data: quickPrompts,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
   });
 
-  const onDeleteMany = () => {
+  const onDeleteMany = useCallback(() => {
     if (!chatbot) return;
-    const links = table.getSelectedRowModel().rows;
-    deleteMany.mutate(links.map((link) => link.original.id));
-  };
+    const selectedQuickPrompts = table.getSelectedRowModel().rows;
+    deleteMany.mutate(selectedQuickPrompts.map((prompt) => prompt.original.id));
+  }, [chatbot, deleteMany, table]);
 
   return (
     <>
@@ -108,7 +185,7 @@ const QuickPromptsPage: NextPageWithLayout = () => {
                 ) : (
                   <Trash2 size={18} className="-ml-1 mr-2" />
                 )}
-                Delete Link(s)
+                Delete Prompt(s)
               </Button>
             </>
           ) : (
@@ -127,7 +204,7 @@ const QuickPromptsPage: NextPageWithLayout = () => {
               </Button>
               <Button disabled={isBusey} onClick={openModal}>
                 <Plus size={18} className="-ml-1 mr-2" />
-                Add Quick Prompt
+                Add Prompt
               </Button>
             </>
           )}
@@ -152,76 +229,15 @@ QuickPromptsPage.getLayout = (page) => <ChatbotLayout>{page}</ChatbotLayout>;
 
 export default QuickPromptsPage;
 
-export const columns: ColumnDef<QuickPrompt>[] = [
-  {
-    id: "select",
-    enableSorting: false,
-    enableHiding: false,
-    header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected()}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-  },
-  {
-    accessorKey: "title",
-    header: () => <div className="whitespace-nowrap">TITLE</div>,
-    cell: ({ row }) => (
-      <p className="min-w-[160px] max-w-sm">{row.original.title}</p>
-    ),
-  },
-  {
-    accessorKey: "prompt",
-    header: () => <div className="whitespace-nowrap">PROMPT</div>,
-    cell: ({ row }) => <p className="min-w-[320px]">{row.original.prompt}</p>,
-  },
-  {
-    accessorKey: "status",
-    header: () => <div className="whitespace-nowrap">STATUS</div>,
-  },
-  {
-    accessorKey: "updatedAt",
-    header: () => <div className="whitespace-nowrap">LAST UPDATED AT</div>,
-    cell: ({ row }) => {
-      return (
-        <p className="whitespace-nowrap">
-          {row.original.updatedAt
-            ? formatDistanceToNow(row.original.updatedAt, {
-                addSuffix: true,
-              })
-            : "-"}
-        </p>
-      );
-    },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    enableSorting: false,
-    cell: ({ row }) => {
-      return <ActionButton quickPrompt={row.original} />;
-    },
-  },
-];
-
 const ActionButton = ({ quickPrompt }: { quickPrompt: QuickPrompt }) => {
   const utils = trpc.useContext();
   const { toast } = useToast();
   const [modalOpen, setModalOpen] = useState(false);
 
-  const deleteLink = trpc.quickPrompt.delete.useMutation({
+  const deletePrompt = trpc.quickPrompt.delete.useMutation({
     onSuccess: () => {
       utils.quickPrompt.list.invalidate({ chatbotId: quickPrompt.chatbotId });
-      toast({ title: "Quick Prompt delete success" });
+      toast({ title: "Prompt deleted" });
     },
     onError: (error) => {
       toast({
@@ -247,8 +263,8 @@ const ActionButton = ({ quickPrompt }: { quickPrompt: QuickPrompt }) => {
             Edit
           </DropdownMenuItem>
           <DropdownMenuItem
-            disabled={deleteLink.isLoading}
-            onClick={() => deleteLink.mutate(quickPrompt.id)}
+            disabled={deletePrompt.isLoading}
+            onClick={() => deletePrompt.mutate(quickPrompt.id)}
           >
             Delete
           </DropdownMenuItem>

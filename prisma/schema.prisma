@@ -81,14 +81,16 @@ enum QuickPromptStatus {
 }
 
 model QuickPrompt {
-  id        String            @id @default(cuid())
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
-  title     String            @db.VarChar(80)
-  prompt    String            @db.VarChar(500)
-  chatbotId String
-  metadata  Json?
-  status    QuickPromptStatus @default(PUBLISHED)
+  id                 String            @id @default(cuid())
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  title              String            @db.VarChar(80)
+  prompt             String            @db.VarChar(500)
+  chatbotId          String
+  metadata           Json?
+  status             QuickPromptStatus @default(PUBLISHED)
+  isFollowUpPrompt   Boolean           @default(false)
+  isEscalationPrompt Boolean           @default(false)
 
   chatbot Chatbot @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
 

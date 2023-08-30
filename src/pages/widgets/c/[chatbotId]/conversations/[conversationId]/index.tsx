@@ -43,9 +43,7 @@ const ConversationPage: NextPageWithLayout = () => {
   );
   const quickPrompts = trpc.quickPrompt.list.useQuery(
     { chatbotId: chatbot.id },
-    {
-      enabled: messages.isSuccess && messages.data.length === 0,
-    },
+    { enabled: messages.isSuccess },
   );
   const updateMessage = trpc.message.update.useMutation();
 
@@ -255,6 +253,7 @@ const ConversationPage: NextPageWithLayout = () => {
                                 size="sm"
                                 variant="secondary"
                                 asChild
+                                className="h-fit px-2 py-1"
                               >
                                 <Link href={source} target="_blank">
                                   {source}
@@ -285,18 +284,22 @@ const ConversationPage: NextPageWithLayout = () => {
           )}
         </div>
 
-        {messages.data?.length === 0 && quickPrompts.isSuccess && (
-          <div className="absolute bottom-4 left-4 right-4 flex flex-wrap justify-end gap-4">
-            {quickPrompts.data.map((prompt) => (
-              <Button
-                key={prompt.id}
-                variant="outline"
-                size="sm"
-                onClick={() => handleSubmit(prompt.prompt)}
-              >
-                {prompt.title}
-              </Button>
-            ))}
+        {!sendMessage.isLoading && quickPrompts.isSuccess && (
+          <div className="flex flex-wrap justify-end gap-4 p-4">
+            {quickPrompts.data
+              .filter(
+                (p) => p.isFollowUpPrompt !== (messages.data?.length === 0),
+              )
+              .map((prompt) => (
+                <Button
+                  key={prompt.id}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleSubmit(prompt.prompt)}
+                >
+                  {prompt.title}
+                </Button>
+              ))}
           </div>
         )}
       </div>
