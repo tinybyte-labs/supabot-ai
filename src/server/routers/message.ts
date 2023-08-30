@@ -17,6 +17,9 @@ export const messageRouter = router({
     .query(({ ctx, input }) => {
       return ctx.db.message.findMany({
         where: { conversationId: input.conversationId },
+        orderBy: {
+          createdAt: "asc",
+        },
       });
     }),
   send: publicProcedure
@@ -66,6 +69,21 @@ export const messageRouter = router({
       });
 
       return { userMessage, botMessage };
+    }),
+  update: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        reaction: z.enum(["LIKE", "DISLIKE"]).nullish(),
+      }),
+    )
+    .mutation(({ ctx, input }) => {
+      return ctx.db.message.update({
+        where: { id: input.id },
+        data: {
+          reaction: input.reaction,
+        },
+      });
     }),
 });
 

@@ -47,7 +47,7 @@ export const chatbotRouter = router({
         conversation: {
           chatbotId: input,
         },
-        reaction: "LIKE",
+        reaction: "DISLIKE",
       },
     });
 

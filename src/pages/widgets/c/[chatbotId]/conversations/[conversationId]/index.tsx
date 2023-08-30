@@ -5,7 +5,14 @@ import ChatbotBoxLayout, { useChatbox } from "@/layouts/ChatboxLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
 import { Message } from "@prisma/client";
-import { ArrowLeft, Loader2, SendIcon } from "lucide-react";
+import { TRPCError } from "@trpc/server";
+import {
+  ArrowLeft,
+  Loader2,
+  SendIcon,
+  ThumbsDown,
+  ThumbsUp,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
@@ -40,6 +47,45 @@ const ConversationPage: NextPageWithLayout = () => {
       enabled: messages.isSuccess && messages.data.length === 0,
     },
   );
+  const updateMessage = trpc.message.update.useMutation();
+
+  const handleMessageReact = async (
+    message: Message,
+    reaction: Message["reaction"],
+  ) => {
+    if (!conversation.isSuccess) return;
+    if (message.reaction === reaction) {
+      reaction = null;
+    }
+
+    utils.message.list.setData(
+      { conversationId: conversation.data.id },
+      (data) =>
+        data?.map((msg) =>
+          msg.id === message.id ? { ...msg, reaction } : msg,
+        ),
+    );
+    try {
+      await updateMessage.mutateAsync({ id: message.id, reaction });
+    } catch (error) {
+      if (error instanceof TRPCError) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
+      utils.message.list.setData(
+        { conversationId: conversation.data.id },
+        (data) =>
+          data?.map((msg) =>
+            msg.id === message.id
+              ? { ...msg, reaction: message.reaction }
+              : msg,
+          ),
+      );
+    }
+  };
 
   const handleScrollToBottom = useCallback(
     (behavior: ScrollBehavior = "smooth") => {
@@ -146,7 +192,7 @@ const ConversationPage: NextPageWithLayout = () => {
         </p>
       </div>
       <div className="relative flex-1 overflow-y-auto" ref={scrollElRef}>
-        <div className="space-y-4 p-4">
+        <div className="space-y-6 p-4">
           {messages.isLoading ? (
             <p>Loading messages..</p>
           ) : messages.isError ? (
@@ -160,10 +206,40 @@ const ConversationPage: NextPageWithLayout = () => {
                       <p className="mb-2 text-sm font-medium uppercase text-muted-foreground">
                         BOT
                       </p>
-                      <div className="rounded-lg bg-secondary p-4 text-secondary-foreground">
+                      <div className="relative rounded-lg rounded-tl-sm bg-secondary p-4 text-secondary-foreground">
                         <ReactMarkdown className="prose max-w-none dark:prose-invert ">
                           {message.body}
                         </ReactMarkdown>
+                        <div className="absolute -bottom-6 right-4 mt-2 space-x-2">
+                          <Button
+                            size="icon"
+                            variant={
+                              message.reaction === "LIKE"
+                                ? "default"
+                                : "secondary"
+                            }
+                            className="h-8 w-8 border border-accent-foreground/10"
+                            onClick={() => handleMessageReact(message, "LIKE")}
+                          >
+                            <p className="sr-only">Like</p>
+                            <ThumbsUp size={16} />
+                          </Button>
+                          <Button
+                            size="icon"
+                            variant={
+                              message.reaction === "DISLIKE"
+                                ? "default"
+                                : "secondary"
+                            }
+                            className="h-8 w-8 border border-accent-foreground/10"
+                            onClick={() =>
+                              handleMessageReact(message, "DISLIKE")
+                            }
+                          >
+                            <p className="sr-only">Dislike</p>
+                            <ThumbsDown size={16} />
+                          </Button>
+                        </div>
                       </div>
                       {(message.metadata as any)?.sources?.length > 0 && (
                         <div className="mt-2 space-y-2">
@@ -196,7 +272,7 @@ const ConversationPage: NextPageWithLayout = () => {
                       <p className="mb-2 text-sm font-medium uppercase text-muted-foreground">
                         YOU
                       </p>
-                      <div className="rounded-lg bg-primary p-4 font-medium text-primary-foreground">
+                      <div className="rounded-lg rounded-tr-sm bg-primary p-4 font-medium text-primary-foreground">
                         {message.body}
                       </div>
                     </div>
