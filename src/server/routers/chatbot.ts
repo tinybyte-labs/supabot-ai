@@ -21,13 +21,49 @@ export const chatbotRouter = router({
           select: {
             links: true,
             quickPrompts: true,
+            conversations: true,
+            users: true,
+            documents: true,
           },
         },
       },
     });
+
+    if (!chatbot) {
+      throw new TRPCError({ code: "NOT_FOUND", message: "Chatbot not found!" });
+    }
+
+    const messageLikeCountPromise = ctx.db.message.count({
+      where: {
+        conversation: {
+          chatbotId: input,
+        },
+        reaction: "LIKE",
+      },
+    });
+
+    const messageDislikeCountPromise = ctx.db.message.count({
+      where: {
+        conversation: {
+          chatbotId: input,
+        },
+        reaction: "LIKE",
+      },
+    });
+
+    const [messageLikeCount, messageDislikeCount] = await Promise.all([
+      messageLikeCountPromise,
+      messageDislikeCountPromise,
+    ]);
+
     return {
       linksCount: chatbot?._count.links || 0,
       quickPromptCount: chatbot?._count.quickPrompts || 0,
+      userCount: chatbot?._count.users || 0,
+      conversationCount: chatbot?._count.conversations || 0,
+      documentCount: chatbot?._count.documents || 0,
+      messageLikeCount,
+      messageDislikeCount,
     };
   }),
   findBySlug: publicProcedure
