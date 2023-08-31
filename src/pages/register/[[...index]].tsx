@@ -1,30 +1,26 @@
-import { Button } from "@/components/ui/button";
-import { SignUp, useAuth } from "@clerk/nextjs";
+import AuthLayout from "@/layouts/AuthLayout";
+import { NextPageWithLayout } from "@/types/next";
+import { APP_NAME } from "@/utils/constants";
+import { SignUp } from "@clerk/nextjs";
 import { buildClerkProps } from "@clerk/nextjs/server";
-import { ChevronLeft } from "lucide-react";
 import { GetServerSideProps } from "next";
-import Link from "next/link";
+import Head from "next/head";
 
-const RegisterPage = () => {
-  const { isSignedIn } = useAuth();
-
+const RegisterPage: NextPageWithLayout = () => {
   return (
     <>
-      <header className="flex items-center justify-between p-8">
-        <Button asChild variant="outline">
-          <Link href={isSignedIn ? "/dashboard" : "/home"}>
-            <ChevronLeft className="w-4 h-4 mr-2 -ml-1" />
-            Back to {isSignedIn ? "Dashboard" : "Home"}
-          </Link>
-        </Button>
-      </header>
+      <Head>
+        <title>{`Create your account - ${APP_NAME}`}</title>
+      </Head>
 
-      <div className="w-fit mx-auto py-8">
+      <div className="mx-auto w-fit py-16">
         <SignUp />
       </div>
     </>
   );
 };
+
+RegisterPage.getLayout = (page) => <AuthLayout>{page}</AuthLayout>;
 
 export default RegisterPage;
 

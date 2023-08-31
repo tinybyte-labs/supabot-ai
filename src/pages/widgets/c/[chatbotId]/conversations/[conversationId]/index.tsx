@@ -177,114 +177,109 @@ const ConversationPage: NextPageWithLayout = () => {
   }
 
   return (
-    <>
-      <ChatboxStyle {...((chatbot.settings as any) || {})} />
-      <div className="chatbox flex h-screen w-screen flex-col overflow-hidden">
-        <header className="flex items-center gap-3 border-b p-2">
-          <Button size="icon" variant="ghost" asChild>
-            <Link href={`/widgets/c/${chatbot.id}`}>
-              <p className="sr-only">go to home</p>
-              <ArrowLeft size={20} />
-            </Link>
+    <div className="flex h-full w-full flex-col overflow-hidden">
+      <header className="flex items-center gap-3 border-b p-2">
+        <Button size="icon" variant="ghost" asChild>
+          <Link href={`/widgets/c/${chatbot.id}`}>
+            <p className="sr-only">go to home</p>
+            <ArrowLeft size={20} />
+          </Link>
+        </Button>
+
+        <h1 className="text-lg font-semibold">
+          {conversation.data.title || chatbot.name}
+        </h1>
+
+        <div className="flex flex-1 items-center justify-end gap-2">
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={() => {
+              conversation.refetch();
+              messages.refetch();
+            }}
+            disabled={conversation.isRefetching || messages.isRefetching}
+          >
+            <p className="sr-only">Refresh Conversation</p>
+            {conversation.isRefetching || messages.isRefetching ? (
+              <Loader2 size={20} className="animate-spin" />
+            ) : (
+              <RefreshCw size={20} />
+            )}
           </Button>
 
-          <h1 className="text-lg font-semibold">
-            {conversation.data.title || chatbot.name}
-          </h1>
+          <ThemeTogglerIconButton />
+        </div>
+      </header>
 
-          <div className="flex flex-1 items-center justify-end gap-2">
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={() => {
-                conversation.refetch();
-                messages.refetch();
-              }}
-              disabled={conversation.isRefetching || messages.isRefetching}
-            >
-              <p className="sr-only">Refresh Conversation</p>
-              {conversation.isRefetching || messages.isRefetching ? (
-                <Loader2 size={20} className="animate-spin" />
-              ) : (
-                <RefreshCw size={20} />
+      <div className="relative flex-1 overflow-y-auto" ref={scrollElRef}>
+        <div className="space-y-6 p-4">
+          {messages.isLoading ? (
+            <p>Loading messages...</p>
+          ) : messages.isError ? (
+            <p>Messages Error: {messages.error.message}</p>
+          ) : (
+            <>
+              {(chatbot.settings as any)?.welcomeMessage && (
+                <BotMessageBubble
+                  name="BOT"
+                  message={(chatbot.settings as any)?.welcomeMessage}
+                  date={conversation.data.createdAt}
+                />
               )}
-            </Button>
-
-            <ThemeTogglerIconButton />
-          </div>
-        </header>
-
-        <div className="relative flex-1 overflow-y-auto" ref={scrollElRef}>
-          <div className="space-y-6 p-4">
-            {messages.isLoading ? (
-              <p>Loading messages...</p>
-            ) : messages.isError ? (
-              <p>Messages Error: {messages.error.message}</p>
-            ) : (
-              <>
-                {(chatbot.settings as any)?.welcomeMessage && (
-                  <BotMessageBubble
-                    name="BOT"
-                    message={(chatbot.settings as any)?.welcomeMessage}
-                    date={conversation.data.createdAt}
-                  />
-                )}
-                {messages.data.map((message) => (
-                  <Fragment key={message.id}>
-                    {message.role === "BOT" ? (
-                      <BotMessageBubble
-                        name="BOT"
-                        message={message.body}
-                        onReact={(value) => handleMessageReact(message, value)}
-                        reaction={message.reaction}
-                        sources={(message.metadata as any)?.sources as string[]}
-                        date={message.createdAt}
-                      />
-                    ) : message.role === "USER" ? (
-                      <UserMessageBubble
-                        name="YOU"
-                        message={message.body}
-                        date={message.createdAt}
-                      />
-                    ) : null}
-                  </Fragment>
-                ))}
-              </>
-            )}
-          </div>
-
-          {!sendMessage.isLoading && quickPrompts.isSuccess && (
-            <div className="flex flex-wrap justify-end gap-4 p-4">
-              {quickPrompts.data
-                .filter(
-                  (p) => p.isFollowUpPrompt !== (messages.data?.length === 0),
-                )
-                .map((prompt) => (
-                  <Button
-                    key={prompt.id}
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleSubmit(prompt.prompt)}
-                  >
-                    {prompt.title}
-                  </Button>
-                ))}
-            </div>
+              {messages.data.map((message) => (
+                <Fragment key={message.id}>
+                  {message.role === "BOT" ? (
+                    <BotMessageBubble
+                      name="BOT"
+                      message={message.body}
+                      onReact={(value) => handleMessageReact(message, value)}
+                      reaction={message.reaction}
+                      sources={(message.metadata as any)?.sources as string[]}
+                      date={message.createdAt}
+                    />
+                  ) : message.role === "USER" ? (
+                    <UserMessageBubble
+                      name="YOU"
+                      message={message.body}
+                      date={message.createdAt}
+                    />
+                  ) : null}
+                </Fragment>
+              ))}
+            </>
           )}
         </div>
 
-        <ChatboxInputBar
-          value={message}
-          onChange={setMessage}
-          onSubmit={handleSubmit}
-          isLoading={sendMessage.isLoading}
-          placeholderText={(chatbot.settings as any)?.placeholderText}
-          autoFocus
-        />
-
-        <ChatboxWatermark />
+        {!sendMessage.isLoading && quickPrompts.isSuccess && (
+          <div className="flex flex-wrap justify-end gap-4 p-4">
+            {quickPrompts.data
+              .filter(
+                (p) => p.isFollowUpPrompt !== (messages.data?.length === 0),
+              )
+              .map((prompt) => (
+                <Button
+                  key={prompt.id}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleSubmit(prompt.prompt)}
+                >
+                  {prompt.title}
+                </Button>
+              ))}
+          </div>
+        )}
       </div>
-    </>
+
+      <ChatboxInputBar
+        value={message}
+        onChange={setMessage}
+        onSubmit={handleSubmit}
+        isLoading={sendMessage.isLoading}
+        placeholderText={(chatbot.settings as any)?.placeholderText}
+        autoFocus
+      />
+    </div>
   );
 };
 

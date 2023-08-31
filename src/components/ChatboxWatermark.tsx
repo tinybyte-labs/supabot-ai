@@ -1,4 +1,4 @@
-import { APP_NAME, HOME_DOMAIN } from "@/utils/constants";
+import { APP_NAME, BASE_DOMAIN } from "@/utils/constants";
 import Link from "next/link";
 
 const ChatboxWatermark = () => {
@@ -7,7 +7,7 @@ const ChatboxWatermark = () => {
       <p className="text-sm text-muted-foreground">
         Powered by{" "}
         <Link
-          href={HOME_DOMAIN}
+          href={BASE_DOMAIN}
           target="_blank"
           className="font-medium text-foreground underline-offset-4 hover:underline"
         >

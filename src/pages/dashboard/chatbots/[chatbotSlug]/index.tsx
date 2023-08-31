@@ -44,7 +44,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
     <>
       <PageHeader title="Overview">
         <Button variant="outline" asChild>
-          <Link href={`/widgets/c/${chatbot?.id}`} target="_blank">
+          <Link href={`/demo/c/${chatbot?.id}`} target="_blank">
             Demo
             <ExternalLink size={18} className="-mr-1 ml-2" />
           </Link>

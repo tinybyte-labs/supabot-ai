@@ -3,17 +3,17 @@ import { NextPageWithLayout } from "@/types/next";
 import { APP_NAME } from "@/utils/constants";
 import Head from "next/head";
 
-const HomePage: NextPageWithLayout = () => {
+const AboutPage: NextPageWithLayout = () => {
   return (
     <>
       <Head>
-        <title>{`Welcome to ${APP_NAME}`}</title>
+        <title>{`About - ${APP_NAME}`}</title>
       </Head>
-      <p>Home Page</p>
+      <p>About Page</p>
     </>
   );
 };
 
-HomePage.getLayout = (page) => <MarketingLayout>{page}</MarketingLayout>;
+AboutPage.getLayout = (page) => <MarketingLayout>{page}</MarketingLayout>;
 
-export default HomePage;
+export default AboutPage;

@@ -1,3 +1,5 @@
+import ChatboxStyle from "@/components/ChatboxStyle";
+import ChatboxWatermark from "@/components/ChatboxWatermark";
 import { trpc } from "@/utils/trpc";
 import { Chatbot, ChatbotUser } from "@prisma/client";
 import { Loader2 } from "lucide-react";
@@ -33,7 +35,11 @@ const ChatbotBoxLayout = ({ children }: { children: ReactNode }) => {
 
   return (
     <Context.Provider value={{ user, chatbot: chatbot.data }}>
-      {children}
+      <ChatboxStyle {...((chatbot.data.settings as any) || {})} />
+      <div className="chatbox flex h-screen w-screen flex-col overflow-hidden">
+        <div className="flex-1">{children}</div>
+        <ChatboxWatermark />
+      </div>
     </Context.Provider>
   );
 };

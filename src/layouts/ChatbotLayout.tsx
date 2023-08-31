@@ -1,10 +1,10 @@
 import { sidebarOpenAtom } from "@/atoms/sidebarOpen";
 import ChatbotSwitcher from "@/components/ChatbotSwitcher";
 import FullUserDropdownButton from "@/components/FullUserDropdownButton";
+import Logo from "@/components/Logo";
 import SideBarNav, { SideBarNavProps } from "@/components/SideBarNav";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { ChatbotProvider } from "@/providers/ChatbotProvider";
-import { APP_NAME } from "@/utils/constants";
 import { useAtom } from "jotai";
 import {
   LayoutGrid,
@@ -15,7 +15,6 @@ import {
   Palette,
   Settings,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { ReactNode } from "react";
@@ -101,13 +100,7 @@ const SideBar = () => {
     <aside className="flex h-full w-full flex-col">
       <header className="flex justify-start p-4">
         <Link href="/dashboard">
-          <Image
-            src="/logo.svg"
-            width={504}
-            height={407}
-            alt={`${APP_NAME} Logo`}
-            className="h-12 w-12 object-contain"
-          />
+          <Logo className="h-12 w-12" />
         </Link>
       </header>
       <div className="p-4">

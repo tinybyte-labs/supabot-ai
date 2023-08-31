@@ -1,63 +1,56 @@
-import { APP_NAME } from "@/utils/constants";
 import { useAuth } from "@clerk/nextjs";
-import Image from "next/image";
 import Link from "next/link";
-import React from "react";
 import { Button } from "./ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Star } from "lucide-react";
 import { Skeleton } from "./ui/skeleton";
+import Logo from "./Logo";
 
 export default function MarketingHeader() {
   const { isLoaded, isSignedIn } = useAuth();
   return (
     <header className="border-b bg-card text-card-foreground">
-      <div className="h-20 flex items-center container">
-        <div className="flex-1">
-          <Link href="/home" className="flex items-center gap-2">
-            <Image
-              src="/logo.svg"
-              width={504}
-              height={407}
-              alt={`${APP_NAME} Logo`}
-              className="w-10 h-10 object-contain"
-            />
-            <p className="text-lg font-bold tracking-tight">SupaBot AI</p>
-          </Link>
-        </div>
+      <div className="container flex h-20 items-center">
+        <Link href="/home" className="mr-6 flex items-center gap-2">
+          <Logo className="h-10 w-10" />
+          <p className="text-lg font-bold tracking-tight">SupaBot AI</p>
+        </Link>
         <nav className="flex items-center max-lg:hidden">
           <Link
             href="/about"
-            className="font-medium text-sm p-4 text-muted-foreground hover:text-accent-foreground"
+            className="p-2 text-sm font-medium text-muted-foreground hover:text-accent-foreground"
           >
             About
           </Link>
           <Link
-            href="/home#features"
-            className="font-medium text-sm p-4 text-muted-foreground hover:text-accent-foreground"
-          >
-            Features
-          </Link>
-          <Link
             href="/pricing"
-            className="font-medium text-sm p-4 text-muted-foreground hover:text-accent-foreground"
+            className="p-4 text-sm font-medium text-muted-foreground hover:text-accent-foreground"
           >
             Pricing
           </Link>
           <Link
-            href="/blog"
-            className="font-medium text-sm p-4 text-muted-foreground hover:text-accent-foreground"
+            href="/demo"
+            className="p-4 text-sm font-medium text-muted-foreground hover:text-accent-foreground"
           >
-            Blog
+            Demo
           </Link>
         </nav>
-        <div className="space-x-2 flex-1 flex items-center justify-end">
+        <div className="flex flex-1 items-center justify-end space-x-2">
+          <Button variant="ghost" asChild>
+            <Link
+              href="https://github.com/iam-rohid/supabot-ai"
+              target="_blank"
+            >
+              <Star size={18} className="-ml-1 mr-2" />
+              Star on Github
+            </Link>
+          </Button>
           {!isLoaded ? (
-            <Skeleton className="w-[124px] h-10" />
+            <Skeleton className="h-10 w-[124px]" />
           ) : isSignedIn ? (
             <Button asChild>
               <Link href="/dashboard">
                 Dashboard
-                <ArrowRight className="w-4 h-4 ml-2 -mr-1" />
+                <ArrowRight className="-mr-1 ml-2 h-4 w-4" />
               </Link>
             </Button>
           ) : (
@@ -68,7 +61,7 @@ export default function MarketingHeader() {
               <Button asChild>
                 <Link href="/register">
                   Get started for free
-                  <ArrowRight className="w-4 h-4 ml-2 -mr-1" />
+                  <ArrowRight className="-mr-1 ml-2 h-4 w-4" />
                 </Link>
               </Button>
             </>
