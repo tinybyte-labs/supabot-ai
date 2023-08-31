@@ -12,13 +12,13 @@ generator client {
 
 model Chatbot {
   id             String   @id @default(cuid())
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
   name           String   @db.VarChar(32)
   slug           String   @unique @db.VarChar(32)
   image          String?
   metadata       Json?
-  organizationId String
+  organizationId String   @map("organization_id")
   settings       Json?
 
   links         Link[]
@@ -30,24 +30,27 @@ model Chatbot {
   @@index([organizationId])
   @@index([updatedAt])
   @@index([name])
+  @@map("chatbots")
 }
 
 enum LinkStatus {
-  QUEUED
-  TRAINING
-  TRAINED
-  ERROR
-  CANCELED
+  QUEUED   @map("queued")
+  TRAINING @map("training")
+  TRAINED  @map("trained")
+  ERROR    @map("error")
+  CANCELED @map("canceled")
+
+  @@map("link_status")
 }
 
 model Link {
   id            String     @id @default(cuid())
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-  lastTrainedAt DateTime?
-  canceledAt    DateTime?
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+  lastTrainedAt DateTime?  @map("last_trained_at")
+  canceledAt    DateTime?  @map("canceled_at")
   url           String
-  chatbotId     String
+  chatbotId     String     @map("chatbot_id")
   status        LinkStatus @default(QUEUED)
   error         String?
   metadata      Json?
@@ -58,107 +61,119 @@ model Link {
   @@unique([chatbotId, url])
   @@index([updatedAt])
   @@index([lastTrainedAt])
+  @@map("links")
 }
 
 model Document {
   id        String                       @id @default(cuid())
-  createdAt DateTime                     @default(now())
-  updatedAt DateTime                     @updatedAt
+  createdAt DateTime                     @default(now()) @map("created_at")
+  updatedAt DateTime                     @updatedAt @map("updated_at")
   content   String
   metadata  Json?
   embedding Unsupported("vector(1536)")?
-  linkId    String?
-  chatbotId String
+  linkId    String?                      @map("link_id")
+  chatbotId String                       @map("chatbot_id")
 
   link    Link?   @relation(fields: [linkId], references: [id], onDelete: Cascade)
   chatbot Chatbot @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
 
   @@index([updatedAt])
+  @@map("documents")
 }
 
 enum QuickPromptStatus {
-  PUBLISHED
-  UNPUBLISHED
+  PUBLISHED   @map("published")
+  UNPUBLISHED @map("unpublished")
+
+  @@map("quick_prompt_status")
 }
 
 model QuickPrompt {
   id                 String            @id @default(cuid())
-  createdAt          DateTime          @default(now())
-  updatedAt          DateTime          @updatedAt
+  createdAt          DateTime          @default(now()) @map("created_at")
+  updatedAt          DateTime          @updatedAt @map("updated_at")
   title              String            @db.VarChar(80)
   prompt             String            @db.VarChar(500)
-  chatbotId          String
+  chatbotId          String            @map("chatbot_id")
   metadata           Json?
   status             QuickPromptStatus @default(PUBLISHED)
-  isFollowUpPrompt   Boolean           @default(false)
-  isEscalationPrompt Boolean           @default(false)
+  isFollowUpPrompt   Boolean           @default(false) @map("is_follow_up_prompt")
+  isEscalationPrompt Boolean           @default(false) @map("is_escalation_prompt")
 
   chatbot Chatbot @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
 
   @@index([updatedAt])
   @@index([title])
+  @@map("quick_prompts")
 }
 
 model ChatbotUser {
   id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
   email     String?
   name      String?
-  chatbotId String
+  chatbotId String   @map("chatbot_id")
 
   chatbot       Chatbot        @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
   conversations Conversation[]
   messages      Message[]
 
   @@unique([chatbotId, email])
+  @@map("chatbot_users")
 }
 
 enum ConversationStatus {
-  OPEN
-  CLOSED
+  OPEN   @map("open")
+  CLOSED @map("closed")
+
+  @@map("conversation_status")
 }
 
 model Conversation {
   id        String             @id @default(cuid())
-  createdAt DateTime           @default(now())
-  updatedAt DateTime           @updatedAt
+  createdAt DateTime           @default(now()) @map("created_at")
+  updatedAt DateTime           @updatedAt @map("updated_at")
   title     String?
   status    ConversationStatus @default(OPEN)
   url       String?
-  chatbotId String
-  userId    String?
+  chatbotId String             @map("chatbot_id")
+  userId    String?            @map("user_id")
 
   chatbot  Chatbot      @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
   user     ChatbotUser? @relation(fields: [userId], references: [id], onDelete: Cascade)
   messages Message[]
+
+  @@map("conversations")
 }
 
 enum MessageRole {
-  BOT
-  USER
-  AGENT
+  BOT  @map("bot")
+  USER @map("user")
+
+  @@map("message_role")
 }
 
 enum Reaction {
-  LIKE
-  DISLIKE
+  LIKE    @map("like")
+  DISLIKE @map("dislike")
+
+  @@map("reaction")
 }
 
 model Message {
   id             String      @id @default(cuid())
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
   body           String
   role           MessageRole
   reaction       Reaction?
-  conversationId String
-  agentId        String?
-  userId         String?
+  conversationId String      @map("conversation_id")
+  userId         String?     @map("user_id")
   metadata       Json?
 
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   user         ChatbotUser? @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([agentId])
+  @@map("messages")
 }

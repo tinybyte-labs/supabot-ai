@@ -26,10 +26,10 @@ export async function addVectors(
             select: { id: true },
           });
           await prisma.$executeRaw`
-          UPDATE "Document" 
-          SET embedding = ${embedding}::vector 
-          WHERE "id" = ${doc.id}
-        `;
+            UPDATE documents 
+            SET embedding = ${embedding}::vector 
+            WHERE id = ${doc.id}
+          `;
         }),
       );
     } catch (error: any) {
@@ -55,20 +55,23 @@ export async function getDocuments(
 ) {
   const documents = await prisma.$queryRaw`
     SELECT 
-      "Document"."id", 
-      "Document"."createdAt",
-      "Document"."updatedAt",
-      "Document"."content", 
-      "Document"."linkId",
-      "Document"."chatbotId",
-      "Document"."metadata",
-      "Link"."url" as "source",
-      1 - ("Document"."embedding" <=> ${embedding}::vector) as "similarity" 
-    FROM "Document"
-    LEFT JOIN "Link" ON "Link"."id" = "Document"."linkId"
-    WHERE "Document"."chatbotId" = ${chatbotId} AND 1 - ("Document"."embedding" <=> ${embedding}::vector) > ${threshold}
-    ORDER BY "similarity" DESC
+      documents.id,
+      documents.content,
+      links.url as source,
+      1 - (documents.embedding <=> ${embedding}::vector) as similarity
+    FROM documents
+    LEFT JOIN links ON links.id = documents.link_id
+    WHERE 
+      documents.chatbot_id = ${chatbotId} 
+      AND 
+      1 - (documents.embedding <=> ${embedding}::vector) > ${threshold}
+    ORDER BY similarity DESC
     LIMIT ${limit};
   `;
-  return documents as Array<Document & { similarity: number; source?: string }>;
+  return documents as {
+    id: string;
+    content: string;
+    source?: string;
+    similarity: number;
+  }[];
 }

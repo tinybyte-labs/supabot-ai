@@ -132,7 +132,6 @@ const ConversationPage: NextPageWithLayout = () => {
         body: message,
         userId: user?.id || null,
         conversationId: conversation.data.id,
-        agentId: null,
         reaction: null,
         metadata: null,
       };
