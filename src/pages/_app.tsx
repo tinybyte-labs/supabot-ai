@@ -11,6 +11,8 @@ import { useCallback, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useAtom } from "jotai";
 import { sidebarOpenAtom } from "@/atoms/sidebarOpen";
+import Head from "next/head";
+import { APP_NAME } from "@/utils/constants";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -42,6 +44,9 @@ function App({ Component, pageProps }: AppPropsWithLayout) {
           options={{ showSpinner: false }}
         />
         <div className={cn(inter.className, "antialiased")}>
+          <Head>
+            <title>{APP_NAME}</title>
+          </Head>
           {getLayout(<Component {...pageProps} />)}
         </div>
         <Toaster />

@@ -23,6 +23,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "next/router";
+import Head from "next/head";
+import { APP_NAME } from "@/utils/constants";
 
 const Page: NextPageWithLayout = (props) => {
   const {
@@ -44,6 +46,10 @@ const Page: NextPageWithLayout = (props) => {
 
   return (
     <>
+      <Head>
+        <title>{`Chatbots - ${APP_NAME}`}</title>
+      </Head>
+
       <PageHeader title="Chatbots" />
 
       <div className="container mb-32 mt-16">
