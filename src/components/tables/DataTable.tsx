@@ -16,33 +16,38 @@ import {
 } from "../ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
 import { Input } from "../ui/input";
+import { useCallback, useMemo } from "react";
 
 interface DataTableProps<TData, TValue> {
   table: import("@tanstack/table-core").Table<TData>;
+  tableClassName?: string;
 }
 
 export function DataTable<TData, TValue>({
   table,
+  tableClassName,
 }: DataTableProps<TData, TValue>) {
+  const hidableColumns = useMemo(
+    () => table.getAllColumns().filter((column) => column.getCanHide()),
+    [table],
+  );
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-4">
         <Input
           placeholder="Search..."
           onChange={(event) => table.setGlobalFilter(event.target.value)}
-          className="max-w-sm"
+          className="max-w-xs flex-1"
         />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
+        {hidableColumns.length > 0 && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="ml-auto">
+                Columns <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {hidableColumns.map((column) => {
                 return (
                   <DropdownMenuCheckboxItem
                     key={column.id}
@@ -56,11 +61,12 @@ export function DataTable<TData, TValue>({
                   </DropdownMenuCheckboxItem>
                 );
               })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
 
-      <Table>
+      <Table className={tableClassName}>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>

@@ -44,6 +44,7 @@
     "cmdk": "^0.2.0",
     "color": "^4.2.3",
     "date-fns": "^2.30.0",
+    "get-sitemap-links": "^1.1.0",
     "gpt3-tokenizer": "^1.1.5",
     "html-to-text": "^9.0.5",
     "jotai": "^2.4.0",
