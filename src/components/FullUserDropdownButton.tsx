@@ -3,7 +3,9 @@ import { Skeleton } from "./ui/skeleton";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
@@ -15,7 +17,6 @@ import { useTheme } from "next-themes";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "./ui/select";
 import { ReactNode } from "react";
 import { Label } from "./ui/label";
-import { APP_NAME } from "@/utils/constants";
 
 const themes: Record<string, { label: string; icon: ReactNode }> = {
   system: {
@@ -69,20 +70,15 @@ const FullUserDropdownButton = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-56">
-        <div className="p-2">
-          <p className="font-medium">{session.user.fullName}</p>
-          <p className="text-sm text-muted-foreground">
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="truncate">
             {session.user.primaryEmailAddress?.emailAddress}
-          </p>
-        </div>
-
-        <DropdownMenuItem asChild>
-          <Link href="/dashboard">Dashboard</Link>
-        </DropdownMenuItem>
-
-        <DropdownMenuItem asChild>
-          <Link href="/settings/account">Settings</Link>
-        </DropdownMenuItem>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem asChild>
+            <Link href="/settings/account">Account Settings</Link>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
 
@@ -109,12 +105,19 @@ const FullUserDropdownButton = () => {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem asChild>
-          <Link href="/home" target="_blank">
-            <p className="flex-1 truncate">{APP_NAME} Homepage</p>
-            <ExternalLink size={16} />
-          </Link>
-        </DropdownMenuItem>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>Links</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem asChild>
+            <Link href="/dashboard">Dashboard</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/home">Homepage</Link>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+
+        <DropdownMenuSeparator />
+
         <DropdownMenuItem onClick={() => signOut({ sessionId: session?.id })}>
           Log Out
         </DropdownMenuItem>

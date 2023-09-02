@@ -128,26 +128,8 @@ const OrganizationSwitcher = ({ className }: { className?: string }) => {
           <CommandGroup>
             <CommandItem
               onSelect={() => {
-                router.push("/settings/organization");
-              }}
-            >
-              <Settings className="mr-2 h-4 w-4" />
-              Organization Settings
-            </CommandItem>
-            <CommandItem
-              onSelect={() => {
-                router.push("/settings/organization#/invite-members");
-              }}
-            >
-              <UserPlus className="mr-2 h-4 w-4" />
-              Invite Members
-            </CommandItem>
-          </CommandGroup>
-          <CommandSeparator />
-          <CommandGroup>
-            <CommandItem
-              onSelect={() => {
                 router.push("/create-org");
+                setOpen(false);
               }}
             >
               <Plus className="mr-2 h-4 w-4" />
@@ -156,14 +138,19 @@ const OrganizationSwitcher = ({ className }: { className?: string }) => {
             <CommandItem
               onSelect={() => {
                 router.push("/signin");
+                setOpen(false);
               }}
             >
               <UserPlus className="mr-2 h-4 w-4" />
               Add Account
             </CommandItem>
+          </CommandGroup>
+          <CommandSeparator />
+          <CommandGroup>
             <CommandItem
               onSelect={() => {
                 signOut({ sessionId: activeSession?.id });
+                setOpen(false);
               }}
             >
               <LogOut className="mr-2 h-4 w-4" />

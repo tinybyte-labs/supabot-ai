@@ -161,7 +161,7 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
           </Form>
         </div>
 
-        <div className="flex items-center justify-center rounded-2xl bg-gradient-to-bl from-[#15B8FB] to-[#2563EB] p-10 xl:flex-1">
+        <div className="flex items-center justify-center rounded-2xl bg-secondary p-10 xl:flex-1">
           <ChatboxPreviewer
             title={chatbot.name}
             settings={form.watch().settings}

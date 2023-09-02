@@ -46,7 +46,7 @@ const SideBar = () => {
             icon: <CreditCard size={20} />,
           },
           {
-            href: "/dashboard/settings",
+            href: "/settings/organization",
             label: "Settings",
             icon: <Settings size={20} />,
           },
