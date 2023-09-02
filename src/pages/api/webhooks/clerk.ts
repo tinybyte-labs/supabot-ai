@@ -15,8 +15,6 @@ export default async function handlers(
 
     const ctx = await createContext({ req, res });
     const caller = appRouter.createCaller(ctx);
-    console.log("Clerk Event:", event.data.type);
-    console.log(event.data);
 
     try {
       switch (event.data.type) {
