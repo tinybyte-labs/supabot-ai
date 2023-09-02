@@ -98,7 +98,7 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
                     <FormLabel>Welcome Message</FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="How can we help you?..."
+                        placeholder="Hello! How can I assist you today?"
                         {...field}
                       />
                     </FormControl>

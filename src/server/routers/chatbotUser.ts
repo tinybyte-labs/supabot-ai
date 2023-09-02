@@ -1,5 +1,5 @@
 import { chatbotUserLogInValidator } from "@/utils/validators";
-import { publicProcedure, router } from "../trpc";
+import { protectedProcedure, publicProcedure, router } from "../trpc";
 import { z } from "zod";
 
 export const chatbotUserRouter = router({
@@ -36,4 +36,18 @@ export const chatbotUserRouter = router({
   getUser: publicProcedure.input(z.string()).query(({ ctx, input }) => {
     return ctx.db.chatbotUser.findUnique({ where: { id: input } });
   }),
+  list: protectedProcedure
+    .input(
+      z.object({
+        chatbotId: z.string(),
+      }),
+    )
+    .query(({ ctx, input }) => {
+      return ctx.db.chatbotUser.findMany({
+        where: {
+          chatbot: { id: input.chatbotId, organizationId: ctx.auth.orgId },
+        },
+        include: { _count: { select: { conversations: true } } },
+      });
+    }),
 });

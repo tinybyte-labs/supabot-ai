@@ -10,6 +10,53 @@ generator client {
   previewFeatures = ["postgresqlExtensions"]
 }
 
+model User {
+  id              String    @id
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  lastSignInAt    DateTime? @map("last_sign_in_at")
+  firstName       String?   @map("first_name")
+  lastName        String?   @map("last_name")
+  email           String?   @unique
+  imageUrl        String?   @map("image_url")
+  profileImageUrl String?   @map("profile_image_url")
+  publicMetadata  Json?     @map("public_metadata")
+
+  organizations OrganizationMembership[]
+
+  @@map("users")
+}
+
+model Organization {
+  id             String   @id
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+  name           String?
+  slug           String   @unique
+  imageUrl       String?  @map("image_url")
+  logoUrl        String?  @map("logo_url")
+  publicMetadata Json?    @map("public_metadata")
+  createdBy      String?  @map("created_by")
+
+  members  OrganizationMembership[]
+  chatbots Chatbot[]
+
+  @@map("organizations")
+}
+
+model OrganizationMembership {
+  id             String @id
+  userId         String
+  organizationId String
+  role           String
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+  @@map("organization_memberships")
+}
+
 model Chatbot {
   id             String   @id @default(cuid())
   createdAt      DateTime @default(now()) @map("created_at")
@@ -27,9 +74,9 @@ model Chatbot {
   conversations Conversation[]
   users         ChatbotUser[]
 
-  @@index([organizationId])
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
   @@index([updatedAt])
-  @@index([name])
   @@map("chatbots")
 }
 
@@ -59,7 +106,6 @@ model Link {
   documents Document[]
 
   @@unique([chatbotId, url])
-  @@index([updatedAt])
   @@index([lastTrainedAt])
   @@map("links")
 }
@@ -77,7 +123,6 @@ model Document {
   link    Link?   @relation(fields: [linkId], references: [id], onDelete: Cascade)
   chatbot Chatbot @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
 
-  @@index([updatedAt])
   @@map("documents")
 }
 
@@ -103,7 +148,6 @@ model QuickPrompt {
   chatbot Chatbot @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
 
   @@index([updatedAt])
-  @@index([title])
   @@map("quick_prompts")
 }
 

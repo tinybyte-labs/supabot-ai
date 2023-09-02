@@ -1,6 +1,7 @@
 import { router } from "../trpc";
 import { chatbotRouter } from "./chatbot";
 import { chatbotUserRouter } from "./chatbotUser";
+import { clerkRouter } from "./clerk";
 import { conversationRouter } from "./conversation";
 import { linkRouter } from "./link";
 import { messageRouter } from "./message";
@@ -15,6 +16,7 @@ export const appRouter = router({
   conversation: conversationRouter,
   chatbotUser: chatbotUserRouter,
   message: messageRouter,
+  clerk: clerkRouter,
 });
 
 export type AppRouter = typeof appRouter;

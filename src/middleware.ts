@@ -13,6 +13,7 @@ export default authMiddleware({
     "/api/qstash(.*)",
     "/widgets(.*)",
     "/api/trpc(.*)",
+    "/api/webhooks(.*)",
   ],
   beforeAuth: (req) => {
     if (req.nextUrl.pathname === "/home") {

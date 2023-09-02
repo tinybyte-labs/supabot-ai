@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { publicProcedure, router } from "../trpc";
+import { protectedProcedure, publicProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
 
 export const conversationRouter = router({
@@ -43,6 +43,22 @@ export const conversationRouter = router({
           chatbotId: input.chatbotId,
           ...(input.userId ? { userId: input.userId } : {}),
           ...(input.url ? { url: input.url } : {}),
+        },
+      });
+    }),
+  list: protectedProcedure
+    .input(
+      z.object({
+        chatbotId: z.string(),
+      }),
+    )
+    .query(({ ctx, input }) => {
+      return ctx.db.conversation.findMany({
+        where: {
+          chatbot: { id: input.chatbotId, organizationId: ctx.auth.orgId },
+        },
+        include: {
+          user: true,
         },
       });
     }),
