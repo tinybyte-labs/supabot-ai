@@ -5,16 +5,17 @@ import Features from "@/components/home/Features";
 import Hero from "@/components/home/Hero";
 import MarketingLayout from "@/layouts/MarketingLayout";
 import { NextPageWithLayout } from "@/types/next";
+import { APP_NAME } from "@/utils/constants";
 import Head from "next/head";
 
 const HomePage: NextPageWithLayout = () => {
   return (
     <>
       <Head>
-        <title>SupaBot AI - Elevate Your Website with a Powerful Chatbot</title>
+        <title>{APP_NAME} - Elevate Your Website with a Powerful Chatbot</title>
         <meta
           name="description"
-          content="Transform your web experience with SupaBot AI, the future of conversational AI. Craft a personalized chatbot tailored to your website's content. Enhance customer engagement and boost conversions."
+          content={`Transform your web experience with ${APP_NAME}, the future of conversational AI. Craft a personalized chatbot tailored to your website's content. Enhance customer engagement and boost conversions.`}
         />
       </Head>
       <Background />

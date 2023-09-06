@@ -1,3 +1,4 @@
+import { APP_NAME } from "@/utils/constants";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
@@ -10,7 +11,7 @@ const EndCTA = () => {
             Ready to Elevate Your Website&apos;s Conversations?
           </h2>
           <p className="mt-4 text-center font-medium text-muted-foreground md:text-lg">
-            Unlock the Power of SupaBot AI and Transform Your Web Experience
+            Unlock the Power of {APP_NAME} and Transform Your Web Experience
             Today. Join the Conversation!
           </p>
         </div>

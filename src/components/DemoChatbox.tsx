@@ -13,6 +13,7 @@ const DemoChatbox = ({ className }: { className?: string }) => {
         className,
       )}
       loading="lazy"
+      title="Demo Chatbox"
     ></iframe>
   );
 };

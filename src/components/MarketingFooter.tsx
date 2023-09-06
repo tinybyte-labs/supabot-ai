@@ -1,6 +1,7 @@
 import { Twitter, Github, Instagram } from "lucide-react";
 import Link from "next/link";
 import FullLogo from "./FullLogo";
+import { APP_NAME } from "@/utils/constants";
 
 const MarketingFooter = () => {
   return (
@@ -10,9 +11,10 @@ const MarketingFooter = () => {
           <div className="col-span-2 flex flex-col gap-6 md:col-span-3">
             <Link href="/home">
               <FullLogo className="h-12 w-fit" />
+              <p className="sr-only">{APP_NAME}</p>
             </Link>
             <p className="text-muted-foreground">
-              Transform your web experience with SupaBot AI, the future of
+              Transform your web experience with {APP_NAME}, the future of
               conversational AI. Craft a personalized chatbot tailored to your
               website&apos;s content. Enhance customer engagement and boost
               conversions.
