@@ -63,10 +63,8 @@ export default function MarketingHeader() {
   useEffect(() => {
     if (!showMenu) return;
     router.events.on("routeChangeStart", closeSidebar);
-    window.addEventListener("resize", closeSidebar);
     return () => {
       router.events.off("routeChangeStart", closeSidebar);
-      window.removeEventListener("resize", closeSidebar);
     };
   }, [closeSidebar, router.events, showMenu]);
 
