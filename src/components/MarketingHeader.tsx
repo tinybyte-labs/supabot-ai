@@ -81,7 +81,7 @@ export default function MarketingHeader() {
         )}
       >
         <div className="container flex h-20 items-center">
-          <div className="flex-1">
+          <div className="lg:flex-1">
             <Link href="/home" className="mr-6 flex w-fit items-center gap-2">
               <FullLogo className="h-10 w-fit max-lg:hidden" />
               <Logo className="h-12 w-12 lg:hidden" />
@@ -129,14 +129,15 @@ export default function MarketingHeader() {
               </>
             )}
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setShowMenu(!showMenu)}
-            className="md:hidden"
-          >
-            {showMenu ? <X size={24} /> : <Menu size={24} />}
-          </Button>
+          <div className="flex flex-1 items-center justify-end md:hidden">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowMenu(!showMenu)}
+            >
+              {showMenu ? <X size={24} /> : <Menu size={24} />}
+            </Button>
+          </div>
         </div>
         {showMenu && (
           <div className="max-h-[calc(100vh-5rem)] overflow-y-auto md:hidden">
