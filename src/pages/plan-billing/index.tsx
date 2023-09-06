@@ -12,7 +12,7 @@ const Page: NextPageWithLayout = () => {
       </Head>
 
       <PageHeader title="Plan & Billing" />
-      <div className="container mb-32 mt-16"></div>
+      <div className="container mb-32 mt-8 md:mt-16"></div>
     </>
   );
 };

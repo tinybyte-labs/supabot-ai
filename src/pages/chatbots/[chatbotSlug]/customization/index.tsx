@@ -36,12 +36,14 @@ const ChatbotCustomizationPage: NextPageWithLayout = () => {
   return (
     <>
       <PageHeader title="Customization">
-        <Button variant="outline" asChild>
-          <Link href={`/demo/c/${chatbot?.id}`} target="_blank">
-            Demo
-            <ExternalLink size={18} className="-mr-1 ml-2" />
-          </Link>
-        </Button>
+        <div className="flex items-center gap-4">
+          <Button variant="outline" asChild>
+            <Link href={`/demo/c/${chatbot?.id}`} target="_blank">
+              Demo
+              <ExternalLink size={18} className="-mr-1 ml-2" />
+            </Link>
+          </Button>
+        </div>
       </PageHeader>
       <Editor chatbot={chatbot} />
     </>
@@ -82,7 +84,7 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
     updateChatbot.mutate(data);
 
   return (
-    <div className="container py-12">
+    <div className="container mb-32 mt-8 md:mt-16">
       <div className="flex gap-8 lg:gap-12">
         <div className="flex-1">
           <Form {...form}>
@@ -161,7 +163,7 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
           </Form>
         </div>
 
-        <div className="flex items-center justify-center rounded-2xl bg-secondary p-10 xl:flex-1">
+        <div className="flex items-center justify-center rounded-2xl bg-secondary p-10 max-xl:hidden xl:flex-1">
           <ChatboxPreviewer
             title={chatbot.name}
             settings={form.watch().settings}

@@ -211,7 +211,7 @@ const QuickPromptsPage: NextPageWithLayout = () => {
         </div>
       </PageHeader>
 
-      <div className="container mb-32 mt-16">
+      <div className="container mb-32 mt-8 md:mt-16">
         {quickPromptsQuery.isLoading ? (
           <div className="flex items-center justify-center rounded-lg border py-32">
             <Loader2 size={24} className="animate-spin" />

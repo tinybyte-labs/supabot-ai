@@ -52,7 +52,7 @@ const Page: NextPageWithLayout = (props) => {
 
       <PageHeader title="Chatbots" />
 
-      <div className="container mb-32 mt-16">
+      <div className="container mb-32 mt-8 md:mt-16">
         <Tabs
           value={new Set(["grid", "list"]).has(view) ? view : "grid"}
           className="space-y-8"

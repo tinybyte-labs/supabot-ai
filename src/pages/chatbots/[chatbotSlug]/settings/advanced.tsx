@@ -1,7 +1,5 @@
-import SecondaryPageHeader from "@/components/SecondaryPageHeader";
 import ChatbotSettingsLayout from "@/layouts/ChatbotSettingsLayout";
 import { NextPageWithLayout } from "@/types/next";
-import { Separator } from "@/components/ui/separator";
 import { useChatbot } from "@/providers/ChatbotProvider";
 import { Skeleton } from "@/components/ui/skeleton";
 import {

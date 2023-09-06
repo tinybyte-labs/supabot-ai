@@ -166,7 +166,7 @@ const LinksPage: NextPageWithLayout = () => {
           )}
         </div>
       </PageHeader>
-      <div className="container mb-32 mt-16">
+      <div className="container mb-32 mt-8 md:mt-16">
         {linksQuery.isLoading ? (
           <div className="flex items-center justify-center rounded-lg border py-32">
             <Loader2 size={24} className="animate-spin" />

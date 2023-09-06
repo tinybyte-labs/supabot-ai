@@ -114,7 +114,7 @@ const ChatbotUsersPage: NextPageWithLayout = () => {
     <>
       <PageHeader title="Users" />
 
-      <div className="container mb-32 mt-16">
+      <div className="container mb-32 mt-8 md:mt-16">
         {chatbotUsersQuery.isLoading ? (
           <div className="flex items-center justify-center rounded-lg border py-32">
             <Loader2 size={24} className="animate-spin" />
