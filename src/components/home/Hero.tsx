@@ -9,7 +9,7 @@ const Hero = () => {
       <div className="container">
         <div className="mx-auto max-w-screen-lg">
           <div className="bg-gradient-to-br from-accent-foreground to-accent-foreground/70 bg-clip-text py-1">
-            <h1 className="text-4 xl text-center font-bold tracking-tight text-transparent md:text-5xl lg:text-7xl">
+            <h1 className="text-center text-4xl font-bold tracking-tight text-transparent md:text-5xl lg:text-7xl">
               {HERO_TITLE}
             </h1>
           </div>
