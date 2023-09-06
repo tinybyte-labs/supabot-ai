@@ -1,7 +1,7 @@
 const Background = () => {
   return (
     <>
-      <div className="absolute left-0 right-0 top-0 -z-10 flex justify-center blur-[270px]">
+      <div className="absolute left-0 right-0 top-0 -z-10 flex justify-center blur-[270px] max-md:hidden">
         <svg
           width="1218"
           height="311"
