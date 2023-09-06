@@ -12,6 +12,7 @@ const DemoChatbox = ({ className }: { className?: string }) => {
         "mx-auto h-[720px] w-[420px] max-w-[calc(100vw-4rem)] rounded-xl border shadow-2xl",
         className,
       )}
+      loading="lazy"
     ></iframe>
   );
 };
