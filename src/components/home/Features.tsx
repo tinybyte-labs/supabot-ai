@@ -72,17 +72,19 @@ const Features = () => {
                 <div className="relative">
                   <Image
                     src={feature.screenshotUrl}
-                    width={2880}
-                    height={1800}
+                    width={1600}
+                    height={900}
                     alt="Customize the Look"
                     className="overflow-hidden rounded-lg border dark:hidden md:rounded-2xl"
+                    loading="lazy"
                   />
                   <Image
                     src={feature.darkScreenshotUrl}
-                    width={2880}
-                    height={1800}
+                    width={1600}
+                    height={900}
                     alt="Customize the Look"
                     className="hidden overflow-hidden rounded-lg border dark:block md:rounded-2xl"
+                    loading="lazy"
                   />
                   <div className="absolute inset-0 -z-10 bg-foreground/5 blur-3xl"></div>
                 </div>

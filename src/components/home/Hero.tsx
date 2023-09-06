@@ -9,7 +9,7 @@ const Hero = () => {
       <div className="container">
         <div className="mx-auto max-w-screen-lg">
           <div className="bg-gradient-to-br from-accent-foreground to-accent-foreground/70 bg-clip-text py-1">
-            <h1 className="text-center text-4xl font-bold tracking-tight text-transparent md:text-5xl lg:text-7xl">
+            <h1 className="text-4 xl text-center font-bold tracking-tight text-transparent md:text-5xl lg:text-7xl">
               {HERO_TITLE}
             </h1>
           </div>
@@ -43,7 +43,7 @@ const Hero = () => {
             width={2880}
             height={1800}
             className="hidden w-full rounded-lg border dark:block md:rounded-2xl"
-            loading="lazy"
+            quality={60}
           />
           <Image
             src="/assets/home-main-screenshot-light.png"
@@ -51,7 +51,7 @@ const Hero = () => {
             width={2880}
             height={1800}
             className="w-full rounded-lg border dark:hidden md:rounded-2xl"
-            loading="lazy"
+            quality={60}
           />
           <div className="absolute inset-0 -z-10 bg-foreground/5 blur-3xl"></div>
         </div>
