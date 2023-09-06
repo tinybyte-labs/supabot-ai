@@ -29,7 +29,7 @@ const NewChatbotPage: NextPageWithLayout = () => {
           <ChatboxPreviewer
             title={name || "My Bot"}
             settings={{
-              welcomeMessage: "",
+              welcomeMessage: "Hello! How can I help you today?",
             }}
           />
         </div>

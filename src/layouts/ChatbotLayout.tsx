@@ -47,18 +47,18 @@ const SideBar = () => {
     {
       items: [
         {
-          href: `/dashboard/chatbots/${chatbotSlug}`,
+          href: `/chatbots/${chatbotSlug}`,
           label: "Overview",
           icon: <LayoutGrid size={20} />,
           end: true,
         },
         {
-          href: `/dashboard/chatbots/${chatbotSlug}/users`,
+          href: `/chatbots/${chatbotSlug}/users`,
           label: "Users",
           icon: <Users size={20} />,
         },
         {
-          href: `/dashboard/chatbots/${chatbotSlug}/conversations`,
+          href: `/chatbots/${chatbotSlug}/conversations`,
           label: "Conversations",
           icon: <MessagesSquare size={20} />,
         },
@@ -68,12 +68,12 @@ const SideBar = () => {
       title: "CONTENT",
       items: [
         {
-          href: `/dashboard/chatbots/${chatbotSlug}/links`,
+          href: `/chatbots/${chatbotSlug}/links`,
           label: "Links",
           icon: <LinkIcon size={20} />,
         },
         {
-          href: `/dashboard/chatbots/${chatbotSlug}/quick-prompts`,
+          href: `/chatbots/${chatbotSlug}/quick-prompts`,
           label: "Quick Prompts",
           icon: <FileText size={20} />,
         },
@@ -83,12 +83,12 @@ const SideBar = () => {
       title: "CONFIGURE",
       items: [
         {
-          href: `/dashboard/chatbots/${chatbotSlug}/customization`,
+          href: `/chatbots/${chatbotSlug}/customization`,
           label: "Customization",
           icon: <Palette size={20} />,
         },
         {
-          href: `/dashboard/chatbots/${chatbotSlug}/settings`,
+          href: `/chatbots/${chatbotSlug}/settings`,
           label: "Settings",
           icon: <Settings size={20} />,
         },
@@ -99,7 +99,7 @@ const SideBar = () => {
   return (
     <aside className="flex h-full w-full flex-col">
       <header className="flex justify-start p-4">
-        <Link href="/dashboard">
+        <Link href="/chatbots">
           <Logo className="h-12 w-12" />
         </Link>
       </header>

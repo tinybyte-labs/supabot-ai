@@ -50,9 +50,9 @@ const ChatboxPreviewer = ({ title, settings }: ChatboxPreviewerProps) => {
               date={new Date()}
             />
             <BotMessageBubble
-              message={`${APP_NAME} is an open source AI Chatbot App`}
+              message={`${APP_NAME} is an AI chatbot platform that allows users to create personalized chatbots for their websites. It uses ChatGPT to tailor the chatbot's responses to the specific content of the website, enhancing the customer experience.`}
               date={new Date()}
-              onReact={(value) => {}}
+              onReact={() => {}}
               reaction="LIKE"
               sources={[`https://${DOMAIN}`]}
             />

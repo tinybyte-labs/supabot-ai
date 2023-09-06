@@ -9,9 +9,9 @@ export default authMiddleware({
     "/about",
     "/demo",
     "/blog(.*)",
+    "/widgets(.*)",
     "/api/avatar.svg",
     "/api/qstash(.*)",
-    "/widgets(.*)",
     "/api/trpc(.*)",
     "/api/webhooks(.*)",
   ],
@@ -26,7 +26,7 @@ export default authMiddleware({
     }
 
     if (auth.userId && req.nextUrl.pathname === "/") {
-      const dashboard = new URL("/dashboard", req.url);
+      const dashboard = new URL("/chatbots", req.url);
       return NextResponse.redirect(dashboard);
     }
 

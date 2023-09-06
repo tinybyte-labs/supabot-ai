@@ -17,7 +17,7 @@ export const ChatbotProvider = ({ children }: { children: ReactNode }) => {
   } = useRouter();
   if (isReady && !chatbotSlug) {
     throw new Error(
-      "ChatbotProvider must is inside /dashboard/chatbots/:chatbotSlug route",
+      "ChatbotProvider must is inside /chatbots/:chatbotSlug route",
     );
   }
   const chatbot = trpc.chatbot.findBySlug.useQuery(chatbotSlug as string, {

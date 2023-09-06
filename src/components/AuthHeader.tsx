@@ -14,7 +14,7 @@ const AuthHeader = () => {
   return (
     <header className="flex h-24 items-center justify-between px-8">
       <Button asChild variant="outline">
-        <Link href={isSignedIn ? "/dashboard" : "/home"}>
+        <Link href={isSignedIn ? "/chatbots" : "/home"}>
           <ChevronLeft className="-ml-1 mr-2 h-4 w-4" />
           Back to {isSignedIn ? "Dashboard" : "Home"}
         </Link>

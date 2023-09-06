@@ -109,7 +109,7 @@ const FullUserDropdownButton = () => {
           <DropdownMenuLabel>Links</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
-            <Link href="/dashboard">Dashboard</Link>
+            <Link href="/chatbots">Dashboard</Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link href="/home">Homepage</Link>

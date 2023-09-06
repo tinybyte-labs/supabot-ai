@@ -62,7 +62,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
                 {statusQuery.data.linksCount.toLocaleString()}
               </div>
               <Link
-                href={`/dashboard/chatbots/${chatbot?.slug}/links`}
+                href={`/chatbots/${chatbot?.slug}/links`}
                 className="mt-2 inline-flex items-center text-sm text-muted-foreground underline-offset-4 hover:text-accent-foreground hover:underline"
               >
                 All Links
@@ -83,7 +83,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
                 {statusQuery.data.quickPromptCount.toLocaleString()}
               </div>
               <Link
-                href={`/dashboard/chatbots/${chatbot?.slug}/quick-prompts`}
+                href={`/chatbots/${chatbot?.slug}/quick-prompts`}
                 className="mt-2 inline-flex items-center text-sm text-muted-foreground underline-offset-4 hover:text-accent-foreground hover:underline"
               >
                 All Quick Prompts
@@ -102,7 +102,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
                 {statusQuery.data.userCount.toLocaleString()}
               </div>
               <Link
-                href={`/dashboard/chatbots/${chatbot?.slug}/users`}
+                href={`/chatbots/${chatbot?.slug}/users`}
                 className="mt-2 inline-flex items-center text-sm text-muted-foreground underline-offset-4 hover:text-accent-foreground hover:underline"
               >
                 All Users
@@ -123,7 +123,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
                 {statusQuery.data.conversationCount.toLocaleString()}
               </div>
               <Link
-                href={`/dashboard/chatbots/${chatbot?.slug}/conversations`}
+                href={`/chatbots/${chatbot?.slug}/conversations`}
                 className="mt-2 inline-flex items-center text-sm text-muted-foreground underline-offset-4 hover:text-accent-foreground hover:underline"
               >
                 All Conversations

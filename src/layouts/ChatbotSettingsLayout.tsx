@@ -14,12 +14,12 @@ const ChatbotSettingsLayout = ({ children }: { children: ReactNode }) => {
 
   const menu = [
     {
-      href: `/dashboard/chatbots/${chatbotSlug}/settings`,
+      href: `/chatbots/${chatbotSlug}/settings`,
       label: "General",
       end: true,
     },
     {
-      href: `/dashboard/chatbots/${chatbotSlug}/settings/advanced`,
+      href: `/chatbots/${chatbotSlug}/settings/advanced`,
       label: "Advanced",
     },
   ];

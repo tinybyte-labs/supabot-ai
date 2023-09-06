@@ -105,7 +105,7 @@ export default function MarketingHeader() {
               </>
             ) : isSignedIn ? (
               <Link
-                href="/dashboard"
+                href="/chatbots"
                 className="flex h-10 items-center justify-center whitespace-nowrap rounded-full bg-primary px-6 text-center text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90"
               >
                 Dashboard
@@ -148,7 +148,7 @@ export default function MarketingHeader() {
                   </>
                 ) : isSignedIn ? (
                   <Link
-                    href="/dashboard"
+                    href="/chatbots"
                     className="flex h-12 items-center justify-center whitespace-nowrap rounded-lg bg-primary px-6 text-center font-medium text-primary-foreground transition-all hover:bg-primary/90"
                   >
                     Dashboard

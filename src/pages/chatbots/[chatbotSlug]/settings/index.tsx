@@ -180,7 +180,7 @@ const UpdateSlugFrom = () => {
   const router = useRouter();
   const updateChatbot = trpc.chatbot.update.useMutation({
     onSuccess: (data) => {
-      router.push(`/dashboard/chatbots/${data.slug}/settings`);
+      router.push(`/chatbots/${data.slug}/settings`);
       toast({ title: "Chatbot slug updated" });
     },
     onError: (error) => {
@@ -228,7 +228,7 @@ const UpdateSlugFrom = () => {
                   <FormControl>
                     <div className="flex items-center">
                       <div className="flex h-10 items-center rounded-l-md border border-r-0 bg-muted px-3 text-sm font-medium text-muted-foreground">
-                        {DOMAIN}/dashboard/chatbots/
+                        {DOMAIN}/chatbots/
                       </div>
                       <Input
                         placeholder="my-bot"

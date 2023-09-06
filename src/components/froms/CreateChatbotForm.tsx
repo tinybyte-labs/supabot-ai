@@ -35,7 +35,7 @@ export default function CreateChatbotForm() {
   const createChatbot = trpc.chatbot.create.useMutation({
     onSuccess: (data) => {
       toast({ title: "Chatbot created" });
-      router.push(`/dashboard/chatbots/${data.slug}`);
+      router.push(`/chatbots/${data.slug}`);
     },
     onError: (error) => {
       toast({
@@ -88,7 +88,7 @@ export default function CreateChatbotForm() {
         />
         <div className="flex justify-between">
           <Button asChild variant="secondary">
-            <Link href="/dashboard">Cancel</Link>
+            <Link href="/chatbots">Cancel</Link>
           </Button>
           <Button type="submit" disabled={createChatbot.isLoading}>
             {createChatbot.isLoading ? <ButtonLoader /> : null}

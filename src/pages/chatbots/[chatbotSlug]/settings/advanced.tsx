@@ -50,7 +50,7 @@ const DeleteChatbotCard = () => {
   const deleteChatbot = trpc.chatbot.delete.useMutation({
     onSuccess: (data) => {
       toast({ title: "Chatbot deleted" });
-      router.push("/dashboard");
+      router.push("/chatbots");
     },
     onError: (error) => {
       toast({

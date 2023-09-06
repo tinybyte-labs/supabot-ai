@@ -18,7 +18,6 @@ export type SideBarNavProps = {
 
 export default function SideBarNav({ list }: SideBarNavProps) {
   const { asPath } = useRouter();
-
   return (
     <nav className="space-y-6">
       {list.map((group, i) => (
@@ -28,24 +27,28 @@ export default function SideBarNav({ list }: SideBarNavProps) {
               {group.title}
             </div>
           )}
-          <div className="grid gap-px">
-            {group.items.map((item, j) => (
-              <Button
-                key={j}
-                asChild
-                variant="ghost"
-                className={cn({
-                  "bg-accent text-accent-foreground": item.end
-                    ? asPath === item.href
-                    : asPath.startsWith(item.href),
-                })}
-              >
-                <Link href={item.href}>
-                  {item.icon}
-                  <p className="ml-2 flex-1 truncate">{item.label}</p>
-                </Link>
-              </Button>
-            ))}
+          <div className="grid gap-1">
+            {group.items.map((item, j) => {
+              const isActive = item.end
+                ? asPath.split("?")[0] === item.href.split("?")[0]
+                : asPath.split("?")[0].startsWith(item.href.split("?")[0]);
+              return (
+                <Button
+                  key={j}
+                  asChild
+                  variant="ghost"
+                  className={cn({
+                    "bg-accent text-accent-foreground": isActive,
+                    "text-muted-foreground": !isActive,
+                  })}
+                >
+                  <Link href={item.href}>
+                    {item.icon}
+                    <p className="ml-2 flex-1 truncate">{item.label}</p>
+                  </Link>
+                </Button>
+              );
+            })}
           </div>
         </div>
       ))}

@@ -74,7 +74,7 @@ const ChatbotSwitcher = ({ className }: { className?: string }) => {
               <CommandItem
                 key={chatbot.slug}
                 onSelect={() => {
-                  router.push(`/dashboard/chatbots/${chatbot.slug}`);
+                  router.push(`/chatbots/${chatbot.slug}`);
                   setOpen(false);
                 }}
               >
@@ -107,9 +107,7 @@ const ChatbotSwitcher = ({ className }: { className?: string }) => {
           </CommandGroup>
           <CommandSeparator />
           <CommandGroup>
-            <CommandItem
-              onSelect={() => router.push("/dashboard/chatbots/new")}
-            >
+            <CommandItem onSelect={() => router.push("/chatbots/new")}>
               <Plus className="mr-2 h-4 w-4" />
               Create Chatbot
             </CommandItem>

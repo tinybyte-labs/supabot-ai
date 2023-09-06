@@ -35,13 +35,13 @@ const SideBar = () => {
       {
         items: [
           {
-            href: "/dashboard",
+            href: "/chatbots",
             label: "Chatbots",
             icon: <LayoutGrid size={20} />,
             end: true,
           },
           {
-            href: "/dashboard/plan-billing",
+            href: "/plan-billing",
             label: "Plan & Billing",
             icon: <CreditCard size={20} />,
           },
@@ -59,7 +59,7 @@ const SideBar = () => {
   return (
     <aside className="flex h-full w-full flex-col">
       <header className="flex justify-start p-4">
-        <Link href="/dashboard">
+        <Link href="/chatbots">
           <Logo className="h-12 w-12" />
         </Link>
       </header>

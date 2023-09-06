@@ -73,7 +73,7 @@ const Page: NextPageWithLayout = (props) => {
               <TabsTrigger value="grid" asChild>
                 <Link
                   href={{
-                    pathname: "/dashboard",
+                    pathname: "/chatbots",
                     search: new URLSearchParams({ view: "grid" }).toString(),
                   }}
                 >
@@ -83,7 +83,7 @@ const Page: NextPageWithLayout = (props) => {
               <TabsTrigger value="list" asChild>
                 <Link
                   href={{
-                    pathname: "/dashboard",
+                    pathname: "/chatbots",
                     search: new URLSearchParams({ view: "list" }).toString(),
                   }}
                 >
@@ -92,13 +92,13 @@ const Page: NextPageWithLayout = (props) => {
               </TabsTrigger>
             </TabsList>
             <Button asChild className="whitespace-nowrap max-sm:hidden">
-              <Link href="/dashboard/chatbots/new">
+              <Link href="/chatbots/new">
                 <Plus size={20} className="-ml-1 mr-2" />
                 Create Chatbot
               </Link>
             </Button>
             <Button asChild size="icon" className="whitespace-nowrap sm:hidden">
-              <Link href="/dashboard/chatbots/new">
+              <Link href="/chatbots/new">
                 <p className="sr-only">Create Chatbot</p>
                 <Plus size={20} />
               </Link>
@@ -110,7 +110,7 @@ const Page: NextPageWithLayout = (props) => {
               {chatbots.map((chatbot) => (
                 <Link
                   key={chatbot.id}
-                  href={`/dashboard/chatbots/${chatbot.slug}`}
+                  href={`/chatbots/${chatbot.slug}`}
                   className="flex flex-col gap-4 rounded-lg border bg-card p-4 text-card-foreground shadow-sm transition-all hover:border-foreground/20 hover:shadow-lg"
                 >
                   <div className="flex items-center gap-4">
@@ -148,7 +148,7 @@ const Page: NextPageWithLayout = (props) => {
               {chatbots.map((chatbot) => (
                 <Link
                   key={chatbot.id}
-                  href={`/dashboard/chatbots/${chatbot.slug}`}
+                  href={`/chatbots/${chatbot.slug}`}
                   className="flex gap-4 rounded-lg border bg-card p-4 text-card-foreground shadow-sm transition-all hover:shadow-lg md:items-center"
                 >
                   <div className="flex flex-1 gap-4 max-md:flex-col md:items-center">
@@ -191,22 +191,18 @@ const Page: NextPageWithLayout = (props) => {
                       <DropdownMenuContent>
                         <DropdownMenuItem asChild>
                           <Link
-                            href={`/dashboard/chatbots/${chatbot.slug}/conversations`}
+                            href={`/chatbots/${chatbot.slug}/conversations`}
                           >
                             Conversations
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                          <Link
-                            href={`/dashboard/chatbots/${chatbot.slug}/links`}
-                          >
+                          <Link href={`/chatbots/${chatbot.slug}/links`}>
                             Add Link
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                          <Link
-                            href={`/dashboard/chatbots/${chatbot.slug}/settings`}
-                          >
+                          <Link href={`/chatbots/${chatbot.slug}/settings`}>
                             Settings
                           </Link>
                         </DropdownMenuItem>
