@@ -9,7 +9,7 @@ const DemoChatbox = ({ className }: { className?: string }) => {
     <iframe
       src={`/widgets/c/${process.env.NEXT_PUBLIC_DEMO_CHATBOT_ID}`}
       className={cn(
-        "mx-auto h-[720px] w-[420px] max-w-[calc(100vw-4rem)] rounded-xl border shadow-2xl",
+        "mx-auto h-[620px] w-[420px] max-w-[calc(100vw-2rem)] rounded-xl border shadow-2xl md:h-[720px]",
         className,
       )}
       loading="lazy"

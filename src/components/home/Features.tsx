@@ -32,10 +32,10 @@ const features = [
 const Features = () => {
   const [feature, setFeature] = useState(features[0].id);
   return (
-    <section className="my-48">
+    <section className="my-24 md:my-48">
       <div className="container">
         <div className="mx-auto max-w-screen-md">
-          <h2 className="text-center text-4xl font-bold md:text-5xl">
+          <h2 className="text-center text-3xl font-bold md:text-5xl">
             Powerful AI ChatBot for the modern Web
           </h2>
           <p className="mt-4 text-center font-medium text-muted-foreground md:text-lg">
@@ -75,14 +75,14 @@ const Features = () => {
                     width={2880}
                     height={1800}
                     alt="Customize the Look"
-                    className="overflow-hidden rounded-2xl border dark:hidden"
+                    className="overflow-hidden rounded-lg border dark:hidden md:rounded-2xl"
                   />
                   <Image
                     src={feature.darkScreenshotUrl}
                     width={2880}
                     height={1800}
                     alt="Customize the Look"
-                    className="hidden overflow-hidden rounded-2xl border dark:block"
+                    className="hidden overflow-hidden rounded-lg border dark:block md:rounded-2xl"
                   />
                   <div className="absolute inset-0 -z-10 bg-foreground/5 blur-3xl"></div>
                 </div>

@@ -80,7 +80,7 @@ export default function MarketingHeader() {
           },
         )}
       >
-        <div className="container flex h-20 items-center">
+        <div className="container flex h-16 items-center md:h-20">
           <div className="lg:flex-1">
             <Link href="/home" className="mr-6 flex w-fit items-center gap-2">
               <FullLogo className="h-10 w-fit max-lg:hidden" />
@@ -192,7 +192,7 @@ export default function MarketingHeader() {
         )}
       </header>
 
-      <div className="h-20"></div>
+      <div className="h-16 md:h-20"></div>
     </>
   );
 }
