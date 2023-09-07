@@ -32,7 +32,7 @@ const ChatbotLayout = ({ children }: { children: ReactNode }) => {
           <SideBar />
         </SheetContent>
       </Sheet>
-      <main className="flex min-h-screen flex-col lg:ml-64">{children}</main>
+      <main className="flex h-screen flex-col lg:ml-64">{children}</main>
     </ChatbotProvider>
   );
 };

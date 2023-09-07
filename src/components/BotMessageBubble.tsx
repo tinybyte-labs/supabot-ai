@@ -21,7 +21,7 @@ const BotMessageBubble = ({
   date?: Date;
 }) => {
   return (
-    <div className="flex justify-start pr-12 sm:pr-24">
+    <div className="flex justify-start pr-12">
       <div className="flex flex-col items-start">
         <p className="mb-2 text-sm font-medium uppercase text-muted-foreground">
           {name}

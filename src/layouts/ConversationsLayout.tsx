@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { MessagesSquare } from "lucide-react";
 import SideBarNav from "@/components/SideBarNav";
 import { formatDistanceToNow } from "date-fns";
+import ChatbotLayout from "./ChatbotLayout";
 
 const ConversationsLayout = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
@@ -38,10 +39,10 @@ const ConversationsLayout = ({ children }: { children: ReactNode }) => {
   ]);
 
   return (
-    <>
+    <ChatbotLayout>
       <PageHeader title="Conversations" containerClassName="max-w-full" />
       <div className="flex flex-1 overflow-hidden">
-        <div className="flex w-72 flex-col gap-1 border-r p-2">
+        <div className="flex w-80 flex-col gap-1 border-r p-2">
           {conversationsQuery.isLoading ? (
             <p>Loading...</p>
           ) : conversationsQuery.isError ? (
@@ -68,7 +69,7 @@ const ConversationsLayout = ({ children }: { children: ReactNode }) => {
         </div>
         <div className="flex flex-1 flex-col overflow-hidden">{children}</div>
       </div>
-    </>
+    </ChatbotLayout>
   );
 };
 

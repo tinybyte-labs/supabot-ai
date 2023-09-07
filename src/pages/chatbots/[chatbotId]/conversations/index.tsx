@@ -1,4 +1,3 @@
-import ChatbotLayout from "@/layouts/ChatbotLayout";
 import ConversationsLayout from "@/layouts/ConversationsLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { Loader2 } from "lucide-react";
@@ -12,9 +11,7 @@ const ConversationsPage: NextPageWithLayout = () => {
 };
 
 ConversationsPage.getLayout = (page) => (
-  <ChatbotLayout>
-    <ConversationsLayout>{page}</ConversationsLayout>
-  </ChatbotLayout>
+  <ConversationsLayout>{page}</ConversationsLayout>
 );
 
 export default ConversationsPage;

@@ -10,7 +10,7 @@ const UserMessageBubble = ({
   date?: Date;
 }) => {
   return (
-    <div className="flex justify-end pl-12 sm:pl-24">
+    <div className="flex justify-end pl-12">
       <div className="flex flex-col items-end">
         <div className="mb-2 flex items-center justify-end gap-3 text-right">
           {date && (
