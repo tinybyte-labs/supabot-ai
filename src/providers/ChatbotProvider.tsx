@@ -13,14 +13,14 @@ const Context = createContext<ChatbotContext | null>(null);
 export const ChatbotProvider = ({ children }: { children: ReactNode }) => {
   const {
     isReady,
-    query: { chatbotSlug },
+    query: { chatbotId },
   } = useRouter();
-  if (isReady && !chatbotSlug) {
+  if (isReady && !chatbotId) {
     throw new Error(
-      "ChatbotProvider must is inside /chatbots/:chatbotSlug route",
+      "ChatbotProvider must is inside /chatbots/:chatbotId route",
     );
   }
-  const chatbot = trpc.chatbot.findBySlug.useQuery(chatbotSlug as string, {
+  const chatbot = trpc.chatbot.findById.useQuery(chatbotId as string, {
     enabled: isReady,
   });
 

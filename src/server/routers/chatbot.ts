@@ -66,20 +66,6 @@ export const chatbotRouter = router({
       messageDislikeCount,
     };
   }),
-  findBySlug: publicProcedure
-    .input(z.string())
-    .query(async ({ ctx, input }) => {
-      const chatbot = await ctx.db.chatbot.findUnique({
-        where: { slug: input },
-      });
-      if (!chatbot) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Chatbot not found!",
-        });
-      }
-      return chatbot;
-    }),
   findById: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
     const chatbot = await ctx.db.chatbot.findUnique({
       where: { id: input },
@@ -98,20 +84,9 @@ export const chatbotRouter = router({
           message: "No organization selected",
         });
       }
-      const alreadyExists = await ctx.db.chatbot.findUnique({
-        where: { slug: input.slug },
-        select: { slug: true },
-      });
-      if (alreadyExists) {
-        throw new TRPCError({
-          code: "CONFLICT",
-          message: "Slug is already taken",
-        });
-      }
       return ctx.db.chatbot.create({
         data: {
           name: input.name,
-          slug: input.slug,
           organizationId: ctx.auth.orgId,
           metadata: { createdBy: ctx.auth.userId },
         },
@@ -134,18 +109,6 @@ export const chatbotRouter = router({
           code: "NOT_FOUND",
           message: "Chatbot not found!",
         });
-      }
-      if (data.slug) {
-        const alreadyExists = await ctx.db.chatbot.findUnique({
-          where: { slug: data.slug },
-          select: { slug: true },
-        });
-        if (alreadyExists) {
-          throw new TRPCError({
-            code: "CONFLICT",
-            message: "Slug is already taken",
-          });
-        }
       }
       return ctx.db.chatbot.update({
         where: { id },

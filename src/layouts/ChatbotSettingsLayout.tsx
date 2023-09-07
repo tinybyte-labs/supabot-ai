@@ -8,18 +8,18 @@ import { cn } from "@/lib/utils";
 
 const ChatbotSettingsLayout = ({ children }: { children: ReactNode }) => {
   const {
-    query: { chatbotSlug },
+    query: { chatbotId },
     asPath,
   } = useRouter();
 
   const menu = [
     {
-      href: `/chatbots/${chatbotSlug}/settings`,
+      href: `/chatbots/${chatbotId}/settings`,
       label: "General",
       end: true,
     },
     {
-      href: `/chatbots/${chatbotSlug}/settings/advanced`,
+      href: `/chatbots/${chatbotId}/settings/advanced`,
       label: "Advanced",
     },
   ];

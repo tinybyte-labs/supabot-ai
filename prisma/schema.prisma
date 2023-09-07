@@ -62,7 +62,6 @@ model Chatbot {
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
   name           String   @db.VarChar(32)
-  slug           String   @unique @db.VarChar(32)
   image          String?
   metadata       Json?
   organizationId String   @map("organization_id")

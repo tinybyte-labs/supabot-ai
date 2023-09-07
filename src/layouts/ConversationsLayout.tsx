@@ -1,5 +1,4 @@
 import PageHeader from "@/components/PageHeader";
-import { useChatbot } from "@/providers/ChatbotProvider";
 import { trpc } from "@/utils/trpc";
 import { ReactNode, useEffect } from "react";
 import { useRouter } from "next/router";
@@ -8,16 +7,15 @@ import SideBarNav from "@/components/SideBarNav";
 import { formatDistanceToNow } from "date-fns";
 
 const ConversationsLayout = ({ children }: { children: ReactNode }) => {
-  const { isLoaded, chatbot } = useChatbot();
   const router = useRouter();
-  const {
-    query: { conversationId },
-  } = router;
+  const chatbotId = router.query.chatbotId as string;
+  const conversationId = router.query.conversationId as string;
+
   const conversationsQuery = trpc.conversation.list.useQuery(
     {
-      chatbotId: chatbot?.id || "",
+      chatbotId: chatbotId,
     },
-    { enabled: isLoaded },
+    { enabled: router.isReady },
   );
 
   useEffect(() => {
@@ -28,11 +26,11 @@ const ConversationsLayout = ({ children }: { children: ReactNode }) => {
       !conversationId
     ) {
       router.replace(
-        `/chatbots/${chatbot?.slug}/conversations/${conversationsQuery.data[0].id}`,
+        `/chatbots/${chatbotId}/conversations/${conversationsQuery.data[0].id}`,
       );
     }
   }, [
-    chatbot?.slug,
+    chatbotId,
     conversationId,
     conversationsQuery.data,
     conversationsQuery.isSuccess,
@@ -52,12 +50,15 @@ const ConversationsLayout = ({ children }: { children: ReactNode }) => {
             <SideBarNav
               list={[
                 {
-                  items: conversationsQuery.data.map((item) => ({
-                    href: `/chatbots/${chatbot?.slug}/conversations/${item.id}`,
-                    label: item.title || item.id,
-                    subtitle: formatDistanceToNow(new Date(item.updatedAt), {
-                      addSuffix: true,
-                    }),
+                  items: conversationsQuery.data.map((conversation) => ({
+                    href: `/chatbots/${chatbotId}/conversations/${conversation.id}`,
+                    label: conversation.title || conversation.id,
+                    subtitle: formatDistanceToNow(
+                      new Date(conversation.updatedAt),
+                      {
+                        addSuffix: true,
+                      },
+                    ),
                     icon: <MessagesSquare size={22} />,
                   })),
                 },

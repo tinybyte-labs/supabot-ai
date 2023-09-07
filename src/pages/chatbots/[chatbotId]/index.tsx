@@ -2,7 +2,6 @@ import PageHeader from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ChatbotLayout from "@/layouts/ChatbotLayout";
-import { useChatbot } from "@/providers/ChatbotProvider";
 import { NextPageWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
 import {
@@ -17,11 +16,13 @@ import {
   Users,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 const ChatbotOverviewPage: NextPageWithLayout = () => {
-  const { isLoaded, chatbot } = useChatbot();
-  const statusQuery = trpc.chatbot.stats.useQuery(chatbot?.id || "", {
-    enabled: isLoaded,
+  const router = useRouter();
+  const chatbotId = router.query.chatbotId as string;
+  const statusQuery = trpc.chatbot.stats.useQuery(chatbotId, {
+    enabled: router.isReady,
   });
 
   if (statusQuery.isLoading) {
@@ -45,7 +46,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
       <PageHeader title="Overview">
         <div className="flex items-center gap-4">
           <Button variant="outline" asChild>
-            <Link href={`/demo/c/${chatbot?.id}`} target="_blank">
+            <Link href={`/demo/c/${chatbotId}`} target="_blank">
               Demo
               <ExternalLink size={18} className="-mr-1 ml-2" />
             </Link>
@@ -64,7 +65,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
                 {statusQuery.data.linksCount.toLocaleString()}
               </div>
               <Link
-                href={`/chatbots/${chatbot?.slug}/links`}
+                href={`/chatbots/${chatbotId}/links`}
                 className="mt-2 inline-flex items-center text-sm text-muted-foreground underline-offset-4 hover:text-accent-foreground hover:underline"
               >
                 All Links
@@ -85,7 +86,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
                 {statusQuery.data.quickPromptCount.toLocaleString()}
               </div>
               <Link
-                href={`/chatbots/${chatbot?.slug}/quick-prompts`}
+                href={`/chatbots/${chatbotId}/quick-prompts`}
                 className="mt-2 inline-flex items-center text-sm text-muted-foreground underline-offset-4 hover:text-accent-foreground hover:underline"
               >
                 All Quick Prompts
@@ -104,7 +105,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
                 {statusQuery.data.userCount.toLocaleString()}
               </div>
               <Link
-                href={`/chatbots/${chatbot?.slug}/users`}
+                href={`/chatbots/${chatbotId}/users`}
                 className="mt-2 inline-flex items-center text-sm text-muted-foreground underline-offset-4 hover:text-accent-foreground hover:underline"
               >
                 All Users
@@ -125,7 +126,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
                 {statusQuery.data.conversationCount.toLocaleString()}
               </div>
               <Link
-                href={`/chatbots/${chatbot?.slug}/conversations`}
+                href={`/chatbots/${chatbotId}/conversations`}
                 className="mt-2 inline-flex items-center text-sm text-muted-foreground underline-offset-4 hover:text-accent-foreground hover:underline"
               >
                 All Conversations

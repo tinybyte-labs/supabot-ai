@@ -49,7 +49,7 @@ const Page: NextPageWithLayout = (props) => {
           {chatbots.map((chatbot) => (
             <Link
               key={chatbot.id}
-              href={`/chatbots/${chatbot.slug}`}
+              href={`/chatbots/${chatbot.id}`}
               className="flex flex-col gap-4 rounded-lg border bg-card p-4 text-card-foreground shadow-sm transition-all hover:border-foreground/20 hover:shadow-lg"
             >
               <div className="flex items-center gap-4">
@@ -57,7 +57,7 @@ const Page: NextPageWithLayout = (props) => {
                   {chatbot.image && <AvatarImage src={chatbot.image} />}
                   <AvatarFallback>
                     <Image
-                      src={`/api/avatar.svg?seed=${chatbot.id}&initials=${chatbot.slug}&size=128`}
+                      src={`/api/avatar.svg?seed=${chatbot.id}&initials=${chatbot.name}&size=128`}
                       width={128}
                       height={128}
                       alt=""
@@ -67,9 +67,6 @@ const Page: NextPageWithLayout = (props) => {
                 </Avatar>
                 <div className="flex-1">
                   <h3 className="font-medium">{chatbot.name}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {chatbot.slug}
-                  </p>
                 </div>
               </div>
               <p className="text-sm text-muted-foreground">

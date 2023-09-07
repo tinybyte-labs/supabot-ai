@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button, ButtonLoader } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import ChatbotBoxLayout, { useChatbox } from "@/layouts/ChatboxLayout";
 import { NextPageWithLayout } from "@/types/next";
@@ -37,7 +37,7 @@ const ChatBoxHome: NextPageWithLayout = () => {
             {chatbot?.image && <AvatarImage src={chatbot.image} />}
             <AvatarFallback>
               <Image
-                src={`/api/avatar.svg?seed=${chatbot.id}&initials=${chatbot.slug}&size=128`}
+                src={`/api/avatar.svg?seed=${chatbot.id}&initials=${chatbot.name}&size=128`}
                 width={128}
                 height={128}
                 alt=""

@@ -41,24 +41,24 @@ export default ChatbotLayout;
 
 const SideBar = () => {
   const {
-    query: { chatbotSlug },
+    query: { chatbotId },
   } = useRouter();
   const list: SideBarNavProps["list"] = [
     {
       items: [
         {
-          href: `/chatbots/${chatbotSlug}`,
+          href: `/chatbots/${chatbotId}`,
           label: "Overview",
           icon: <LayoutGrid size={20} />,
           end: true,
         },
         {
-          href: `/chatbots/${chatbotSlug}/users`,
+          href: `/chatbots/${chatbotId}/users`,
           label: "Users",
           icon: <Users size={20} />,
         },
         {
-          href: `/chatbots/${chatbotSlug}/conversations`,
+          href: `/chatbots/${chatbotId}/conversations`,
           label: "Conversations",
           icon: <MessagesSquare size={20} />,
         },
@@ -68,12 +68,12 @@ const SideBar = () => {
       title: "CONTENT",
       items: [
         {
-          href: `/chatbots/${chatbotSlug}/links`,
+          href: `/chatbots/${chatbotId}/links`,
           label: "Links",
           icon: <LinkIcon size={20} />,
         },
         {
-          href: `/chatbots/${chatbotSlug}/quick-prompts`,
+          href: `/chatbots/${chatbotId}/quick-prompts`,
           label: "Quick Prompts",
           icon: <FileText size={20} />,
         },
@@ -83,12 +83,12 @@ const SideBar = () => {
       title: "CONFIGURE",
       items: [
         {
-          href: `/chatbots/${chatbotSlug}/customization`,
+          href: `/chatbots/${chatbotId}/customization`,
           label: "Customization",
           icon: <Palette size={20} />,
         },
         {
-          href: `/chatbots/${chatbotSlug}/settings`,
+          href: `/chatbots/${chatbotId}/settings`,
           label: "Settings",
           icon: <Settings size={20} />,
         },

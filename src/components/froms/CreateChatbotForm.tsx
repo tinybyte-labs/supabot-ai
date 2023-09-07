@@ -27,7 +27,6 @@ export default function CreateChatbotForm() {
     resolver: zodResolver(createChatbotValidator),
     defaultValues: {
       name: "",
-      slug: "",
     },
   });
   const { toast } = useToast();
@@ -35,7 +34,7 @@ export default function CreateChatbotForm() {
   const createChatbot = trpc.chatbot.create.useMutation({
     onSuccess: (data) => {
       toast({ title: "Chatbot created" });
-      router.push(`/chatbots/${data.slug}`);
+      router.push(`/chatbots/${data.id}`);
     },
     onError: (error) => {
       toast({
@@ -66,20 +65,6 @@ export default function CreateChatbotForm() {
               <FormLabel>Name</FormLabel>
               <FormControl>
                 <Input placeholder="My bot" autoFocus {...field} />
-              </FormControl>
-              <FormDescription>Max 32 characters.</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="slug"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Slug</FormLabel>
-              <FormControl>
-                <Input placeholder="my-bot" {...field} />
               </FormControl>
               <FormDescription>Max 32 characters.</FormDescription>
               <FormMessage />

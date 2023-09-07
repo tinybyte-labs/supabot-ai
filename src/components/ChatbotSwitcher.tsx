@@ -25,10 +25,10 @@ import { trpc } from "@/utils/trpc";
 const ChatbotSwitcher = ({ className }: { className?: string }) => {
   const {
     isReady,
-    query: { chatbotSlug },
+    query: { chatbotId },
   } = useRouter();
   const { isSuccess: chatbotLoaded, data: currentChatbot } =
-    trpc.chatbot.findBySlug.useQuery(chatbotSlug as string, {
+    trpc.chatbot.findById.useQuery(chatbotId as string, {
       enabled: isReady,
     });
   const [open, setOpen] = useState(false);
@@ -53,7 +53,7 @@ const ChatbotSwitcher = ({ className }: { className?: string }) => {
             )}
             <AvatarFallback>
               <Image
-                src={`/api/avatar.svg?seed=${currentChatbot.id}&initials=${currentChatbot.slug}&size=128`}
+                src={`/api/avatar.svg?seed=${currentChatbot.id}&initials=${currentChatbot.name}&size=128`}
                 width={128}
                 height={128}
                 alt=""
@@ -72,9 +72,9 @@ const ChatbotSwitcher = ({ className }: { className?: string }) => {
           <CommandGroup>
             {chatbots.data?.map((chatbot) => (
               <CommandItem
-                key={chatbot.slug}
+                key={chatbot.id}
                 onSelect={() => {
-                  router.push(`/chatbots/${chatbot.slug}`);
+                  router.push(`/chatbots/${chatbot.id}`);
                   setOpen(false);
                 }}
               >
@@ -82,7 +82,7 @@ const ChatbotSwitcher = ({ className }: { className?: string }) => {
                   {chatbot?.image && <AvatarImage src={chatbot?.image} />}
                   <AvatarFallback>
                     <Image
-                      src={`/api/avatar.svg?seed=${chatbot.id}&initials=${chatbot.slug}&size=128`}
+                      src={`/api/avatar.svg?seed=${chatbot.id}&initials=${chatbot.name}&size=128`}
                       width={128}
                       height={128}
                       alt=""
@@ -91,13 +91,13 @@ const ChatbotSwitcher = ({ className }: { className?: string }) => {
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 truncate">
-                  <p className="sr-only">{chatbot.slug}</p>
+                  <p className="sr-only">{chatbot.id}</p>
                   {chatbot.name}
                 </div>
                 <Check
                   className={cn(
                     "ml-2 h-4 w-4",
-                    currentChatbot.slug === chatbot.slug
+                    currentChatbot.id === chatbot.id
                       ? "opacity-100"
                       : "opacity-0",
                   )}
