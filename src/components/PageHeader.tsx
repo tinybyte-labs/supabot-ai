@@ -1,16 +1,30 @@
 import { ReactNode } from "react";
 import ToggleSidebarButton from "./ToggleSidebarButton";
+import { cn } from "@/lib/utils";
 
 export interface PageHeaderProps {
   title: string;
   subtitle?: string;
   children?: ReactNode;
+  containerClassName?: string;
+  className?: string;
 }
 
-const PageHeader = ({ title, subtitle, children }: PageHeaderProps) => {
+const PageHeader = ({
+  title,
+  subtitle,
+  children,
+  containerClassName,
+  className,
+}: PageHeaderProps) => {
   return (
-    <header className="border-b">
-      <div className="container flex min-h-[88px] gap-4 py-6 max-md:flex-col md:items-center">
+    <header className={cn("border-b", className)}>
+      <div
+        className={cn(
+          "container flex min-h-[88px] gap-4 py-6 max-md:flex-col md:items-center",
+          containerClassName,
+        )}
+      >
         <div className="flex flex-1 items-center gap-6">
           <ToggleSidebarButton />
           <div className="flex-1 space-y-0.5">

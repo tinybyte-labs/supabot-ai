@@ -12,6 +12,7 @@ export type SideBarNavProps = {
       label: string;
       icon: ReactNode;
       end?: boolean;
+      subtitle?: string;
     }[];
   }[];
 };
@@ -27,7 +28,7 @@ export default function SideBarNav({ list }: SideBarNavProps) {
               {group.title}
             </div>
           )}
-          <div className="grid gap-1">
+          <div className="flex flex-col gap-1 overflow-hidden">
             {group.items.map((item, j) => {
               const isActive = item.end
                 ? asPath.split("?")[0] === item.href.split("?")[0]
@@ -37,14 +38,21 @@ export default function SideBarNav({ list }: SideBarNavProps) {
                   key={j}
                   asChild
                   variant="ghost"
-                  className={cn({
+                  className={cn("flex h-fit w-full", {
                     "bg-accent text-accent-foreground": isActive,
                     "text-muted-foreground": !isActive,
                   })}
                 >
                   <Link href={item.href}>
                     {item.icon}
-                    <p className="ml-2 flex-1 truncate">{item.label}</p>
+                    <div className="ml-3 flex-1 overflow-hidden">
+                      <p className="truncate">{item.label}</p>
+                      {!!item.subtitle && (
+                        <p className="text-xs text-muted-foreground">
+                          {item.subtitle}
+                        </p>
+                      )}
+                    </div>
                   </Link>
                 </Button>
               );
