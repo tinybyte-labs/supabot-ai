@@ -60,6 +60,9 @@ export const conversationRouter = router({
         include: {
           user: true,
         },
+        orderBy: {
+          updatedAt: "desc",
+        },
       });
     }),
 });

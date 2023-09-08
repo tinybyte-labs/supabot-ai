@@ -160,6 +160,7 @@ const ConversationPage: NextPageWithLayout = () => {
       utils.message.list,
     ],
   );
+
   useEffect(() => {
     handleScrollToBottom("instant");
   }, [handleScrollToBottom]);
@@ -176,7 +177,7 @@ const ConversationPage: NextPageWithLayout = () => {
   }
 
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden">
+    <div className="flex h-full w-full flex-1 flex-col overflow-hidden">
       <header className="flex items-center gap-3 border-b p-2">
         <Button size="icon" variant="ghost" asChild>
           <Link href={`/widgets/c/${chatbot.id}`}>

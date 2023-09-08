@@ -37,7 +37,7 @@ const ChatbotBoxLayout = ({ children }: { children: ReactNode }) => {
     <Context.Provider value={{ user, chatbot: chatbot.data }}>
       <ChatboxStyle {...((chatbot.data.settings as any) || {})} />
       <div className="chatbox flex h-screen w-screen flex-col overflow-hidden">
-        <div className="flex-1">{children}</div>
+        <div className="flex-1 overflow-hidden">{children}</div>
         <ChatboxWatermark />
       </div>
     </Context.Provider>
