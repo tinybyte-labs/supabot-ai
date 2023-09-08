@@ -42,7 +42,7 @@ const ConversationsLayout = ({ children }: { children: ReactNode }) => {
     <ChatbotLayout>
       <PageHeader title="Conversations" containerClassName="max-w-full" />
       <div className="flex flex-1 overflow-hidden">
-        <div className="flex w-80 flex-col gap-1 border-r p-2">
+        <div className="flex w-80 flex-col gap-1 overflow-y-auto border-r p-2">
           {conversationsQuery.isLoading ? (
             <p>Loading...</p>
           ) : conversationsQuery.isError ? (
