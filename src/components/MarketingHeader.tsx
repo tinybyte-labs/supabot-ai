@@ -64,130 +64,133 @@ export default function MarketingHeader() {
   }, [showMenu]);
 
   return (
-    <header
-      className={cn(
-        "sticky top-0 z-30 border-b bg-background transition-all md:border-b-transparent md:bg-transparent",
-        {
-          "md:border-b-border md:bg-background/80 md:backdrop-blur-md":
-            scrolled,
-        },
-      )}
-    >
-      <div className="container flex h-16 items-center">
-        <div className="lg:flex-1">
-          <Link href="/home" className="mr-6 flex w-fit items-center gap-2">
-            <FullLogo className="h-10 w-fit max-lg:hidden" />
-            <Logo className="h-12 w-12 lg:hidden" />
-            <p className="sr-only">{APP_NAME}</p>
-          </Link>
-        </div>
-        <nav className="flex items-center gap-1 max-md:hidden">
-          {menu.map((item) => {
-            const isActive = router.asPath.split("?")[0] === item.href;
-            return (
-              <Button
-                asChild
-                key={item.href}
-                variant="ghost"
-                className={cn(
-                  "rounded-full bg-transparent hover:bg-transparent",
-                  {
-                    "text-secondary-foreground": isActive,
-                    "text-muted-foreground": !isActive,
-                  },
-                )}
-              >
-                <Link href={item.href}>{item.label}</Link>
-              </Button>
-            );
-          })}
-        </nav>
-        <div className="flex flex-1 items-center justify-end gap-2 max-md:hidden">
-          {!isLoaded ? (
-            <>
-              <Skeleton className="h-10 w-[93px] rounded-full" />
-              <Skeleton className="h-10 w-[124px] rounded-full" />
-            </>
-          ) : isSignedIn ? (
-            <Button asChild className="rounded-full px-6">
-              <Link href="/chatbots">Dashboard</Link>
-            </Button>
-          ) : (
-            <>
-              <Button
-                asChild
-                variant="ghost"
-                className="rounded-full px-6 max-lg:hidden"
-              >
-                <Link href="/signin">Sign In</Link>
-              </Button>
-              <Button asChild className="rounded-full px-6">
-                <Link href="/register">Get started</Link>
-              </Button>
-            </>
-          )}
-        </div>
-        <div className="flex flex-1 items-center justify-end md:hidden">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setShowMenu(!showMenu)}
-          >
-            {showMenu ? <X size={24} /> : <Menu size={24} />}
-          </Button>
-        </div>
-      </div>
-      {showMenu && (
-        <div className="flex h-[calc(100vh-4rem)] flex-col overflow-y-auto border-t p-6 md:hidden">
-          <nav className="flex flex-col gap-1">
-            {menu.map((item, i) => {
+    <>
+      <header
+        className={cn(
+          "fixed left-0 right-0 top-0 z-30 border-b bg-background transition-all md:border-b-transparent md:bg-transparent",
+          {
+            "md:border-b-border md:bg-background/80 md:backdrop-blur-md":
+              scrolled,
+          },
+        )}
+      >
+        <div className="container flex h-16 items-center">
+          <div className="lg:flex-1">
+            <Link href="/home" className="mr-6 flex w-fit items-center gap-2">
+              <FullLogo className="h-10 w-fit max-lg:hidden" />
+              <Logo className="h-12 w-12 lg:hidden" />
+              <p className="sr-only">{APP_NAME}</p>
+            </Link>
+          </div>
+          <nav className="flex items-center gap-1 max-md:hidden">
+            {menu.map((item) => {
               const isActive = router.asPath.split("?")[0] === item.href;
-
               return (
                 <Button
                   asChild
                   key={item.href}
                   variant="ghost"
-                  size="lg"
-                  className={cn("justify-start px-4", {
-                    "bg-secondary text-secondary-foreground": isActive,
-                  })}
-                  onClick={closeSidebar}
+                  className={cn(
+                    "rounded-full bg-transparent hover:bg-transparent",
+                    {
+                      "text-secondary-foreground": isActive,
+                      "text-muted-foreground": !isActive,
+                    },
+                  )}
                 >
                   <Link href={item.href}>{item.label}</Link>
                 </Button>
               );
             })}
           </nav>
-
-          <div className="mt-12 flex flex-col gap-2">
+          <div className="flex flex-1 items-center justify-end gap-2 max-md:hidden">
             {!isLoaded ? (
               <>
-                <Skeleton className="h-12 rounded-lg" />
-                <Skeleton className="h-12 rounded-lg" />
+                <Skeleton className="h-10 w-[93px] rounded-full" />
+                <Skeleton className="h-10 w-[124px] rounded-full" />
               </>
             ) : isSignedIn ? (
-              <Button asChild size="lg" onClick={closeSidebar}>
+              <Button asChild className="rounded-full px-6">
                 <Link href="/chatbots">Dashboard</Link>
               </Button>
             ) : (
               <>
                 <Button
                   asChild
-                  variant="outline"
-                  size="lg"
-                  onClick={closeSidebar}
+                  variant="ghost"
+                  className="rounded-full px-6 max-lg:hidden"
                 >
                   <Link href="/signin">Sign In</Link>
                 </Button>
-                <Button asChild size="lg" onClick={closeSidebar}>
+                <Button asChild className="rounded-full px-6">
                   <Link href="/register">Get started</Link>
                 </Button>
               </>
             )}
           </div>
+          <div className="flex flex-1 items-center justify-end md:hidden">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowMenu(!showMenu)}
+            >
+              {showMenu ? <X size={24} /> : <Menu size={24} />}
+            </Button>
+          </div>
         </div>
-      )}
-    </header>
+        {showMenu && (
+          <div className="flex h-[calc(100vh-4rem)] flex-col overflow-y-auto border-t p-6 md:hidden">
+            <nav className="flex flex-col gap-1">
+              {menu.map((item, i) => {
+                const isActive = router.asPath.split("?")[0] === item.href;
+
+                return (
+                  <Button
+                    asChild
+                    key={item.href}
+                    variant="ghost"
+                    size="lg"
+                    className={cn("justify-start px-4", {
+                      "bg-secondary text-secondary-foreground": isActive,
+                    })}
+                    onClick={closeSidebar}
+                  >
+                    <Link href={item.href}>{item.label}</Link>
+                  </Button>
+                );
+              })}
+            </nav>
+
+            <div className="mt-12 flex flex-col gap-2">
+              {!isLoaded ? (
+                <>
+                  <Skeleton className="h-12 rounded-lg" />
+                  <Skeleton className="h-12 rounded-lg" />
+                </>
+              ) : isSignedIn ? (
+                <Button asChild size="lg" onClick={closeSidebar}>
+                  <Link href="/chatbots">Dashboard</Link>
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="lg"
+                    onClick={closeSidebar}
+                  >
+                    <Link href="/signin">Sign In</Link>
+                  </Button>
+                  <Button asChild size="lg" onClick={closeSidebar}>
+                    <Link href="/register">Get started</Link>
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+      </header>
+      <div className="h-16"></div>
+    </>
   );
 }

@@ -15,6 +15,7 @@ import Head from "next/head";
 import { APP_NAME } from "@/utils/constants";
 import Script from "next/script";
 import * as gtag from "@/utils/gtag";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -56,16 +57,17 @@ function App({ Component, pageProps }: AppPropsWithLayout) {
           height={2}
           options={{ showSpinner: false }}
         />
-        <div className={cn(inter.className, "antialiased")}>
-          <Head>
-            <title>{APP_NAME}</title>
-          </Head>
-          <Script
-            strategy="lazyOnload"
-            src={`https://www.googletagmanager.com/gtag/js?id=${gtag.MEASUREMENT_ID}`}
-          />
-          <Script id="google-analytics" strategy="lazyOnload">
-            {`
+        <TooltipProvider>
+          <div className={cn(inter.className, "antialiased")}>
+            <Head>
+              <title>{APP_NAME}</title>
+            </Head>
+            <Script
+              strategy="lazyOnload"
+              src={`https://www.googletagmanager.com/gtag/js?id=${gtag.MEASUREMENT_ID}`}
+            />
+            <Script id="google-analytics" strategy="lazyOnload">
+              {`
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
@@ -74,9 +76,10 @@ function App({ Component, pageProps }: AppPropsWithLayout) {
               });
               console.log("GA SENT");
             `}
-          </Script>
-          {getLayout(<Component {...pageProps} />)}
-        </div>
+            </Script>
+            {getLayout(<Component {...pageProps} />)}
+          </div>
+        </TooltipProvider>
         <Toaster />
       </ClerkProvider>
     </ThemeProvider>
