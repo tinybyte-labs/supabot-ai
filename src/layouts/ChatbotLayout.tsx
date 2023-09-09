@@ -1,5 +1,6 @@
 import { sidebarOpenAtom } from "@/atoms/sidebarOpen";
 import ChatbotSwitcher from "@/components/ChatbotSwitcher";
+import DevWarningBar from "@/components/DevWarningBar";
 import FullUserDropdownButton from "@/components/FullUserDropdownButton";
 import Logo from "@/components/Logo";
 import SideBarNav, { SideBarNavProps } from "@/components/SideBarNav";
@@ -24,15 +25,20 @@ const ChatbotLayout = ({ children }: { children: ReactNode }) => {
 
   return (
     <ChatbotProvider>
-      <div className="fixed bottom-0 left-0 top-0 w-64 border-r bg-card text-card-foreground max-lg:hidden">
-        <SideBar />
+      <div className="flex h-screen w-screen flex-col overflow-hidden">
+        <DevWarningBar />
+        <div className="relative flex flex-1 overflow-hidden">
+          <div className="w-64 border-r bg-card text-card-foreground max-lg:hidden">
+            <SideBar />
+          </div>
+          <main className="flex flex-1 flex-col overflow-auto">{children}</main>
+        </div>
+        <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+          <SheetContent className="p-0" side="left">
+            <SideBar />
+          </SheetContent>
+        </Sheet>
       </div>
-      <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-        <SheetContent className="p-0" side="left">
-          <SideBar />
-        </SheetContent>
-      </Sheet>
-      <main className="flex h-screen flex-col lg:ml-64">{children}</main>
     </ChatbotProvider>
   );
 };

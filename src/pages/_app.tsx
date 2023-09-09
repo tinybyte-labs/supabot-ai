@@ -75,7 +75,6 @@ function App({ Component, pageProps }: AppPropsWithLayout) {
               console.log("GA SENT");
             `}
           </Script>
-
           {getLayout(<Component {...pageProps} />)}
         </div>
         <Toaster />
