@@ -169,6 +169,9 @@ devDependencies:
   '@tailwindcss/typography':
     specifier: ^0.5.9
     version: 0.5.9(tailwindcss@3.3.3)
+  '@types/gtag.js':
+    specifier: ^0.0.13
+    version: 0.0.13
   '@types/html-to-text':
     specifier: ^9.0.1
     version: 9.0.1
@@ -1829,6 +1832,10 @@ packages:
       '@types/qs': 6.9.7
       '@types/serve-static': 1.15.2
     dev: false
+
+  /@types/gtag.js@0.0.13:
+    resolution: {integrity: sha512-yOXFkfnt1DQr1v9B4ERulJOGnbdVqnPHV8NG4nkQhnu4qbrJecQ06DlaKmSjI3nzIwBj5U9/X61LY4sTc2KbaQ==}
+    dev: true
 
   /@types/hast@2.3.5:
     resolution: {integrity: sha512-SvQi0L/lNpThgPoleH53cdjB3y9zpLlVjRbqB3rH8hx1jiRSBGAhyjV3H+URFjNVRqt2EdYNrbZE5IsGlNfpRg==}

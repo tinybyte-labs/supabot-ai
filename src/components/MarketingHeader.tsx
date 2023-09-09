@@ -39,7 +39,6 @@ export default function MarketingHeader() {
   const router = useRouter();
 
   const handleScroll = useCallback(() => {
-    console.log("CALLED");
     const y = window.scrollY;
     if (y > 4 && !scrolled) {
       setScrolled(true);
@@ -87,15 +86,23 @@ export default function MarketingHeader() {
             </Link>
           </div>
           <nav className="flex items-center max-md:hidden">
-            {menu.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="whitespace-nowrap p-4 text-center font-medium text-muted-foreground transition-all hover:text-accent-foreground"
-              >
-                {item.label}
-              </Link>
-            ))}
+            {menu.map((item) => {
+              const isActive = router.asPath.split("?")[0] === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "whitespace-nowrap p-4 text-center font-medium text-muted-foreground transition-all hover:text-accent-foreground",
+                    {
+                      "text-foreground": isActive,
+                    },
+                  )}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
           <div className="flex flex-1 items-center justify-end gap-2 max-md:hidden">
             {!isLoaded ? (

@@ -48,7 +48,7 @@ const MarketingFooter = () => {
             <ul className="flex flex-col space-y-2">
               <li>
                 <Link
-                  href="#"
+                  href="/home#"
                   className="text-muted-foreground hover:text-accent-foreground"
                 >
                   About
@@ -56,7 +56,7 @@ const MarketingFooter = () => {
               </li>
               <li>
                 <Link
-                  href="#"
+                  href="/home#"
                   className="text-muted-foreground hover:text-accent-foreground"
                 >
                   Change Log
@@ -64,7 +64,7 @@ const MarketingFooter = () => {
               </li>
               <li>
                 <Link
-                  href="#"
+                  href="/home#"
                   className="text-muted-foreground hover:text-accent-foreground"
                 >
                   Help Center
@@ -77,7 +77,7 @@ const MarketingFooter = () => {
             <ul className="flex flex-col space-y-2">
               <li>
                 <Link
-                  href="#"
+                  href="/home#"
                   className="text-muted-foreground hover:text-accent-foreground"
                 >
                   Blog
@@ -90,7 +90,7 @@ const MarketingFooter = () => {
             <ul className="flex flex-col space-y-2">
               <li>
                 <Link
-                  href="#"
+                  href="/home#"
                   className="text-muted-foreground hover:text-accent-foreground"
                 >
                   Privacy
@@ -98,7 +98,7 @@ const MarketingFooter = () => {
               </li>
               <li>
                 <Link
-                  href="#"
+                  href="/home#"
                   className="text-muted-foreground hover:text-accent-foreground"
                 >
                   Terms

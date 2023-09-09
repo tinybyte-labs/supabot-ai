@@ -13,6 +13,8 @@ import { useAtom } from "jotai";
 import { sidebarOpenAtom } from "@/atoms/sidebarOpen";
 import Head from "next/head";
 import { APP_NAME } from "@/utils/constants";
+import Script from "next/script";
+import * as gtag from "@/utils/gtag";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,6 +26,17 @@ function App({ Component, pageProps }: AppPropsWithLayout) {
   const closeSidebar = useCallback(() => {
     setSidebarOpen(false);
   }, [setSidebarOpen]);
+
+  const onRouteChangeComplete = (e: any) => {
+    gtag.pageView(e);
+  };
+
+  useEffect(() => {
+    router.events.on("routeChangeComplete", onRouteChangeComplete);
+    return () => {
+      router.events.off("routeChangeComplete", onRouteChangeComplete);
+    };
+  }, [router.events]);
 
   useEffect(() => {
     if (!sidebarOpen) return;
@@ -47,6 +60,25 @@ function App({ Component, pageProps }: AppPropsWithLayout) {
           <Head>
             <title>{APP_NAME}</title>
           </Head>
+          {process.env.NODE_ENV === "production" && (
+            <Script
+              strategy="lazyOnload"
+              src={`https://www.googletagmanager.com/gtag/js?id=${gtag.MEASUREMENT_ID}`}
+            />
+          )}
+
+          <Script id="google-analytics" strategy="lazyOnload">
+            {`
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', '${gtag.MEASUREMENT_ID}', {
+                  page_path: window.location.pathname,
+                  });
+                  console.log("GA SENT");
+                `}
+          </Script>
+
           {getLayout(<Component {...pageProps} />)}
         </div>
         <Toaster />
