@@ -8,7 +8,7 @@ const CreateOrgPage: NextPageWithLayout = () => {
   return (
     <>
       <Head>
-        <title>Create Org - {APP_NAME}</title>
+        <title>{`Create Org - ${APP_NAME}`}</title>
       </Head>
 
       <div className="mx-auto w-fit py-16">

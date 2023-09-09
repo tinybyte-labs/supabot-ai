@@ -9,10 +9,12 @@ import { APP_NAME } from "@/utils/constants";
 import Head from "next/head";
 
 const HomePage: NextPageWithLayout = () => {
+  const pageTitle = `${APP_NAME} - Elevate Your Website with a Powerful Chatbot`;
+
   return (
     <>
       <Head>
-        <title>{APP_NAME} - Elevate Your Website with a Powerful Chatbot</title>
+        <title>{pageTitle}</title>
         <meta
           name="description"
           content={`Transform your web experience with ${APP_NAME}, the future of conversational AI. Craft a personalized chatbot tailored to your website's content. Enhance customer engagement and boost conversions.`}
