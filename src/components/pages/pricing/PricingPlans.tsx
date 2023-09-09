@@ -123,7 +123,7 @@ const plans: Plan[] = [
     id: "enterprise",
     title: "Enterprise",
     interval: "monthly",
-    price: 299,
+    price: 599,
     description: "For startups & side projects",
   },
   {
@@ -152,7 +152,7 @@ const plans: Plan[] = [
     id: "enterprise",
     title: "Enterprise",
     interval: "annually",
-    price: 2990,
+    price: 5990,
     description: "For startups & side projects",
   },
 ];
