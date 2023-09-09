@@ -1,8 +1,8 @@
-import Background from "@/components/home/Background";
-import Demo from "@/components/home/Demo";
-import EndCTA from "@/components/home/EndCTA";
-import Features from "@/components/home/Features";
-import Hero from "@/components/home/Hero";
+import Background from "@/components/Background";
+import Demo from "@/components/pages/home/Demo";
+import EndCTA from "@/components/pages/home/EndCTA";
+import Features from "@/components/pages/home/Features";
+import Hero from "@/components/pages/home/Hero";
 import MarketingLayout from "@/layouts/MarketingLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { APP_NAME } from "@/utils/constants";
@@ -21,10 +21,12 @@ const HomePage: NextPageWithLayout = () => {
         />
       </Head>
       <Background />
-      <Hero />
-      <Demo />
-      <Features />
-      <EndCTA />
+      <main className="space-y-48 py-32">
+        <Hero />
+        <Demo />
+        <Features />
+        <EndCTA />
+      </main>
     </>
   );
 };

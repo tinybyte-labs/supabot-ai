@@ -2,11 +2,11 @@ import { HERO_SUBTITLE, HERO_TITLE } from "@/utils/constants/strings";
 import { ArrowRight, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 
 const Hero = () => {
   return (
-    <section className="my-12 md:my-24">
+    <section>
       <div className="container">
         <div className="mx-auto max-w-screen-sm md:max-w-screen-lg">
           <div className="bg-gradient-to-br from-accent-foreground to-accent-foreground/70 bg-clip-text py-1">

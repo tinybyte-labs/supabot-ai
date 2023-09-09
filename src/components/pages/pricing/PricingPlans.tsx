@@ -101,21 +101,21 @@ const plans: Plan[] = [
     id: "starter",
     title: "Starter",
     interval: "monthly",
-    price: 9.9,
+    price: 9,
     description: "For startups & side projects",
   },
   {
     id: "team",
     title: "Team",
     interval: "monthly",
-    price: 29.9,
+    price: 29,
     description: "For startups & side projects",
   },
   {
     id: "business",
     title: "Business",
     interval: "monthly",
-    price: 99.9,
+    price: 99,
     description: "For startups & side projects",
     isFeatured: true,
   },
@@ -123,28 +123,28 @@ const plans: Plan[] = [
     id: "enterprise",
     title: "Enterprise",
     interval: "monthly",
-    price: 299.9,
+    price: 299,
     description: "For startups & side projects",
   },
   {
     id: "starter",
     title: "Starter",
     interval: "annually",
-    price: 99.9,
+    price: 90,
     description: "For startups & side projects",
   },
   {
     id: "team",
     title: "Team",
     interval: "annually",
-    price: 299.9,
+    price: 290,
     description: "For startups & side projects",
   },
   {
     id: "business",
     title: "Business",
     interval: "annually",
-    price: 999.9,
+    price: 990,
     description: "For startups & side projects",
     isFeatured: true,
   },
@@ -152,25 +152,27 @@ const plans: Plan[] = [
     id: "enterprise",
     title: "Enterprise",
     interval: "annually",
-    price: 2999.9,
+    price: 2990,
     description: "For startups & side projects",
   },
 ];
 const PricingPlans = () => {
-  const [interval, setInterval] = useState<Interval>("monthly");
+  const [interval, setInterval] = useState<Interval>("annually");
   const curPlans = useMemo(
     () => plans.filter((plan) => plan.interval === interval),
     [interval],
   );
   return (
-    <section>
+    <section id="pricing">
       <div className="container">
-        <h1 className="mx-auto max-w-screen-sm text-center text-5xl font-bold">
-          Simple, transparent pricing
-        </h1>
-        <p className="mx-auto mt-4 max-w-screen-sm text-center text-lg text-muted-foreground">
-          Choose plan that works for you and your team.
-        </p>
+        <div className="mx-auto max-w-screen-md">
+          <h2 className="text-center text-3xl font-bold md:text-5xl">
+            Simple, transparent pricing
+          </h2>
+          <p className="mt-4 text-center font-medium text-muted-foreground md:text-lg">
+            Choose plan that works for you and your team.
+          </p>
+        </div>
 
         <div className="mt-8 flex items-center justify-center gap-2">
           <p className="text-muted-foreground">Billed Monthly</p>

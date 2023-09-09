@@ -1,11 +1,11 @@
 import { APP_NAME } from "@/utils/constants";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 
 const EndCTA = () => {
   return (
-    <section className="my-24 md:my-48">
+    <section>
       <div className="container">
         <div className="mx-auto max-w-screen-md">
           <h2 className="text-center text-3xl font-bold md:text-5xl">

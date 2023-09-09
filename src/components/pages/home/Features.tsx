@@ -32,7 +32,7 @@ const features = [
 const Features = () => {
   const [feature, setFeature] = useState(features[0].id);
   return (
-    <section className="my-24 md:my-48" id="features">
+    <section id="features">
       <div className="container">
         <div className="mx-auto max-w-screen-md">
           <h2 className="text-center text-3xl font-bold md:text-5xl">

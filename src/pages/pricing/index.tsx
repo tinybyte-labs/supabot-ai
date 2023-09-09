@@ -1,4 +1,6 @@
-import PricingPlans from "@/components/PricingPlans";
+import Background from "@/components/Background";
+import PricingFAQ from "@/components/pages/pricing/PricingFAQ";
+import PricingPlans from "@/components/pages/pricing/PricingPlans";
 import MarketingLayout from "@/layouts/MarketingLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { APP_NAME } from "@/utils/constants";
@@ -11,8 +13,11 @@ const PricingPage: NextPageWithLayout = () => {
         <title>{`Pricing - ${APP_NAME}`}</title>
       </Head>
 
-      <main className="my-16 space-y-16">
+      <Background />
+
+      <main className="space-y-48 py-32">
         <PricingPlans />
+        <PricingFAQ />
       </main>
     </>
   );
