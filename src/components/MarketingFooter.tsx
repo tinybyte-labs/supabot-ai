@@ -34,13 +34,13 @@ const MarketingFooter = () => {
                 />
                 <p className="sr-only">Github</p>
               </Link>
-              <Link href="https://instagram.com">
+              {/* <Link href="https://instagram.com">
                 <Instagram
                   size={24}
                   className="text-muted-foreground hover:text-accent-foreground"
                 />
                 <p className="sr-only">Instagram</p>
-              </Link>
+              </Link> */}
             </div>
           </div>
           <div className="col-span-1">
