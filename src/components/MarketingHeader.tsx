@@ -5,31 +5,31 @@ import FullLogo from "./FullLogo";
 import { APP_NAME } from "@/utils/constants";
 import { Button } from "./ui/button";
 import { Menu, X } from "lucide-react";
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import Logo from "./Logo";
 import { useRouter } from "next/router";
 
 const menu = [
   {
-    label: "About",
-    href: "/about",
+    label: "Demo",
+    href: "/home#demo",
   },
   {
     label: "Pricing",
     href: "/pricing",
   },
   {
+    label: "Changelog",
+    href: "/changelog",
+  },
+  {
     label: "Blog",
     href: "/blog",
   },
   {
-    label: "Demo",
-    href: "/demo",
-  },
-  {
-    label: "Docs",
-    href: "/docs",
+    label: "Help",
+    href: "/help",
   },
 ];
 export default function MarketingHeader() {
@@ -60,24 +60,20 @@ export default function MarketingHeader() {
   }, [handleScroll]);
 
   useEffect(() => {
-    if (!showMenu) return;
-    router.events.on("routeChangeStart", closeSidebar);
-    return () => {
-      router.events.off("routeChangeStart", closeSidebar);
-    };
-  }, [closeSidebar, router.events, showMenu]);
+    document.documentElement.classList.toggle("overflow-hidden", showMenu);
+  }, [showMenu]);
 
   return (
     <>
       <header
         className={cn(
-          "fixed left-0 right-0 top-0 z-30 max-md:border-b max-md:bg-background/90 max-md:backdrop-blur-md",
+          "fixed left-0 right-0 top-0 z-30 border-b bg-background transition-all md:border-b-0 md:bg-transparent",
           {
-            "border-b bg-background/90 backdrop-blur-md": scrolled,
+            "md:border-b md:bg-background/90 md:backdrop-blur-md": scrolled,
           },
         )}
       >
-        <div className="container flex h-16 items-center md:h-20">
+        <div className="container flex h-16 items-center">
           <div className="lg:flex-1">
             <Link href="/home" className="mr-6 flex w-fit items-center gap-2">
               <FullLogo className="h-10 w-fit max-lg:hidden" />
@@ -85,22 +81,24 @@ export default function MarketingHeader() {
               <p className="sr-only">{APP_NAME}</p>
             </Link>
           </div>
-          <nav className="flex items-center max-md:hidden">
+          <nav className="flex items-center gap-1 max-md:hidden">
             {menu.map((item) => {
               const isActive = router.asPath.split("?")[0] === item.href;
               return (
-                <Link
+                <Button
+                  asChild
                   key={item.href}
-                  href={item.href}
+                  variant="ghost"
                   className={cn(
-                    "whitespace-nowrap p-4 text-center font-medium text-muted-foreground transition-all hover:text-accent-foreground",
+                    "rounded-full bg-transparent hover:bg-transparent",
                     {
-                      "text-foreground": isActive,
+                      "text-secondary-foreground": isActive,
+                      "text-muted-foreground": !isActive,
                     },
                   )}
                 >
-                  {item.label}
-                </Link>
+                  <Link href={item.href}>{item.label}</Link>
+                </Button>
               );
             })}
           </nav>
@@ -111,26 +109,21 @@ export default function MarketingHeader() {
                 <Skeleton className="h-10 w-[124px] rounded-full" />
               </>
             ) : isSignedIn ? (
-              <Link
-                href="/chatbots"
-                className="flex h-10 items-center justify-center whitespace-nowrap rounded-full bg-primary px-6 text-center text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90"
-              >
-                Dashboard
-              </Link>
+              <Button asChild className="rounded-full px-6">
+                <Link href="/chatbots">Dashboard</Link>
+              </Button>
             ) : (
               <>
-                <Link
-                  href="/signin"
-                  className="flex h-10 items-center justify-center whitespace-nowrap rounded-full bg-transparent px-6 text-center text-sm font-medium text-secondary-foreground transition-all hover:bg-secondary max-lg:hidden"
+                <Button
+                  asChild
+                  variant="ghost"
+                  className="rounded-full px-6 max-lg:hidden"
                 >
-                  Sign In
-                </Link>
-                <Link
-                  href="/register"
-                  className="flex h-10 items-center justify-center whitespace-nowrap rounded-full bg-primary px-6 text-center text-sm font-medium text-primary-foreground transition-all hover:bg-primary/90"
-                >
-                  Get started
-                </Link>
+                  <Link href="/signin">Sign In</Link>
+                </Button>
+                <Button asChild className="rounded-full px-6">
+                  <Link href="/register">Get started</Link>
+                </Button>
               </>
             )}
           </div>
@@ -145,59 +138,59 @@ export default function MarketingHeader() {
           </div>
         </div>
         {showMenu && (
-          <div className="max-h-[calc(100vh-5rem)] overflow-y-auto md:hidden">
-            <div className="container p-4">
-              <div className="flex flex-col gap-2">
-                {!isLoaded ? (
-                  <>
-                    <Skeleton className="h-12 rounded-lg" />
-                    <Skeleton className="h-12 rounded-lg" />
-                  </>
-                ) : isSignedIn ? (
-                  <Link
-                    href="/chatbots"
-                    className="flex h-12 items-center justify-center whitespace-nowrap rounded-lg bg-primary px-6 text-center font-medium text-primary-foreground transition-all hover:bg-primary/90"
+          <div className="flex h-[calc(100vh-4rem)] flex-col overflow-y-auto border-t p-6 md:hidden">
+            <nav className="flex flex-col gap-1">
+              {menu.map((item, i) => {
+                const isActive = router.asPath.split("?")[0] === item.href;
+
+                return (
+                  <Button
+                    asChild
+                    key={item.href}
+                    variant="ghost"
+                    size="lg"
+                    className={cn("justify-start px-4", {
+                      "bg-secondary text-secondary-foreground": isActive,
+                    })}
+                    onClick={closeSidebar}
                   >
-                    Dashboard
-                  </Link>
-                ) : (
-                  <>
-                    <Link
-                      href="/signin"
-                      className="flex h-12 items-center justify-center whitespace-nowrap rounded-lg bg-secondary px-6 text-center font-medium text-secondary-foreground transition-all hover:bg-secondary/90"
-                    >
-                      Sign In
-                    </Link>
-                    <Link
-                      href="/register"
-                      className="flex h-12 items-center justify-center whitespace-nowrap rounded-lg bg-primary px-6 text-center font-medium text-primary-foreground transition-all hover:bg-primary/90"
-                    >
-                      Get started
-                    </Link>
-                  </>
-                )}
-              </div>
+                    <Link href={item.href}>{item.label}</Link>
+                  </Button>
+                );
+              })}
+            </nav>
 
-              <nav className="mt-4 flex flex-col">
-                {menu.map((item, i) => (
-                  <Fragment key={item.href}>
-                    <Link
-                      href={item.href}
-                      className="flex h-14 items-center whitespace-nowrap px-4 font-medium text-muted-foreground transition-colors hover:text-accent-foreground"
-                    >
-                      {item.label}
-                    </Link>
-
-                    {i < menu.length - 1 && <hr className="h-px bg-border" />}
-                  </Fragment>
-                ))}
-              </nav>
+            <div className="mt-12 flex flex-col gap-2">
+              {!isLoaded ? (
+                <>
+                  <Skeleton className="h-12 rounded-lg" />
+                  <Skeleton className="h-12 rounded-lg" />
+                </>
+              ) : isSignedIn ? (
+                <Button asChild size="lg" onClick={closeSidebar}>
+                  <Link href="/chatbots">Dashboard</Link>
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="lg"
+                    onClick={closeSidebar}
+                  >
+                    <Link href="/signin">Sign In</Link>
+                  </Button>
+                  <Button asChild size="lg" onClick={closeSidebar}>
+                    <Link href="/register">Get started</Link>
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         )}
       </header>
 
-      <div className="h-16 md:h-20"></div>
+      <div className="h-16"></div>
     </>
   );
 }

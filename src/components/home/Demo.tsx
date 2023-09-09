@@ -2,8 +2,8 @@ import DemoChatbox from "../DemoChatbox";
 
 const Demo = () => {
   return (
-    <section className="my-24 md:my-48">
-      <div className="container py-16">
+    <section className="my-24 md:my-48" id="demo">
+      <div className="container">
         <div className="mx-auto mb-16 max-w-screen-md">
           <h2 className="text-center text-3xl font-bold md:text-5xl">
             Try Out Our Powerful Chatbot Demo{" "}

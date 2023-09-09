@@ -1,6 +1,7 @@
 import { APP_NAME } from "@/utils/constants";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { Button } from "../ui/button";
 
 const EndCTA = () => {
   return (
@@ -16,13 +17,12 @@ const EndCTA = () => {
           </p>
         </div>
         <div className="mt-16 flex justify-center">
-          <Link
-            href="/register"
-            className="flex h-14 w-full shrink-0 items-center justify-center gap-4 whitespace-nowrap rounded-full bg-primary px-8 font-semibold text-primary-foreground transition-colors hover:bg-primary/90 md:w-fit"
-          >
-            Get Started Now!
-            <ArrowRight size={24} />
-          </Link>
+          <Button asChild className="h-14 rounded-full px-12 text-base">
+            <Link href="/register">
+              Get Started Now!
+              <ArrowRight size={24} className="-mr-2 ml-4" />
+            </Link>
+          </Button>
         </div>
       </div>
     </section>

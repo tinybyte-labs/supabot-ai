@@ -48,23 +48,23 @@ const MarketingFooter = () => {
             <ul className="flex flex-col space-y-2">
               <li>
                 <Link
-                  href="/home#"
+                  href="/home#demo"
                   className="text-muted-foreground hover:text-accent-foreground"
                 >
-                  About
+                  Demo
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/home#"
+                  href="/changelog"
                   className="text-muted-foreground hover:text-accent-foreground"
                 >
-                  Change Log
+                  Changelog
                 </Link>
               </li>
               <li>
                 <Link
-                  href="/home#"
+                  href="/help"
                   className="text-muted-foreground hover:text-accent-foreground"
                 >
                   Help Center
@@ -77,7 +77,7 @@ const MarketingFooter = () => {
             <ul className="flex flex-col space-y-2">
               <li>
                 <Link
-                  href="/home#"
+                  href="/blog"
                   className="text-muted-foreground hover:text-accent-foreground"
                 >
                   Blog
