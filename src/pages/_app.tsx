@@ -60,23 +60,20 @@ function App({ Component, pageProps }: AppPropsWithLayout) {
           <Head>
             <title>{APP_NAME}</title>
           </Head>
-          {process.env.NODE_ENV === "production" && (
-            <Script
-              strategy="lazyOnload"
-              src={`https://www.googletagmanager.com/gtag/js?id=${gtag.MEASUREMENT_ID}`}
-            />
-          )}
-
+          <Script
+            strategy="lazyOnload"
+            src={`https://www.googletagmanager.com/gtag/js?id=${gtag.MEASUREMENT_ID}`}
+          />
           <Script id="google-analytics" strategy="lazyOnload">
             {`
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', '${gtag.MEASUREMENT_ID}', {
-                  page_path: window.location.pathname,
-                  });
-                  console.log("GA SENT");
-                `}
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${gtag.MEASUREMENT_ID}', {
+              page_path: window.location.pathname,
+              });
+              console.log("GA SENT");
+            `}
           </Script>
 
           {getLayout(<Component {...pageProps} />)}
