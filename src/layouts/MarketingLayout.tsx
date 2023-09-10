@@ -13,6 +13,10 @@ const MarketingLayout = ({ children }: { children: ReactNode }) => {
       <MarketingHeader />
       <div className="flex-1">{children}</div>
       <MarketingFooter />
+      <Script
+        strategy="lazyOnload"
+        src="http://localhost:3000/api/widget/js?id=clm7ajyrz0001s5vmpkeopu5h"
+      ></Script>
     </div>
   );
 };

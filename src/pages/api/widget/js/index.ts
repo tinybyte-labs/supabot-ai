@@ -38,10 +38,26 @@ export default async function handler(
     const xm = ${settings.mx ?? 18};
     const ym = ${settings.my ?? 18};
     const p = "${(chatbot.settings as ChatbotSettings)?.position ?? "right"}";
-
+    const style = document.createElement("style");
+    style.id = "sb-style";
+    style.innerHTML = \`
+      .light,
+      :root {
+        --sb-primary: ${settings.primaryBgColor || "#6366F1"};
+        --sb-border: #E4E4E7;
+        --sb-background: #ffffff;
+        --sb-foreground: #09090b;
+      }
+      .dark {
+        --sb-primary: ${settings.primaryBgColor || "#6366F1"};
+        --sb-border: #27272a;
+        --sb-background: #09090b;
+        --sb-foreground: #ffffff;
+      }
+    \`
     const btn = document.createElement("button");
     btn.id = "sb-btn";
-    btn.style.backgroundColor = "${settings.primaryBgColor || "#6366F1"}";
+    btn.style.backgroundColor = "var(--sb-primary)";
     btn.style.position = "fixed";
     btn.style.display = "flex";
     btn.style.alignItems = "center";
@@ -72,14 +88,15 @@ export default async function handler(
     iframe.style.position = "fixed";
     iframe.style.transition = "opacity 0.3s ease, transform 0.3s ease";
     iframe.style.width = "100%";
-    iframe.style.height = "620px";
-    iframe.style.maxWidth = "400px";
-    iframe.style.maxHeight = "80vh";
+    iframe.style.height = "calc(100vh - 8rem)";
+    iframe.style.maxWidth = "420px";
+    iframe.style.maxHeight = "720px";
     iframe.style.borderRadius = "10px";
     iframe.style.boxShadow = "rgba(0, 0, 0, 0.15) 0px 8px 32px";
     iframe.style.zIndex = 100;
-    iframe.style.backgroundColor = "#fff";
-    iframe.style.border = "1px solid #E4E4E7";
+    iframe.style.backgroundColor = "var(--sb-background)";
+    iframe.style.color = "var(--sb-foreground)";
+    iframe.style.border = "1px solid var(--sb-border)";
     iframe.style.boxSizing = "border-box";
     iframe.style.zIndex = 110;
     iframe.style.bottom = \`\${64 + Number(ym) * 2}px\`;
@@ -95,8 +112,9 @@ export default async function handler(
     msgBox.id = "sb-msg-box";
     msgBox.innerText = "Hi there 👋";
     msgBox.style.padding = "12px";
-    msgBox.style.backgroundColor = "#fff";
-    msgBox.style.color = "#000";
+    msgBox.style.backgroundColor = "var(--sb-background)";
+    msgBox.style.color = "var(--sb-foreground)";
+    msgBox.style.border = "1px solid var(--sb-border)";
     msgBox.style.fontWeight = "600";
     msgBox.style.boxShadow = "rgba(0, 0, 0, 0.15) 0px 8px 32px";
     msgBox.style.borderRadius = "6px";
@@ -116,6 +134,7 @@ export default async function handler(
     msgBox.style.fontFamily =
       'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"';
 
+    document.head.append(style);
     document.body.append(btn);
     document.body.append(iframe);
     document.body.append(msgBox);
