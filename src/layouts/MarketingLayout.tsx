@@ -2,6 +2,7 @@ import Background from "@/components/Background";
 import DevWarningBar from "@/components/DevWarningBar";
 import MarketingFooter from "@/components/MarketingFooter";
 import MarketingHeader from "@/components/MarketingHeader";
+import Script from "next/script";
 import { ReactNode } from "react";
 
 const MarketingLayout = ({ children }: { children: ReactNode }) => {

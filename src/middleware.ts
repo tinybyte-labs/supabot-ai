@@ -10,11 +10,9 @@ export default authMiddleware({
     "/help(.*)",
     "/blog(.*)",
     "/widgets(.*)",
-    "/api/avatar.svg",
-    "/api/qstash(.*)",
-    "/api/trpc(.*)",
-    "/api/webhooks(.*)",
+    "/api(.*)",
   ],
+  ignoredRoutes: ["/api/widget(.*)"],
   beforeAuth: (req) => {
     if (req.nextUrl.pathname === "/home") {
       return NextResponse.rewrite(new URL("/", req.url));
