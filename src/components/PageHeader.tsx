@@ -20,7 +20,7 @@ const PageHeader = ({
     <header className={cn("border-b", className)}>
       <div
         className={cn(
-          "container flex min-h-[88px] gap-4 py-6 max-md:flex-col md:items-center",
+          "container flex gap-4 pb-8 pt-16 max-md:flex-col md:items-center",
           containerClassName,
         )}
       >

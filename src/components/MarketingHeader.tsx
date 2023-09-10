@@ -87,7 +87,7 @@ export default function MarketingHeader() {
         </div>
         <nav className="flex items-center gap-1 max-md:hidden">
           {menu.map((item) => {
-            const isActive = router.asPath.split("?")[0] === item.href;
+            const isActive = router.asPath.split("?")[0].startsWith(item.href);
             return (
               <Button
                 asChild
@@ -145,7 +145,9 @@ export default function MarketingHeader() {
         <div className="flex h-[calc(100vh-4rem)] flex-col overflow-y-auto border-t p-6 md:hidden">
           <nav className="flex flex-col gap-1">
             {menu.map((item, i) => {
-              const isActive = router.asPath.split("?")[0] === item.href;
+              const isActive = router.asPath
+                .split("?")[0]
+                .startsWith(item.href);
 
               return (
                 <Button

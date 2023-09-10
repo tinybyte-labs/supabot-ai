@@ -2,9 +2,9 @@ import { APP_NAME } from "@/utils/constants";
 import Link from "next/link";
 
 const DevWarningBar = () => {
-  // if (process.env.NODE_ENV !== "production") {
-  //   return null;
-  // }
+  if (process.env.NODE_ENV !== "production") {
+    return null;
+  }
   return (
     <div className="flex items-center  justify-center bg-muted p-1.5 text-center text-muted-foreground">
       <p className="text-sm text-muted-foreground">

@@ -1,4 +1,3 @@
-import Background from "@/components/Background";
 import PricingFAQ from "@/components/pages/pricing/PricingFAQ";
 import PricingPlans from "@/components/pages/pricing/PricingPlans";
 import MarketingLayout from "@/layouts/MarketingLayout";
@@ -12,8 +11,6 @@ const PricingPage: NextPageWithLayout = () => {
       <Head>
         <title>{`Pricing - ${APP_NAME}`}</title>
       </Head>
-
-      <Background />
 
       <main className="space-y-48 py-32">
         <PricingPlans />

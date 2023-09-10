@@ -1,4 +1,3 @@
-import Background from "@/components/Background";
 import Demo from "@/components/pages/home/Demo";
 import EndCTA from "@/components/pages/home/EndCTA";
 import Features from "@/components/pages/home/Features";
@@ -20,7 +19,6 @@ const HomePage: NextPageWithLayout = () => {
           content={`Transform your web experience with ${APP_NAME}, the future of conversational AI. Craft a personalized chatbot tailored to your website's content. Enhance customer engagement and boost conversions.`}
         />
       </Head>
-      <Background />
       <main className="space-y-48 py-32">
         <Hero />
         <Demo />
