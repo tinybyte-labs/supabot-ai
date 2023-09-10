@@ -15,7 +15,7 @@ const MarketingLayout = ({ children }: { children: ReactNode }) => {
       <MarketingFooter />
       <Script
         strategy="lazyOnload"
-        src="http://localhost:3000/api/widget/js?id=clm7ajyrz0001s5vmpkeopu5h"
+        src={`http://localhost:3000/api/widget/js?id=${process.env.NEXT_PUBLIC_DEMO_CHATBOT_ID}`}
       ></Script>
     </div>
   );
