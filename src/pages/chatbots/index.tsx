@@ -1,4 +1,4 @@
-import PageHeader from "@/components/PageHeader";
+import DashboardPageHeader from "@/components/DashboardPageHeader";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import { NextPageWithLayout } from "@/types/next";
@@ -33,7 +33,7 @@ const Page: NextPageWithLayout = (props) => {
         <title>{`Chatbots - ${APP_NAME}`}</title>
       </Head>
 
-      <PageHeader title="Chatbots">
+      <DashboardPageHeader title="Chatbots">
         <div className="flex items-center gap-4">
           <Button asChild className="whitespace-nowrap">
             <Link href="/chatbots/new">
@@ -42,7 +42,7 @@ const Page: NextPageWithLayout = (props) => {
             </Link>
           </Button>
         </div>
-      </PageHeader>
+      </DashboardPageHeader>
 
       <div className="container mb-32 mt-8 md:mt-16">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

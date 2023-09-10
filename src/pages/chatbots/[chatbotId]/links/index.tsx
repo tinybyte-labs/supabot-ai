@@ -1,4 +1,4 @@
-import PageHeader from "@/components/PageHeader";
+import DashboardPageHeader from "@/components/DashboardPageHeader";
 import AddLinksModal from "@/components/modals/AddLinksModal";
 import { useModal } from "@/components/modals/useModal";
 import { DataTable } from "@/components/tables/DataTable";
@@ -107,7 +107,7 @@ const LinksPage: NextPageWithLayout = () => {
 
   return (
     <>
-      <PageHeader title="Links">
+      <DashboardPageHeader title="Links">
         <div className="flex items-center gap-4">
           {linksQuery.isLoading ? (
             <>
@@ -165,7 +165,7 @@ const LinksPage: NextPageWithLayout = () => {
             </>
           )}
         </div>
-      </PageHeader>
+      </DashboardPageHeader>
       <div className="container mb-32 mt-8 md:mt-16">
         {linksQuery.isLoading ? (
           <div className="flex items-center justify-center rounded-lg border py-32">

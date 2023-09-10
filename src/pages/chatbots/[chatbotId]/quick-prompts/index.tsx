@@ -1,4 +1,4 @@
-import PageHeader from "@/components/PageHeader";
+import DashboardPageHeader from "@/components/DashboardPageHeader";
 import AddQuickPromptModal from "@/components/modals/AddQuickPrompt";
 import UpdateQuickPromptModal from "@/components/modals/UpdateQuickPromptModal";
 import { useModal } from "@/components/modals/useModal";
@@ -163,7 +163,7 @@ const QuickPromptsPage: NextPageWithLayout = () => {
 
   return (
     <>
-      <PageHeader title="Quick Prompts">
+      <DashboardPageHeader title="Quick Prompts">
         <div className="flex items-center gap-4">
           {quickPromptsQuery.isLoading ? (
             <>
@@ -209,7 +209,7 @@ const QuickPromptsPage: NextPageWithLayout = () => {
             </>
           )}
         </div>
-      </PageHeader>
+      </DashboardPageHeader>
 
       <div className="container mb-32 mt-8 md:mt-16">
         {quickPromptsQuery.isLoading ? (

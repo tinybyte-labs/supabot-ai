@@ -1,4 +1,4 @@
-import PageHeader from "@/components/PageHeader";
+import DashboardPageHeader from "@/components/DashboardPageHeader";
 import { DataTable } from "@/components/tables/DataTable";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -112,7 +112,7 @@ const ChatbotUsersPage: NextPageWithLayout = () => {
 
   return (
     <>
-      <PageHeader title="Users" />
+      <DashboardPageHeader title="Users" />
 
       <div className="container mb-32 mt-8 md:mt-16">
         {chatbotUsersQuery.isLoading ? (

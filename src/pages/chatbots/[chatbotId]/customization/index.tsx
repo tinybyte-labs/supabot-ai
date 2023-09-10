@@ -1,5 +1,5 @@
 import ChatboxPreviewer from "@/components/ChatboxPreviewer";
-import PageHeader from "@/components/PageHeader";
+import DashboardPageHeader from "@/components/DashboardPageHeader";
 import { Button, ButtonLoader } from "@/components/ui/button";
 import {
   Form,
@@ -35,7 +35,7 @@ const ChatbotCustomizationPage: NextPageWithLayout = () => {
   }
   return (
     <>
-      <PageHeader title="Customization">
+      <DashboardPageHeader title="Customization">
         <div className="flex items-center gap-4">
           <Button variant="outline" asChild>
             <Link href={`/demo/c/${chatbot?.id}`} target="_blank">
@@ -44,7 +44,7 @@ const ChatbotCustomizationPage: NextPageWithLayout = () => {
             </Link>
           </Button>
         </div>
-      </PageHeader>
+      </DashboardPageHeader>
       <Editor chatbot={chatbot} />
     </>
   );

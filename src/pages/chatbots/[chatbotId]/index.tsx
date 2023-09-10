@@ -1,4 +1,4 @@
-import PageHeader from "@/components/PageHeader";
+import DashboardPageHeader from "@/components/DashboardPageHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ChatbotLayout from "@/layouts/ChatbotLayout";
@@ -43,7 +43,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
 
   return (
     <>
-      <PageHeader title="Overview">
+      <DashboardPageHeader title="Overview">
         <div className="flex items-center gap-4">
           <Button variant="outline" asChild>
             <Link href={`/demo/c/${chatbotId}`} target="_blank">
@@ -52,7 +52,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
             </Link>
           </Button>
         </div>
-      </PageHeader>
+      </DashboardPageHeader>
       <div className="container mb-32 mt-8 md:mt-16">
         <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
           <Card>

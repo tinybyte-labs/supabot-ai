@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import ToggleSidebarButton from "./ToggleSidebarButton";
 import { cn } from "@/lib/utils";
 
-export interface PageHeaderProps {
+export interface DashboardPageHeaderProps {
   title: string;
   subtitle?: string;
   children?: ReactNode;
@@ -10,13 +10,13 @@ export interface PageHeaderProps {
   className?: string;
 }
 
-const PageHeader = ({
+const DashboardPageHeader = ({
   title,
   subtitle,
   children,
   containerClassName,
   className,
-}: PageHeaderProps) => {
+}: DashboardPageHeaderProps) => {
   return (
     <header className={cn("border-b", className)}>
       <div
@@ -38,4 +38,4 @@ const PageHeader = ({
   );
 };
 
-export default PageHeader;
+export default DashboardPageHeader;

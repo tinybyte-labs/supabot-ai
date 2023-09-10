@@ -1,4 +1,4 @@
-import PageHeader from "@/components/PageHeader";
+import DashboardPageHeader from "@/components/DashboardPageHeader";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { APP_NAME } from "@/utils/constants";
@@ -11,7 +11,7 @@ const Page: NextPageWithLayout = () => {
         <title>{`Plan & Billing - ${APP_NAME}`}</title>
       </Head>
 
-      <PageHeader title="Plan & Billing" />
+      <DashboardPageHeader title="Plan & Billing" />
       <div className="container mb-32 mt-8 md:mt-16"></div>
     </>
   );

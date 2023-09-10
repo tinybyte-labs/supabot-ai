@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import PageHeader from "@/components/PageHeader";
+import DashboardPageHeader from "@/components/DashboardPageHeader";
 import { useRouter } from "next/router";
 import ChatbotLayout from "./ChatbotLayout";
 import { Button } from "@/components/ui/button";
@@ -26,7 +26,7 @@ const ChatbotSettingsLayout = ({ children }: { children: ReactNode }) => {
 
   return (
     <ChatbotLayout>
-      <PageHeader title="Settings" />
+      <DashboardPageHeader title="Settings" />
       <div className="container mb-32 mt-8 md:mt-16">
         <div className="flex gap-8 max-xl:flex-col xl:gap-12">
           <nav className="flex w-64 gap-1 xl:flex-col">
