@@ -1,4 +1,4 @@
-import DashboardPageHeader from "@/components/DashboardPageHeader";
+import PageHeader from "@/components/PageHeader";
 import MarketingLayout from "@/layouts/MarketingLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { APP_NAME } from "@/utils/constants";
@@ -11,7 +11,7 @@ const HelpPage: NextPageWithLayout = () => {
         <title>{`Help - ${APP_NAME}`}</title>
       </Head>
       <main>
-        <DashboardPageHeader title="Help" subtitle="Comming soon" />
+        <PageHeader title="Help" subtitle="Comming soon" />
       </main>
     </div>
   );
