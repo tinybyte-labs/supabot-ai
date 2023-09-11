@@ -1,8 +1,17 @@
 import DashboardPageHeader from "@/components/DashboardPageHeader";
+import QuickInstallationCard from "@/components/QuickInstallationCard";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import ChatbotLayout from "@/layouts/ChatbotLayout";
 import { NextPageWithLayout } from "@/types/next";
+import { BASE_DOMAIN } from "@/utils/constants";
 import { trpc } from "@/utils/trpc";
 import {
   ArrowRight,
@@ -53,7 +62,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
           </Button>
         </div>
       </DashboardPageHeader>
-      <div className="container mb-32 mt-8 md:mt-16">
+      <div className="container mb-32 mt-8 space-y-16 md:mt-16">
         <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -161,6 +170,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
             </CardContent>
           </Card>
         </div>
+        <QuickInstallationCard chatbotId={chatbotId} />
       </div>
     </>
   );
