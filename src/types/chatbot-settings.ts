@@ -3,7 +3,7 @@ export interface ChatbotSettings {
   primaryBgColor?: string | null;
   welcomeMessage?: string | null;
   placeholderText?: string | null;
-  position?: string | null;
+  position?: "left" | "right" | null;
   mx?: number | null;
   my?: number | null;
 }

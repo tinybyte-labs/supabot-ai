@@ -19,6 +19,7 @@ export const updateChatbotValidator = z.object({
     placeholderText: z.string().max(80).optional(),
     primaryBgColor: z.string().max(32).optional(),
     primaryFgColor: z.string().max(32).optional(),
+    position: z.enum(["left", "right"]).default("right").optional(),
   }),
 });
 

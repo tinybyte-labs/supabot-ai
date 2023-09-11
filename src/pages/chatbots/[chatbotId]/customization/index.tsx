@@ -11,10 +11,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import ChatbotLayout from "@/layouts/ChatbotLayout";
 import { useChatbot } from "@/providers/ChatbotProvider";
+import { ChatbotSettings } from "@/types/chatbot-settings";
 import { NextPageWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
 import { updateChatbotValidator } from "@/utils/validators";
@@ -24,6 +27,15 @@ import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { SketchPicker } from "react-color";
+import {
+  Popover,
+  PopoverContent,
+  PopoverPortal,
+  PopoverTrigger,
+} from "@radix-ui/react-popover";
+import ColorPicker from "@/components/ColorPicker";
+import Image from "next/image";
 
 const ChatbotCustomizationPage: NextPageWithLayout = () => {
   const { chatbot, isLoaded } = useChatbot();
@@ -57,6 +69,7 @@ ChatbotCustomizationPage.getLayout = (page) => (
 export default ChatbotCustomizationPage;
 
 const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
+  const defaultSettings = chatbot.settings as ChatbotSettings;
   const form = useForm<z.infer<typeof updateChatbotValidator>>({
     resolver: zodResolver(updateChatbotValidator),
     defaultValues: {
@@ -66,6 +79,7 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
         welcomeMessage: (chatbot.settings as any)?.welcomeMessage || "",
         primaryBgColor: (chatbot.settings as any)?.primaryBgColor || "",
         primaryFgColor: (chatbot.settings as any)?.primaryFgColor || "",
+        position: defaultSettings.position || "right",
       },
     },
   });
@@ -130,11 +144,28 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
                 name="settings.primaryBgColor"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Primary Background Color</FormLabel>
+                    <FormLabel>Primary Color</FormLabel>
                     <FormControl>
-                      <Input placeholder="#2563EB" {...field} />
+                      <div className="relative">
+                        <Input placeholder="#2563EB" {...field} />
+                        <Popover>
+                          <PopoverTrigger className="absolute right-2 top-1/2 -translate-y-1/2">
+                            <div
+                              className="h-6 w-10 rounded-sm border"
+                              style={{ backgroundColor: field.value }}
+                            ></div>
+                          </PopoverTrigger>
+                          <PopoverPortal>
+                            <PopoverContent sideOffset={8}>
+                              <ColorPicker
+                                value={field.value}
+                                onChange={field.onChange}
+                              />
+                            </PopoverContent>
+                          </PopoverPortal>
+                        </Popover>
+                      </div>
                     </FormControl>
-                    <FormDescription>Max 32 characters.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -145,11 +176,53 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
                 name="settings.primaryFgColor"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Primary Foreground Color</FormLabel>
+                    <FormLabel>Primary Text Color</FormLabel>
                     <FormControl>
-                      <Input placeholder="#FFFFFF" {...field} />
+                      <div className="relative">
+                        <Input placeholder="#FFFFFF" {...field} />
+                        <Popover>
+                          <PopoverTrigger className="absolute right-2 top-1/2 -translate-y-1/2">
+                            <div
+                              className="h-6 w-10 rounded-sm border"
+                              style={{ backgroundColor: field.value }}
+                            ></div>
+                          </PopoverTrigger>
+                          <PopoverPortal>
+                            <PopoverContent sideOffset={8}>
+                              <ColorPicker
+                                value={field.value}
+                                onChange={field.onChange}
+                              />
+                            </PopoverContent>
+                          </PopoverPortal>
+                        </Popover>
+                      </div>
                     </FormControl>
-                    <FormDescription>Max 32 characters.</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="settings.position"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Widget Position</FormLabel>
+                    <FormControl>
+                      <Tabs
+                        value={field.value}
+                        onValueChange={(value) => field.onChange(value)}
+                      >
+                        <TabsList>
+                          <TabsTrigger value="left">Left</TabsTrigger>
+                          <TabsTrigger value="right">Right</TabsTrigger>
+                        </TabsList>
+                      </Tabs>
+                    </FormControl>
+                    <FormDescription>
+                      Change widget position on the screen.
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -163,11 +236,34 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
           </Form>
         </div>
 
-        <div className="flex items-center justify-center rounded-2xl bg-secondary p-10 max-xl:hidden xl:flex-1">
+        <div
+          className="flex flex-col rounded-2xl bg-secondary p-10 max-xl:hidden xl:flex-1"
+          style={{
+            alignItems:
+              form.watch().settings.position === "left"
+                ? "flex-start"
+                : "flex-end",
+          }}
+        >
           <ChatboxPreviewer
             title={chatbot.name}
             settings={form.watch().settings}
           />
+          <div
+            className="mt-4 flex h-16 w-16 items-center justify-center rounded-full"
+            style={{
+              backgroundColor: form.watch().settings.primaryBgColor,
+              color: form.watch().settings.primaryFgColor,
+            }}
+          >
+            <Image
+              src="/x-icon.svg"
+              alt="Chatbot Icon"
+              width={32}
+              height={32}
+              className="h-8 w-8 object-contain"
+            />
+          </div>
         </div>
       </div>
     </div>
