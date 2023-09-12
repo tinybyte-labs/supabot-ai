@@ -39,7 +39,7 @@ model Organization {
   createdBy            String?  @map("created_by")
   plan                 String   @default("free")
   subscriptionId       String?  @unique @map("subscription_id")
-  billingCycleStartDay Int?     @map("billing_cycle_start_day")
+  billingCycleStartDay Int      @default(1) @map("billing_cycle_start_day")
 
   members  OrganizationMembership[]
   chatbots Chatbot[]

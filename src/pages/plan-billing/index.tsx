@@ -7,7 +7,7 @@ import { NextPageWithLayout } from "@/types/next";
 import { Plan } from "@/types/plan";
 import { APP_NAME } from "@/utils/constants";
 import { trpc } from "@/utils/trpc";
-import { Bot, FileText, Link2, Users } from "lucide-react";
+import { Bot, FileText, Link2, Users, Infinity } from "lucide-react";
 import Head from "next/head";
 
 const Page: NextPageWithLayout = () => {
@@ -54,27 +54,72 @@ const Usage = ({ plan }: { plan: Plan }) => {
         <StatCard
           title="Total Team Members"
           icon={<Users size={20} />}
-          value={`${usage.data.teamMembers} / ${plan.limits.teamMembers}`}
+          value={
+            <>
+              {usage.data.teamMembers.toLocaleString()} /{" "}
+              {plan.limits.teamMembers === "unlimited" ? (
+                <Infinity className="inline" size={32} />
+              ) : (
+                <>{plan.limits.teamMembers.toLocaleString()}</>
+              )}
+            </>
+          }
         />
         <StatCard
           title="Total Chatbots"
           icon={<Bot size={20} />}
-          value={`${usage.data.chatbots} / ${plan.limits.chatbots}`}
+          value={
+            <>
+              {usage.data.chatbots.toLocaleString()} /{" "}
+              {plan.limits.chatbots === "unlimited" ? (
+                <Infinity className="inline" size={32} />
+              ) : (
+                <>{plan.limits.chatbots.toLocaleString()}</>
+              )}
+            </>
+          }
         />
         <StatCard
           title="Total Messages Per Month"
           icon={<Bot size={20} />}
-          value={`${usage.data.messagesPerMonth} / ${plan.limits.messagesPerMonth}`}
+          value={
+            <>
+              {usage.data.messagesPerMonth.toLocaleString()} /{" "}
+              {plan.limits.messagesPerMonth === "unlimited" ? (
+                <Infinity className="inline" size={32} />
+              ) : (
+                <>{plan.limits.messagesPerMonth.toLocaleString()}</>
+              )}
+            </>
+          }
         />
         <StatCard
           title="Total Links"
           icon={<Link2 size={20} />}
-          value={`${usage.data.links} / ${plan.limits.links}`}
+          value={
+            <>
+              {usage.data.links.toLocaleString()} /{" "}
+              {plan.limits.links === "unlimited" ? (
+                <Infinity className="inline" size={32} />
+              ) : (
+                <>{plan.limits.links.toLocaleString()}</>
+              )}
+            </>
+          }
         />
         <StatCard
           title="Total Documents"
           icon={<FileText size={20} />}
-          value={`${usage.data.documents} / ${plan.limits.documents}`}
+          value={
+            <>
+              {usage.data.documents.toLocaleString()} /{" "}
+              {plan.limits.documents === "unlimited" ? (
+                <Infinity className="inline" size={32} />
+              ) : (
+                <>{plan.limits.documents.toLocaleString()}</>
+              )}
+            </>
+          }
         />
       </div>
     </section>

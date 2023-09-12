@@ -6,8 +6,8 @@ const StatCard = ({
   value,
   icon,
 }: {
-  title: string;
-  value: string;
+  title: ReactNode;
+  value: ReactNode;
   icon: ReactNode;
 }) => {
   return (
