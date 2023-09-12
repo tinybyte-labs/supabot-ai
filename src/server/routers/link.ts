@@ -3,6 +3,7 @@ import qstash from "../qstash";
 import { trainLink } from "../training";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 import * as z from "zod";
+import { plans } from "../plans";
 
 const trainLinks = async (linkIds: string[]) => {
   if (process.env.NODE_ENV === "development") {
@@ -44,6 +45,27 @@ export const linkRouter = router({
       }),
     )
     .mutation(async ({ ctx, input: { chatbotId, url } }) => {
+      const orgId = ctx.auth.orgId;
+      if (!orgId) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "No organization selected",
+        });
+      }
+      const org = await ctx.db.organization.findUnique({
+        where: { id: orgId },
+        select: {
+          plan: true,
+          billingCycleStartDay: true,
+        },
+      });
+      if (!org) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Organization not found!",
+        });
+      }
+
       const chatbot = await ctx.db.chatbot.findFirst({
         where: { id: chatbotId, organizationId: ctx.auth.orgId },
         select: { id: true },
@@ -54,6 +76,29 @@ export const linkRouter = router({
           message: "Chatbot not found!",
         });
       }
+
+      const plan = plans[org.plan];
+      if (!plan) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Invalid plan type",
+        });
+      }
+
+      if (plan.limits.links !== "unlimited") {
+        const links = await ctx.db.link.count({
+          where: {
+            chatbot: { organizationId: orgId },
+          },
+        });
+        if (links >= plan.limits.links) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Link creation limit reached",
+          });
+        }
+      }
+
       const link = await ctx.db.link.create({
         data: { url: url, chatbotId },
         select: { id: true },
@@ -69,6 +114,26 @@ export const linkRouter = router({
       }),
     )
     .mutation(async ({ ctx, input: { chatbotId, urls } }) => {
+      const orgId = ctx.auth.orgId;
+      if (!orgId) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "No organization selected",
+        });
+      }
+      const org = await ctx.db.organization.findUnique({
+        where: { id: orgId },
+        select: {
+          plan: true,
+          billingCycleStartDay: true,
+        },
+      });
+      if (!org) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Organization not found!",
+        });
+      }
       const chatbot = await ctx.db.chatbot.findFirst({
         where: { id: chatbotId, organizationId: ctx.auth.orgId },
         select: { id: true },
@@ -79,6 +144,29 @@ export const linkRouter = router({
           message: "Chatbot not found!",
         });
       }
+
+      const plan = plans[org.plan];
+      if (!plan) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Invalid plan type",
+        });
+      }
+
+      if (plan.limits.links !== "unlimited") {
+        const links = await ctx.db.link.count({
+          where: {
+            chatbot: { organizationId: orgId },
+          },
+        });
+        if (links + urls.length > plan.limits.links) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Link creation limit reached",
+          });
+        }
+      }
+
       const links = await Promise.allSettled(
         urls.map((url) =>
           ctx.db.link.create({

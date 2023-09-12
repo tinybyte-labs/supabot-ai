@@ -34,14 +34,15 @@ export const messageRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.auth.orgId) {
+      const orgId = ctx.auth.orgId;
+      if (!orgId) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "No organization selected",
         });
       }
       const org = await ctx.db.organization.findUnique({
-        where: { id: ctx.auth.orgId },
+        where: { id: orgId },
         select: {
           plan: true,
           billingCycleStartDay: true,
@@ -84,10 +85,10 @@ export const messageRouter = router({
         );
         const last30DaysMessageCount = await ctx.db.message.count({
           where: {
-            conversation: { chatbotId: input.chatbotId },
+            conversation: { chatbot: { organizationId: orgId } },
             createdAt: {
-              gte: lastDay,
-              lte: firstDay,
+              gte: firstDay,
+              lte: lastDay,
             },
           },
         });

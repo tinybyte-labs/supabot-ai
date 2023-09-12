@@ -6,6 +6,7 @@ import { conversationRouter } from "./conversation";
 import { linkRouter } from "./link";
 import { messageRouter } from "./message";
 import { quickPromptRouter } from "./quickPrompt";
+import { subscriptionRouter } from "./subscription";
 import { utilsRouter } from "./utils";
 
 export const appRouter = router({
@@ -17,6 +18,7 @@ export const appRouter = router({
   chatbotUser: chatbotUserRouter,
   message: messageRouter,
   clerk: clerkRouter,
+  subscription: subscriptionRouter,
 });
 
 export type AppRouter = typeof appRouter;

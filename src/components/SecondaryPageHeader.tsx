@@ -1,19 +1,12 @@
-import { ReactNode } from "react";
-
 export interface SecondaryPageHeaderProps {
   title: string;
   subtitle?: string;
-  children?: ReactNode;
 }
 
-const SecondaryPageHeader = ({
-  title,
-  subtitle,
-  children,
-}: SecondaryPageHeaderProps) => {
+const SecondaryPageHeader = ({ title, subtitle }: SecondaryPageHeaderProps) => {
   return (
     <div>
-      <h1 className="text-lg font-medium">{title}</h1>
+      <h1 className="text-xl font-semibold">{title}</h1>
       {!!subtitle && (
         <p className="text-sm text-muted-foreground">{subtitle}</p>
       )}

@@ -1,25 +1,14 @@
-export type Plan = {
-  limits: {
-    chatbots: number | "unlimited";
-    messagesPerMonth: number | "unlimited";
-    webpages: number | "unlimited";
-    documents: number | "unlimited";
-    teamMembers: number | "unlimited";
-    advancedCustomization: boolean;
-    removeWatermark: boolean;
-    apiAccess: boolean;
-    priority_support: boolean;
-  };
-};
+import { Plan } from "@/types/plan";
 
 export const plans: Record<string, Plan> = {
   free: {
+    name: "Free",
     limits: {
       chatbots: 0,
       messagesPerMonth: 0,
       documents: 0,
-      webpages: 0,
-      teamMembers: 0,
+      links: 0,
+      teamMembers: 1,
       apiAccess: false,
       removeWatermark: false,
       advancedCustomization: false,
@@ -27,9 +16,10 @@ export const plans: Record<string, Plan> = {
     },
   },
   starter: {
+    name: "Starter",
     limits: {
       chatbots: 1,
-      webpages: 40,
+      links: 40,
       documents: 20,
       messagesPerMonth: 3_000,
       teamMembers: 2,
@@ -40,9 +30,10 @@ export const plans: Record<string, Plan> = {
     },
   },
   team: {
+    name: "Team",
     limits: {
       chatbots: 2,
-      webpages: 120,
+      links: 120,
       documents: 100,
       messagesPerMonth: 10_000,
       teamMembers: 6,
@@ -53,9 +44,10 @@ export const plans: Record<string, Plan> = {
     },
   },
   business: {
+    name: "Business",
     limits: {
       chatbots: 6,
-      webpages: 600,
+      links: 600,
       documents: 300,
       messagesPerMonth: 40_000,
       teamMembers: "unlimited",
@@ -66,9 +58,10 @@ export const plans: Record<string, Plan> = {
     },
   },
   enterprise: {
+    name: "Enterprise",
     limits: {
       chatbots: "unlimited",
-      webpages: "unlimited",
+      links: "unlimited",
       documents: "unlimited",
       messagesPerMonth: "unlimited",
       teamMembers: "unlimited",

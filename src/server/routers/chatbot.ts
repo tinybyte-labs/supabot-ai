@@ -79,14 +79,18 @@ export const chatbotRouter = router({
   create: protectedProcedure
     .input(createChatbotValidator)
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.auth.orgId) {
+      const orgId = ctx.auth.orgId;
+      if (!orgId) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "No organization selected",
         });
       }
       const org = await ctx.db.organization.findUnique({
-        where: { id: ctx.auth.orgId },
+        where: { id: orgId },
+        select: {
+          plan: true,
+        },
       });
       if (!org) {
         throw new TRPCError({
@@ -103,7 +107,7 @@ export const chatbotRouter = router({
       }
       if (plan.limits.chatbots !== "unlimited") {
         const chatbotsCount = await ctx.db.chatbot.count({
-          where: { organizationId: org.id },
+          where: { organizationId: orgId },
         });
         if (chatbotsCount >= plan.limits.chatbots) {
           throw new TRPCError({
@@ -112,11 +116,10 @@ export const chatbotRouter = router({
           });
         }
       }
-
       return ctx.db.chatbot.create({
         data: {
           name: input.name,
-          organizationId: ctx.auth.orgId,
+          organizationId: orgId,
           metadata: { createdBy: ctx.auth.userId },
         },
       });
