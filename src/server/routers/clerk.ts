@@ -57,6 +57,7 @@ export const clerkRouter = router({
           logoUrl: input.logo_url,
           createdBy: input.created_by,
           publicMetadata: input.public_metadata,
+          billingCycleStartDay: new Date().getDate(),
         },
       }),
     ),

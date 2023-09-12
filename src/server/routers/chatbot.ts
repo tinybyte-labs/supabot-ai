@@ -5,6 +5,7 @@ import {
 } from "@/utils/validators";
 import { TRPCError } from "@trpc/server";
 import * as z from "zod";
+import { plans } from "../plans";
 
 export const chatbotRouter = router({
   list: protectedProcedure.query(async ({ ctx }) => {
@@ -84,6 +85,34 @@ export const chatbotRouter = router({
           message: "No organization selected",
         });
       }
+      const org = await ctx.db.organization.findUnique({
+        where: { id: ctx.auth.orgId },
+      });
+      if (!org) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Organization not found!",
+        });
+      }
+      const plan = plans[org.plan];
+      if (!plan) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Invalid plan type",
+        });
+      }
+      if (plan.limits.chatbots !== "unlimited") {
+        const chatbotsCount = await ctx.db.chatbot.count({
+          where: { organizationId: org.id },
+        });
+        if (chatbotsCount >= plan.limits.chatbots) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Chatbot creation limit riched",
+          });
+        }
+      }
+
       return ctx.db.chatbot.create({
         data: {
           name: input.name,

@@ -6,6 +6,8 @@ import { getDocuments } from "../vector-store";
 import { Chatbot } from "@prisma/client";
 import GPT3Tokenizer from "gpt3-tokenizer";
 import { TRPCError } from "@trpc/server";
+import { getFirstAndLastDay } from "@/utils/getStartAndLastDate";
+import { plans } from "../plans";
 
 export const messageRouter = router({
   list: publicProcedure
@@ -32,15 +34,69 @@ export const messageRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      if (!ctx.auth.orgId) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "No organization selected",
+        });
+      }
+      const org = await ctx.db.organization.findUnique({
+        where: { id: ctx.auth.orgId },
+        select: {
+          plan: true,
+          billingCycleStartDay: true,
+        },
+      });
+      if (!org) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Organization not found!",
+        });
+      }
+      if (org.billingCycleStartDay === null) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Billing cycle start day not found. Please subscribe",
+        });
+      }
       const chatbot = await ctx.db.chatbot.findUnique({
         where: { id: input.chatbotId },
+        select: {
+          name: true,
+        },
       });
-
       if (!chatbot) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Chatbot not found!",
         });
+      }
+      const plan = plans[org.plan];
+      if (!plan) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Invalid plan type",
+        });
+      }
+      if (plan.limits.messagesPerMonth !== "unlimited") {
+        const { firstDay, lastDay } = getFirstAndLastDay(
+          org.billingCycleStartDay,
+        );
+        const last30DaysMessageCount = await ctx.db.message.count({
+          where: {
+            conversation: { chatbotId: input.chatbotId },
+            createdAt: {
+              gte: lastDay,
+              lte: firstDay,
+            },
+          },
+        });
+        if (last30DaysMessageCount >= plan.limits.messagesPerMonth) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Messages per month limit reached",
+          });
+        }
       }
 
       const userMessage = await ctx.db.message.create({
@@ -54,7 +110,8 @@ export const messageRouter = router({
 
       const { message, sources } = await generateAiResponse({
         message: input.message,
-        chatbot,
+        chatbotId: input.chatbotId,
+        chatbotName: chatbot.name,
       });
 
       const botMessage = await ctx.db.message.create({
@@ -119,22 +176,24 @@ function getContextTextFromChunks(
 
 async function generateAiResponse({
   message,
-  chatbot,
+  chatbotId,
+  chatbotName,
 }: {
-  chatbot: Chatbot;
+  chatbotId: string;
+  chatbotName: string;
   message: string;
 }) {
   const sanitizedQuery = message.trim();
   const moderatedQuery = await moderateText(sanitizedQuery);
   const embedding = await embedText(moderatedQuery);
-  const docs = await getDocuments(chatbot.id, embedding);
+  const docs = await getDocuments(chatbotId, embedding);
   const { contextText, sources } = getContextTextFromChunks(
     docs.map((doc) => ({ content: doc.content, source: doc.source })),
   );
 
   const systemContent = SYSTEM_DEFAULT_TEMPLATE.replaceAll(
     "{{CHATBOT_NAME}}",
-    chatbot.name,
+    chatbotName,
   ).replaceAll("{{CONTEXT}}", contextText);
 
   const response = await openai.createChatCompletion({

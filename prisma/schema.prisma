@@ -28,15 +28,18 @@ model User {
 }
 
 model Organization {
-  id             String   @id
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
-  name           String?
-  slug           String   @unique
-  imageUrl       String?  @map("image_url")
-  logoUrl        String?  @map("logo_url")
-  publicMetadata Json?    @map("public_metadata")
-  createdBy      String?  @map("created_by")
+  id                   String   @id
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+  name                 String?
+  slug                 String   @unique
+  imageUrl             String?  @map("image_url")
+  logoUrl              String?  @map("logo_url")
+  publicMetadata       Json?    @map("public_metadata")
+  createdBy            String?  @map("created_by")
+  plan                 String   @default("free")
+  subscriptionId       String?  @unique @map("subscription_id")
+  billingCycleStartDay Int?     @map("billing_cycle_start_day")
 
   members  OrganizationMembership[]
   chatbots Chatbot[]
