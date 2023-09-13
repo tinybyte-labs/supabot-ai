@@ -15,6 +15,7 @@ import {
   FileText,
   Palette,
   Settings,
+  MessageSquareIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -81,7 +82,7 @@ const SideBar = () => {
         {
           href: `/chatbots/${chatbotId}/quick-prompts`,
           label: "Quick Prompts",
-          icon: <FileText size={20} />,
+          icon: <MessageSquareIcon size={20} />,
         },
       ],
     },

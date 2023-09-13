@@ -1,17 +1,9 @@
 import DashboardPageHeader from "@/components/DashboardPageHeader";
 import QuickInstallationCard from "@/components/QuickInstallationCard";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ChatbotLayout from "@/layouts/ChatbotLayout";
 import { NextPageWithLayout } from "@/types/next";
-import { BASE_DOMAIN } from "@/utils/constants";
 import { trpc } from "@/utils/trpc";
 import {
   ArrowRight,
