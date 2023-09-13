@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
+import { IpInfo, getIpInfo } from "../ipinfo";
 
 export const conversationRouter = router({
   getById: publicProcedure
@@ -37,12 +38,19 @@ export const conversationRouter = router({
         url: z.string().url().optional(),
       }),
     )
-    .mutation(({ ctx, input }) => {
+    .mutation(async ({ ctx, input }) => {
+      let ipInfo: IpInfo | null = null;
+      if (ctx.clientIp) {
+        ipInfo = await getIpInfo(ctx.clientIp);
+        console.log({ ipInfo });
+      }
       return ctx.db.conversation.create({
         data: {
           chatbotId: input.chatbotId,
           ...(input.userId ? { userId: input.userId } : {}),
           ...(input.url ? { url: input.url } : {}),
+          ...(ipInfo ? { ipInfo } : {}),
+          ...(ctx.clientIp ? { ipAddress: ctx.clientIp } : {}),
         },
       });
     }),

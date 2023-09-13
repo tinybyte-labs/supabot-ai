@@ -180,11 +180,15 @@ model Conversation {
   id        String             @id @default(cuid())
   createdAt DateTime           @default(now()) @map("created_at")
   updatedAt DateTime           @updatedAt @map("updated_at")
+  closedAt  DateTime?          @map("closed_at")
   title     String?
   status    ConversationStatus @default(OPEN)
-  url       String?
   chatbotId String             @map("chatbot_id")
   userId    String?            @map("user_id")
+  url       String?
+  // fileds from ipinfo.io
+  ipAddress String?            @map("ip_address")
+  ipInfo    Json?              @map("ip_info")
 
   chatbot  Chatbot      @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
   user     ChatbotUser? @relation(fields: [userId], references: [id], onDelete: Cascade)
