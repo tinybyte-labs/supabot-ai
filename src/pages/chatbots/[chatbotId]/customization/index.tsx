@@ -264,7 +264,7 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
           className="flex flex-col rounded-2xl bg-secondary p-10 max-xl:hidden xl:flex-1"
           style={{
             alignItems:
-              form.watch().settings.position === "left"
+              form.watch().settings?.position === "left"
                 ? "flex-start"
                 : "flex-end",
           }}
@@ -276,8 +276,8 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
           <div
             className="mt-4 flex h-16 w-16 items-center justify-center rounded-full"
             style={{
-              backgroundColor: form.watch().settings.primaryColor,
-              color: form.watch().settings.primaryForegroundColor,
+              backgroundColor: form.watch().settings?.primaryColor,
+              color: form.watch().settings?.primaryForegroundColor,
             }}
           >
             <Image
