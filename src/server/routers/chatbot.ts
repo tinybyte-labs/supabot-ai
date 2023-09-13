@@ -5,7 +5,7 @@ import {
 } from "@/utils/validators";
 import { TRPCError } from "@trpc/server";
 import * as z from "zod";
-import { plans } from "../plans";
+import { plans } from "@/data/plans";
 
 export const chatbotRouter = router({
   list: protectedProcedure.query(async ({ ctx }) => {

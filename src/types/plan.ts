@@ -9,6 +9,6 @@ export type Plan = {
     advancedCustomization: boolean;
     removeWatermark: boolean;
     apiAccess: boolean;
-    priority_support: boolean;
+    prioritySupport: boolean;
   };
 };

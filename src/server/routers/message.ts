@@ -7,7 +7,7 @@ import { Chatbot } from "@prisma/client";
 import GPT3Tokenizer from "gpt3-tokenizer";
 import { TRPCError } from "@trpc/server";
 import { getFirstAndLastDay } from "@/utils/getStartAndLastDate";
-import { plans } from "../plans";
+import { plans } from "@/data/plans";
 
 export const messageRouter = router({
   list: publicProcedure

@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { protectedProcedure, router } from "../trpc";
-import { plans } from "../plans";
+import { plans } from "@/data/plans";
 import { getFirstAndLastDay } from "@/utils/getStartAndLastDate";
 
 export const subscriptionRouter = router({

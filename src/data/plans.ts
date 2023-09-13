@@ -12,7 +12,7 @@ export const plans: Record<string, Plan> = {
       apiAccess: false,
       removeWatermark: false,
       advancedCustomization: false,
-      priority_support: false,
+      prioritySupport: false,
     },
   },
   starter: {
@@ -26,7 +26,7 @@ export const plans: Record<string, Plan> = {
       apiAccess: false,
       removeWatermark: false,
       advancedCustomization: false,
-      priority_support: false,
+      prioritySupport: false,
     },
   },
   team: {
@@ -40,7 +40,7 @@ export const plans: Record<string, Plan> = {
       apiAccess: false,
       removeWatermark: false,
       advancedCustomization: false,
-      priority_support: false,
+      prioritySupport: false,
     },
   },
   business: {
@@ -54,7 +54,7 @@ export const plans: Record<string, Plan> = {
       apiAccess: true,
       removeWatermark: true,
       advancedCustomization: true,
-      priority_support: true,
+      prioritySupport: true,
     },
   },
   enterprise: {
@@ -68,7 +68,7 @@ export const plans: Record<string, Plan> = {
       apiAccess: true,
       removeWatermark: true,
       advancedCustomization: true,
-      priority_support: true,
+      prioritySupport: true,
     },
   },
 };
