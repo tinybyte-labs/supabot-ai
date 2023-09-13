@@ -11,23 +11,20 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import ChatbotLayout from "@/layouts/ChatbotLayout";
 import { useChatbot } from "@/providers/ChatbotProvider";
-import { ChatbotSettings } from "@/types/chatbot-settings";
 import { NextPageWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
-import { updateChatbotValidator } from "@/utils/validators";
+import { ChatbotSettings, updateChatbotValidator } from "@/utils/validators";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Chatbot } from "@prisma/client";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { SketchPicker } from "react-color";
 import {
   Popover,
   PopoverContent,
@@ -36,11 +33,16 @@ import {
 } from "@radix-ui/react-popover";
 import ColorPicker from "@/components/ColorPicker";
 import Image from "next/image";
+import { defaultChatbotSettings } from "@/data/defaultChatbotSettings";
 
 const ChatbotCustomizationPage: NextPageWithLayout = () => {
   const { chatbot, isLoaded } = useChatbot();
   if (!isLoaded) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center">
+        <Loader2 size={24} className="animate-spin" />
+      </div>
+    );
   }
   if (!chatbot) {
     return null;
@@ -69,18 +71,12 @@ ChatbotCustomizationPage.getLayout = (page) => (
 export default ChatbotCustomizationPage;
 
 const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
-  const defaultSettings = chatbot.settings as ChatbotSettings;
+  const settings = (chatbot.settings ?? {}) as ChatbotSettings;
   const form = useForm<z.infer<typeof updateChatbotValidator>>({
     resolver: zodResolver(updateChatbotValidator),
     defaultValues: {
       id: chatbot.id,
-      settings: {
-        placeholderText: (chatbot.settings as any)?.placeholderText || "",
-        welcomeMessage: (chatbot.settings as any)?.welcomeMessage || "",
-        primaryBgColor: (chatbot.settings as any)?.primaryBgColor || "",
-        primaryFgColor: (chatbot.settings as any)?.primaryFgColor || "",
-        position: defaultSettings.position || "right",
-      },
+      settings,
     },
   });
   const { toast } = useToast();
@@ -118,7 +114,7 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
                         {...field}
                       />
                     </FormControl>
-                    <FormDescription>Max 300 characters.</FormDescription>
+                    <FormDescription>Max 500 characters.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -141,7 +137,22 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
 
               <FormField
                 control={form.control}
-                name="settings.primaryBgColor"
+                name="settings.messageBoxText"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Message Box Text</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Hi there 👋" {...field} />
+                    </FormControl>
+                    <FormDescription>Max 100 characters.</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="settings.primaryColor"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Primary Color</FormLabel>
@@ -173,7 +184,7 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
 
               <FormField
                 control={form.control}
-                name="settings.primaryFgColor"
+                name="settings.primaryForegroundColor"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Primary Text Color</FormLabel>
@@ -227,10 +238,23 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
                   </FormItem>
                 )}
               />
-
               <Button type="submit" disabled={updateChatbot.isLoading}>
                 {updateChatbot.isLoading && <ButtonLoader />}
                 Update
+              </Button>
+              <Button
+                type="reset"
+                disabled={updateChatbot.isLoading}
+                onClick={() =>
+                  form.reset({
+                    id: chatbot.id,
+                    settings: defaultChatbotSettings,
+                  })
+                }
+                variant="secondary"
+                className="ml-2"
+              >
+                Reset
               </Button>
             </form>
           </Form>
@@ -252,8 +276,8 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
           <div
             className="mt-4 flex h-16 w-16 items-center justify-center rounded-full"
             style={{
-              backgroundColor: form.watch().settings.primaryBgColor,
-              color: form.watch().settings.primaryFgColor,
+              backgroundColor: form.watch().settings.primaryColor,
+              color: form.watch().settings.primaryForegroundColor,
             }}
           >
             <Image

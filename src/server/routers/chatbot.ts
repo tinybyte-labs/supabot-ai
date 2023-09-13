@@ -6,6 +6,7 @@ import {
 import { TRPCError } from "@trpc/server";
 import * as z from "zod";
 import { plans } from "@/data/plans";
+import { defaultChatbotSettings } from "@/data/defaultChatbotSettings";
 
 export const chatbotRouter = router({
   list: protectedProcedure.query(async ({ ctx }) => {
@@ -120,6 +121,7 @@ export const chatbotRouter = router({
         data: {
           name: input.name,
           organizationId: orgId,
+          settings: defaultChatbotSettings,
           metadata: { createdBy: ctx.auth.userId },
         },
       });

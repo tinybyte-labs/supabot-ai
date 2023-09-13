@@ -1,19 +1,23 @@
-import { ChatbotSettings } from "@/types/chatbot-settings";
 import { getTwHSL } from "@/utils/getTwHSL";
+import { ChatbotSettings } from "@/utils/validators";
 
-const ChatboxStyle = ({ primaryBgColor, primaryFgColor }: ChatbotSettings) => {
+const ChatboxStyle = ({
+  primaryColor,
+  primaryForegroundColor,
+}: ChatbotSettings) => {
   return (
     <style>
       {`
     .chatbox {
       ${
-        typeof primaryBgColor === "string" && primaryBgColor.length > 0
-          ? `--primary: ${getTwHSL(primaryBgColor)};`
+        typeof primaryColor === "string" && primaryColor.length > 0
+          ? `--primary: ${getTwHSL(primaryColor)};`
           : ""
       }
       ${
-        typeof primaryFgColor === "string" && primaryFgColor.length > 0
-          ? `--primary-foreground: ${getTwHSL(primaryFgColor)};`
+        typeof primaryForegroundColor === "string" &&
+        primaryForegroundColor.length > 0
+          ? `--primary-foreground: ${getTwHSL(primaryForegroundColor)};`
           : ""
       }
     }

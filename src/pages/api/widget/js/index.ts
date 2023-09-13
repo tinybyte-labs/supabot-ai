@@ -1,6 +1,7 @@
+import { defaultChatbotSettings } from "@/data/defaultChatbotSettings";
 import { prisma } from "@/server/prisma";
-import { ChatbotSettings } from "@/types/chatbot-settings";
 import { BASE_DOMAIN } from "@/utils/constants";
+import { ChatbotSettings } from "@/utils/validators";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -29,7 +30,7 @@ export default async function handler(
   if (!chatbot) {
     throw res.status(404).send("Chatbot not found!");
   }
-  const settings: ChatbotSettings = (chatbot.settings as ChatbotSettings) || {};
+  const settings = (chatbot.settings ?? {}) as ChatbotSettings;
 
   const SCRIPT_TEMPLATE = `
 !(function() {
@@ -43,13 +44,18 @@ export default async function handler(
     style.innerHTML = \`
       .light,
       :root {
-        --sb-primary: ${settings.primaryBgColor || "#6366F1"};
+        --sb-primary: ${
+          settings.primaryColor ?? defaultChatbotSettings.primaryColor
+        };
+        --sb-primary-foreground: ${
+          settings.primaryForegroundColor ??
+          defaultChatbotSettings.primaryForegroundColor
+        };
         --sb-border: #E4E4E7;
         --sb-background: #ffffff;
         --sb-foreground: #09090b;
       }
       .dark {
-        --sb-primary: ${settings.primaryBgColor || "#6366F1"};
         --sb-border: #27272a;
         --sb-background: #09090b;
         --sb-foreground: #ffffff;
@@ -108,56 +114,65 @@ export default async function handler(
       iframe.style.right = xm + "px";
     }
 
-    const msgBox = document.createElement("div");
-    msgBox.id = "sb-msg-box";
-    msgBox.innerText = "Hi there 👋";
-    msgBox.style.padding = "12px";
-    msgBox.style.backgroundColor = "var(--sb-background)";
-    msgBox.style.color = "var(--sb-foreground)";
-    msgBox.style.border = "1px solid var(--sb-border)";
-    msgBox.style.fontWeight = "600";
-    msgBox.style.boxShadow = "rgba(0, 0, 0, 0.15) 0px 8px 32px";
-    msgBox.style.borderRadius = "6px";
-    msgBox.style.position = "fixed";
-    msgBox.style.zIndex = 99;
-    msgBox.style.bottom = \`\${64 + Number(ym) * 2}px\`;
-    if (p === "left") {
-      msgBox.style.left = xm + "px";
-      msgBox.style.transformOrigin = "left bottom";
-    } else {
-      msgBox.style.right = xm + "px";
-      msgBox.style.transformOrigin = "right bottom";
-    }
-    msgBox.style.transition = "all .3s ease 0s";
-    msgBox.style.transform = "scale(.5)";
-    msgBox.style.opacity = 0;
-    msgBox.style.fontFamily =
-      'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"';
-
-    document.head.append(style);
-    document.body.append(btn);
-    document.body.append(iframe);
-    document.body.append(msgBox);
-
+    let msgBox;
     const closeMessageBox = () => {
+      if(!msgBox) return;
       msgBox.style.opacity = 0;
       msgBox.style.transform = "scale(.5)";
       msgBox.style.pointerEvents = "none";
     };
+    
+    ${
+      settings.messageBoxText
+        ? `
+      msgBox = document.createElement("div");
+      msgBox.id = "sb-msg-box";
+      msgBox.innerText = "${settings.messageBoxText}";
+      msgBox.style.padding = "12px";
+      msgBox.style.backgroundColor = "var(--sb-background)";
+      msgBox.style.color = "var(--sb-foreground)";
+      msgBox.style.border = "1px solid var(--sb-border)";
+      msgBox.style.fontWeight = "600";
+      msgBox.style.boxShadow = "rgba(0, 0, 0, 0.15) 0px 8px 32px";
+      msgBox.style.borderRadius = "6px";
+      msgBox.style.position = "fixed";
+      msgBox.style.zIndex = 99;
+      msgBox.style.bottom = \`\${64 + Number(ym) * 2}px\`;
+      if (p === "left") {
+        msgBox.style.left = xm + "px";
+        msgBox.style.transformOrigin = "left bottom";
+      } else {
+        msgBox.style.right = xm + "px";
+        msgBox.style.transformOrigin = "right bottom";
+      }
+      msgBox.style.transition = "all .3s ease 0s";
+      msgBox.style.transform = "scale(.5)";
+      msgBox.style.opacity = 0;
+      msgBox.style.fontFamily =
+        'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"';
+
+      document.body.append(msgBox);
+
+      setTimeout(() => {
+        msgBox.style.transform = "scale(1)";
+        msgBox.style.opacity = 1;
+      }, 600);
+
+      setTimeout(() => {
+        closeMessageBox();
+      }, 5000);
+    `
+        : ""
+    }
+
+    document.head.append(style);
+    document.body.append(btn);
+    document.body.append(iframe);
 
     setTimeout(() => {
       btn.style.transform = "scale(1)";
       btn.style.opacity = 1;
     }, 100);
-
-    setTimeout(() => {
-      msgBox.style.transform = "scale(1)";
-      msgBox.style.opacity = 1;
-    }, 600);
-
-    setTimeout(() => {
-      closeMessageBox();
-    }, 5000);
 
     let chatboxOpen = false;
 

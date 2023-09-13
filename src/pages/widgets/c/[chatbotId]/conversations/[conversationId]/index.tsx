@@ -1,7 +1,5 @@
 import BotMessageBubble from "@/components/BotMessageBubble";
 import ChatboxInputBar from "@/components/ChatboxInputBar";
-import ChatboxStyle from "@/components/ChatboxStyle";
-import ChatboxWatermark from "@/components/ChatboxWatermark";
 import ThemeTogglerIconButton from "@/components/ThemeTogglerIconButton";
 import UserMessageBubble from "@/components/UserMessageBubble";
 import { Button } from "@/components/ui/button";
@@ -9,12 +7,20 @@ import { useToast } from "@/components/ui/use-toast";
 import ChatbotBoxLayout, { useChatbox } from "@/layouts/ChatboxLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
+import { ChatbotSettings } from "@/utils/validators";
 import { Message } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { ArrowLeft, Loader2, RefreshCw, SendIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 const ConversationPage: NextPageWithLayout = () => {
   const router = useRouter();
@@ -23,6 +29,10 @@ const ConversationPage: NextPageWithLayout = () => {
   const { toast } = useToast();
   const utils = trpc.useContext();
   const scrollElRef = useRef<HTMLDivElement | null>(null);
+  const chatbotSettings: ChatbotSettings = useMemo(
+    () => (chatbot.settings ?? {}) as ChatbotSettings,
+    [chatbot.settings],
+  );
   const conversation = trpc.conversation.getById.useQuery(
     {
       id: (router.query.conversationId as string) || "",
@@ -220,10 +230,10 @@ const ConversationPage: NextPageWithLayout = () => {
             <p>Messages Error: {messages.error.message}</p>
           ) : (
             <>
-              {(chatbot.settings as any)?.welcomeMessage && (
+              {chatbotSettings.welcomeMessage && (
                 <BotMessageBubble
                   name="BOT"
-                  message={(chatbot.settings as any)?.welcomeMessage}
+                  message={chatbotSettings.welcomeMessage}
                   date={conversation.data.createdAt}
                 />
               )}
@@ -276,7 +286,7 @@ const ConversationPage: NextPageWithLayout = () => {
         onChange={setMessage}
         onSubmit={handleSubmit}
         isLoading={sendMessage.isLoading}
-        placeholderText={(chatbot.settings as any)?.placeholderText}
+        placeholderText={chatbotSettings.placeholderText}
         autoFocus
       />
     </div>

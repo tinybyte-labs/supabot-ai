@@ -7,8 +7,8 @@ import ChatboxInputBar from "./ChatboxInputBar";
 import { useState } from "react";
 import ChatboxWatermark from "./ChatboxWatermark";
 import ChatboxStyle from "./ChatboxStyle";
-import { ChatbotSettings } from "@/types/chatbot-settings";
 import ThemeTogglerIconButton from "./ThemeTogglerIconButton";
+import { ChatbotSettings } from "@/utils/validators";
 
 export type ChatboxPreviewerProps = {
   title: string;

@@ -1,6 +1,6 @@
 export interface ChatbotSettings {
-  primaryFgColor?: string | null;
-  primaryBgColor?: string | null;
+  primaryColor?: string | null;
+  primaryForegroundColor?: string | null;
   welcomeMessage?: string | null;
   placeholderText?: string | null;
   position?: "left" | "right" | null;

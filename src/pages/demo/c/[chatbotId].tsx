@@ -1,16 +1,23 @@
+import { BASE_DOMAIN } from "@/utils/constants";
 import { useRouter } from "next/router";
+import Script from "next/script";
 
 const ChatbotDemoPage = () => {
   const {
     query: { chatbotId },
+    isReady,
   } = useRouter();
+  if (!isReady) {
+    return <p>Loading...</p>;
+  }
   return (
-    <div className="flex h-screen items-center justify-center p-8">
-      <iframe
-        src={`/widgets/c/${chatbotId}`}
-        className="h-full max-h-[720px] w-full max-w-[400px] overflow-hidden rounded-xl border shadow-2xl"
-      ></iframe>
-    </div>
+    <>
+      <main className="flex min-h-screen flex-col items-center justify-center bg-muted"></main>
+      <Script
+        strategy="lazyOnload"
+        src={`${BASE_DOMAIN}/api/widget/js?id=${chatbotId}`}
+      ></Script>
+    </>
   );
 };
 

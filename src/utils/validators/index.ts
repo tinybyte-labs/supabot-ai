@@ -7,6 +7,19 @@ export const createChatbotValidator = z.object({
     .min(2, "Name must be at least 2 characters.")
     .max(32, "Name must be at most 32 characters."),
 });
+export const chatbotSettingsSchema = z.object({
+  messageBoxText: z.string().max(100).optional(),
+  welcomeMessage: z.string().max(500).optional(),
+  placeholderText: z.string().max(80).optional(),
+  primaryColor: z.string().optional(),
+  primaryForegroundColor: z.string().optional(),
+  position: z.enum(["left", "right"]).optional(),
+  mx: z.number().optional(),
+  my: z.number().optional(),
+});
+
+export type ChatbotSettings = z.infer<typeof chatbotSettingsSchema>;
+
 export const updateChatbotValidator = z.object({
   id: z.string(),
   name: z
@@ -14,13 +27,7 @@ export const updateChatbotValidator = z.object({
     .min(2, "Name must be at least 2 characters.")
     .max(32, "Name must be at most 32 characters.")
     .optional(),
-  settings: z.object({
-    welcomeMessage: z.string().max(300).optional(),
-    placeholderText: z.string().max(80).optional(),
-    primaryBgColor: z.string().max(32).optional(),
-    primaryFgColor: z.string().max(32).optional(),
-    position: z.enum(["left", "right"]).default("right").optional(),
-  }),
+  settings: chatbotSettingsSchema,
 });
 
 export const createQuickPromptValidator = z.object({
