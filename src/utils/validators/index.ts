@@ -27,7 +27,7 @@ export const updateChatbotValidator = z.object({
     .min(2, "Name must be at least 2 characters.")
     .max(32, "Name must be at most 32 characters.")
     .optional(),
-  settings: chatbotSettingsSchema,
+  settings: chatbotSettingsSchema.optional(),
 });
 
 export const createQuickPromptValidator = z.object({

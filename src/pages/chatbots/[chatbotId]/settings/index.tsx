@@ -141,14 +141,7 @@ const UpdateNameFrom = () => {
             />
           </CardContent>
           <CardFooter>
-            <Button
-              type="submit"
-              disabled={
-                updateChatbot.isLoading ||
-                !form.formState.isValid ||
-                !form.formState.isDirty
-              }
-            >
+            <Button type="submit" disabled={updateChatbot.isLoading}>
               {updateChatbot.isLoading && (
                 <Loader2
                   size={18}

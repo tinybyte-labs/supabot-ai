@@ -122,7 +122,7 @@ export const chatbotRouter = router({
           name: input.name,
           organizationId: orgId,
           settings: defaultChatbotSettings,
-          metadata: { createdBy: ctx.auth.userId },
+          createdBy: ctx.auth.userId,
         },
       });
     }),

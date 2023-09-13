@@ -23,6 +23,7 @@ model User {
   publicMetadata  Json?     @map("public_metadata")
 
   organizations OrganizationMembership[]
+  chatbots      Chatbot[]
 
   @@map("users")
 }
@@ -64,6 +65,7 @@ model Chatbot {
   id             String   @id @default(cuid())
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
+  createdBy      String?  @map("created_by")
   name           String   @db.VarChar(32)
   image          String?
   metadata       Json?
@@ -76,6 +78,7 @@ model Chatbot {
   conversations Conversation[]
   users         ChatbotUser[]
 
+  creator      User?        @relation(fields: [createdBy], references: [id], onDelete: SetNull)
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@index([updatedAt])
