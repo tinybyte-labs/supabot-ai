@@ -176,7 +176,7 @@ const PlansGrid = ({
                   <p className="text-sm text-muted-foreground">
                     {item.description}
                   </p>
-                  <p className="text-5xl font-semibold">
+                  <p className="text-6xl font-semibold">
                     {(interval === "monthly" ? price : price / 12)
                       .toFixed(1)
                       .replace(rx, "$1")}
