@@ -8,7 +8,7 @@ const DevWarningBar = () => {
   return (
     <div className="flex items-center  justify-center bg-muted p-1.5 text-center text-muted-foreground">
       <p className="text-sm text-muted-foreground">
-        🛠️ {APP_NAME} is under construction. Follow{" "}
+        🛠️ {APP_NAME} is under development. Follow{" "}
         <Link
           href="https://twitter.com/SupaBotAI"
           className="font-medium text-foreground underline-offset-4 hover:underline"
