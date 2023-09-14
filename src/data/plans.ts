@@ -81,8 +81,8 @@ export const plans: Plan[] = [
     name: "Enterprise",
     limits: {
       chatbots: "unlimited",
-      links: 10_000,
-      documents: 5_000,
+      links: 15_000,
+      documents: 8_000,
       messagesPerMonth: "unlimited",
       teamMembers: "unlimited",
       apiAccess: true,
