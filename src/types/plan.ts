@@ -1,3 +1,5 @@
+import { PlanInterval } from "./plan-interval";
+
 export type Plan = {
   id: string;
   name: string;
@@ -12,14 +14,11 @@ export type Plan = {
     apiAccess: boolean;
     prioritySupport: boolean;
   };
-  price: {
-    monthly: {
+  price: Record<
+    PlanInterval,
+    {
       amount: number;
       priceId: string;
-    };
-    yearly: {
-      amount: number;
-      priceId: string;
-    };
-  };
+    }
+  >;
 };

@@ -1,22 +1,16 @@
 import PlansGrid from "@/components/PlansGrid";
 import SecondaryPageHeader from "@/components/SecondaryPageHeader";
-import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/use-toast";
-import { subscriptionPlans } from "@/data/subscriptionPlans";
 import { useOrganization } from "@/hooks/useOrganization";
-import { SubscriptionInterval, SubscriptionPlan } from "@/types/pricing-plan";
+import { Plan } from "@/types/plan";
+import { PlanInterval } from "@/types/plan-interval";
 import { trpc } from "@/utils/trpc";
 import { useStripe } from "@stripe/react-stripe-js";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 const Plans = () => {
   const { plan: currentPlan, organizaton } = useOrganization();
   const [loading, setLoading] = useState(false);
-  const [interval, setInterval] = useState<SubscriptionInterval>("monthly");
-  const currentPlans = useMemo(
-    () => subscriptionPlans.filter((plan) => plan.interval === interval),
-    [interval],
-  );
   const stripe = useStripe();
   const { toast } = useToast();
 
@@ -40,10 +34,9 @@ const Plans = () => {
       setLoading(false);
     },
   });
-  const handleUpgrade = async (plan: SubscriptionPlan) =>
-    getCustomerPortal.mutate({
-      priceId: plan.id,
-    });
+  const handleUpgrade = async (priceId: string) =>
+    getCustomerPortal.mutate({ priceId });
+
   return (
     <section className="space-y-8" id="plans">
       <SecondaryPageHeader
@@ -52,18 +45,7 @@ const Plans = () => {
           currentPlan?.name || "Free"
         } plan.`}
       />
-      <div className="flex items-center justify-center gap-2">
-        <p className="text-muted-foreground">Billed Monthly</p>
-        <Switch
-          checked={interval === "annually"}
-          onCheckedChange={(value) =>
-            setInterval(value ? "annually" : "monthly")
-          }
-        />
-        <p className="text-muted-foreground">Billed Annually</p>
-      </div>
       <PlansGrid
-        plans={currentPlans}
         buttonLabel={(plan) => `Upgrade to ${plan.name}`}
         onPlanClick={handleUpgrade}
         loading={loading}
