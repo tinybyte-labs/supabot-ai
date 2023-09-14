@@ -99,7 +99,7 @@ export const chatbotRouter = router({
           message: "Organization not found!",
         });
       }
-      const plan = plans[org.plan];
+      const plan = plans.find((plan) => plan.id === org.plan);
       if (!plan) {
         throw new TRPCError({
           code: "FORBIDDEN",

@@ -3,6 +3,7 @@ import CurrentPlan from "@/components/pages/plan-billing/CurrentPlan";
 import Plans from "@/components/pages/plan-billing/Plans";
 import Usage from "@/components/pages/plan-billing/Usage";
 import { Badge } from "@/components/ui/badge";
+import { useOrganization } from "@/hooks/useOrganization";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { APP_NAME } from "@/utils/constants";
@@ -11,9 +12,9 @@ import { Loader2 } from "lucide-react";
 import Head from "next/head";
 
 const Page: NextPageWithLayout = () => {
-  const plan = trpc.subscription.plan.useQuery();
+  const { isLoading, error, plan } = useOrganization();
 
-  if (plan.isLoading) {
+  if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Loader2 size={24} className="animate-spin" />
@@ -21,8 +22,8 @@ const Page: NextPageWithLayout = () => {
     );
   }
 
-  if (plan.isError) {
-    return <p>{plan.error.message}</p>;
+  if (error) {
+    return <p>{error.message}</p>;
   }
 
   return (
@@ -32,12 +33,12 @@ const Page: NextPageWithLayout = () => {
       </Head>
 
       <DashboardPageHeader title="Plan & Billing">
-        <Badge>{plan.data.name}</Badge>
+        <Badge>{plan?.name || "Free"}</Badge>
       </DashboardPageHeader>
       <div className="container mb-32 mt-8 space-y-16 md:mt-16">
-        <CurrentPlan plan={plan.data} />
-        <Usage plan={plan.data} />
-        <Plans plan={plan.data} />
+        <CurrentPlan />
+        <Usage />
+        <Plans />
       </div>
     </>
   );

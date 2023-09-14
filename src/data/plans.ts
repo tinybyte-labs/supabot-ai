@@ -1,21 +1,8 @@
 import { Plan } from "@/types/plan";
 
-export const plans: Record<string, Plan> = {
-  free: {
-    name: "Free",
-    limits: {
-      chatbots: 0,
-      messagesPerMonth: 0,
-      documents: 0,
-      links: 0,
-      teamMembers: 1,
-      apiAccess: false,
-      removeWatermark: false,
-      advancedCustomization: false,
-      prioritySupport: false,
-    },
-  },
-  starter: {
+export const plans: Plan[] = [
+  {
+    id: "starter",
     name: "Starter",
     limits: {
       chatbots: 1,
@@ -28,8 +15,19 @@ export const plans: Record<string, Plan> = {
       advancedCustomization: false,
       prioritySupport: false,
     },
+    price: {
+      monthly: {
+        amount: 9,
+        priceId: process.env.NEXT_PUBLIC_STARTER_MONTHLY_PRICE_ID || "",
+      },
+      yearly: {
+        amount: 90,
+        priceId: process.env.NEXT_PUBLIC_STARTER_YEARLY_PRICE_ID || "",
+      },
+    },
   },
-  team: {
+  {
+    id: "team",
     name: "Team",
     limits: {
       chatbots: 2,
@@ -42,8 +40,19 @@ export const plans: Record<string, Plan> = {
       advancedCustomization: false,
       prioritySupport: false,
     },
+    price: {
+      monthly: {
+        amount: 29,
+        priceId: process.env.NEXT_PUBLIC_TEAM_MONTHLY_PRICE_ID || "",
+      },
+      yearly: {
+        amount: 290,
+        priceId: process.env.NEXT_PUBLIC_TEAM_YEARLY_PRICE_ID || "",
+      },
+    },
   },
-  business: {
+  {
+    id: "business",
     name: "Business",
     limits: {
       chatbots: 6,
@@ -56,8 +65,19 @@ export const plans: Record<string, Plan> = {
       advancedCustomization: true,
       prioritySupport: true,
     },
+    price: {
+      monthly: {
+        amount: 99,
+        priceId: process.env.NEXT_PUBLIC_BUSINESS_MONTHLY_PRICE_ID || "",
+      },
+      yearly: {
+        amount: 990,
+        priceId: process.env.NEXT_PUBLIC_BUSINESS_YEARLY_PRICE_ID || "",
+      },
+    },
   },
-  enterprise: {
+  {
+    id: "enterprise",
     name: "Enterprise",
     limits: {
       chatbots: "unlimited",
@@ -70,5 +90,15 @@ export const plans: Record<string, Plan> = {
       advancedCustomization: true,
       prioritySupport: true,
     },
+    price: {
+      monthly: {
+        amount: 699,
+        priceId: process.env.NEXT_PUBLIC_ENTERPRISE_MONTHLY_PRICE_ID || "",
+      },
+      yearly: {
+        amount: 6990,
+        priceId: process.env.NEXT_PUBLIC_ENTERPRISE_YEARLY_PRICE_ID || "",
+      },
+    },
   },
-};
+];

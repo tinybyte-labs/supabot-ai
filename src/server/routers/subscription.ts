@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { protectedProcedure, router } from "../trpc";
-import { plans } from "@/data/plans";
 import { getFirstAndLastDay } from "@/utils/getStartAndLastDate";
+import { plans } from "@/data/plans";
 
 export const subscriptionRouter = router({
   plan: protectedProcedure.query(async ({ ctx }) => {
@@ -21,11 +21,7 @@ export const subscriptionRouter = router({
         message: "Organization not found!",
       });
     }
-    const plan = plans[org.plan];
-    if (!plan) {
-      throw new TRPCError({ code: "NOT_FOUND", message: "Invalid plan type" });
-    }
-    return plan;
+    return plans.find((plan) => plan.id === org.plan);
   }),
   usage: protectedProcedure.query(async ({ ctx }) => {
     const orgId = ctx.auth.orgId;

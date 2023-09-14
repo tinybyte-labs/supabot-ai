@@ -5,12 +5,14 @@ import { clerkRouter } from "./clerk";
 import { conversationRouter } from "./conversation";
 import { linkRouter } from "./link";
 import { messageRouter } from "./message";
+import { organizationRouter } from "./organization";
 import { quickPromptRouter } from "./quickPrompt";
 import { stripeRouter } from "./stripe";
 import { subscriptionRouter } from "./subscription";
 import { utilsRouter } from "./utils";
 
 export const appRouter = router({
+  organization: organizationRouter,
   chatbot: chatbotRouter,
   link: linkRouter,
   utils: utilsRouter,

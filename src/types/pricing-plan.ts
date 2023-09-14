@@ -2,8 +2,7 @@ export type SubscriptionInterval = "monthly" | "annually";
 
 export type SubscriptionPlan = {
   id: string;
-  priceId: string;
-  type: string;
+  type: "starter" | "team" | "business" | "enterprise";
   price: number;
   interval: SubscriptionInterval;
   name: string;

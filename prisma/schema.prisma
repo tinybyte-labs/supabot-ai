@@ -41,6 +41,7 @@ model Organization {
   plan                 String   @default("free")
   customerId           String?  @unique @map("customer_id")
   subscriptionId       String?  @unique @map("subscription_id")
+  priceId              String?  @map("price_id")
   billingCycleStartDay Int      @default(1) @map("billing_cycle_start_day")
 
   members  OrganizationMembership[]

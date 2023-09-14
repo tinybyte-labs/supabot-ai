@@ -1,4 +1,5 @@
 export type Plan = {
+  id: string;
   name: string;
   limits: {
     chatbots: number | "unlimited";
@@ -10,5 +11,15 @@ export type Plan = {
     removeWatermark: boolean;
     apiAccess: boolean;
     prioritySupport: boolean;
+  };
+  price: {
+    monthly: {
+      amount: number;
+      priceId: string;
+    };
+    yearly: {
+      amount: number;
+      priceId: string;
+    };
   };
 };

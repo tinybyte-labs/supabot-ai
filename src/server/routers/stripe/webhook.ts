@@ -1,5 +1,6 @@
 import { stripe } from "@/server/stripe";
 import { publicProcedure, router } from "@/server/trpc";
+import { planFromPriceId } from "@/utils/planFromPriceId";
 import { TRPCError } from "@trpc/server";
 import Stripe from "stripe";
 import { z } from "zod";
@@ -20,7 +21,7 @@ const webhookProcedure = publicProcedure.input(
 );
 
 export const stripeWebhookRouter = router({
-  sessionCompleted: webhookProcedure.mutation(async (opts) => {
+  checkoutSessionCompleted: webhookProcedure.mutation(async (opts) => {
     const session = opts.input.event.data.object as Stripe.Checkout.Session;
     if (typeof session.subscription !== "string") {
       throw new TRPCError({
@@ -31,24 +32,47 @@ export const stripeWebhookRouter = router({
     const subscription = await stripe.subscriptions.retrieve(
       session.subscription,
     );
+    if (subscription.status === "active") {
+      const customerId =
+        typeof subscription.customer === "string"
+          ? subscription.customer
+          : subscription.customer.id;
+      const result = await opts.ctx.db.organization.findUnique({
+        where: { customerId },
+      });
+      if (!result) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Organization not found",
+        });
+      }
+      const priceId = subscription.items.data[0].price.id;
+      const plan = planFromPriceId(priceId);
+      if (!plan) return;
+      await opts.ctx.db.organization.update({
+        where: { id: result.id },
+        data: {
+          plan: plan.id,
+          priceId,
+          subscriptionId: subscription.id,
+          billingCycleStartDay: new Date().getDate(),
+        },
+      });
+    }
+  }),
+  customerSubscriptionDeleted: webhookProcedure.mutation(async (opts) => {
+    const subscription = opts.input.event.data.object as Stripe.Subscription;
     const customerId =
       typeof subscription.customer === "string"
         ? subscription.customer
         : subscription.customer.id;
-    const result = await opts.ctx.db.organization.findUnique({
-      where: { customerId },
-    });
-    if (!result) {
-      throw new TRPCError({
-        code: "BAD_REQUEST",
-        message: "Organization not found",
-      });
-    }
     await opts.ctx.db.organization.update({
-      where: { id: result.id },
+      where: { customerId },
       data: {
-        plan: "",
-        subscriptionId: subscription.id,
+        plan: "free",
+        subscriptionId: null,
+        priceId: null,
+        billingCycleStartDay: new Date().getDate(),
       },
     });
   }),

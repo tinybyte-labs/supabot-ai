@@ -3,12 +3,12 @@ import { Button, ButtonLoader } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { Plan } from "@/types/plan";
 import { trpc } from "@/utils/trpc";
-import { ArrowRight, ExternalLink, Loader2 } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
-const CurrentPlan = ({ plan }: { plan: Plan }) => {
+const CurrentPlan = ({ plan }: { plan?: Plan }) => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
@@ -37,7 +37,7 @@ const CurrentPlan = ({ plan }: { plan: Plan }) => {
     <section className="space-y-6" id="current-plan">
       <SecondaryPageHeader
         title="Current Plan"
-        subtitle={`You are currently on the ${plan.name} plan.`}
+        subtitle={`You are currently on the ${plan?.name || "Free"} plan.`}
       />
       <div className="flex flex-wrap gap-2">
         <Button asChild variant="secondary">

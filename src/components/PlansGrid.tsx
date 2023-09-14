@@ -12,14 +12,14 @@ import { Check, HelpCircle, Loader2 } from "lucide-react";
 const PlansGrid = ({
   plans,
   hidePopularBadge,
-  currentPlan,
+  currentPriceId,
   onPlanClick,
   buttonLabel,
   loading,
 }: {
   plans: SubscriptionPlan[];
   hidePopularBadge?: boolean;
-  currentPlan?: string;
+  currentPriceId?: string | null;
   loading?: boolean;
   onPlanClick?: (plan: SubscriptionPlan) => void;
   buttonLabel?: (plan: SubscriptionPlan) => string;
@@ -28,7 +28,7 @@ const PlansGrid = ({
     <div className="grid grid-cols-1 gap-8 pt-4 lg:grid-cols-2 xl:grid-cols-4 xl:gap-4">
       {plans.map((plan) => {
         const popular = !hidePopularBadge && plan.isPopular;
-        const isActive = plan.id === currentPlan;
+        const isActive = plan.id === currentPriceId;
         return (
           <div key={plan.id} className="relative">
             {popular && (

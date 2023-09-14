@@ -1,10 +1,11 @@
 import SecondaryPageHeader from "@/components/SecondaryPageHeader";
 import StatCard from "@/components/StatCard";
-import { Plan } from "@/types/plan";
+import { useOrganization } from "@/hooks/useOrganization";
 import { trpc } from "@/utils/trpc";
 import { Users, Bot, Link2, Infinity, FileText } from "lucide-react";
 
-const Usage = ({ plan }: { plan: Plan }) => {
+const Usage = () => {
+  const { plan } = useOrganization();
   const usage = trpc.subscription.usage.useQuery();
   if (usage.isLoading) {
     return <p>Loading...</p>;
@@ -22,10 +23,10 @@ const Usage = ({ plan }: { plan: Plan }) => {
           value={
             <>
               {usage.data.teamMembers.toLocaleString()} /{" "}
-              {plan.limits.teamMembers === "unlimited" ? (
+              {plan?.limits.teamMembers === "unlimited" ? (
                 <Infinity className="inline" size={32} />
               ) : (
-                <>{plan.limits.teamMembers.toLocaleString()}</>
+                <>{plan?.limits.teamMembers.toLocaleString() || 0}</>
               )}
             </>
           }
@@ -36,10 +37,10 @@ const Usage = ({ plan }: { plan: Plan }) => {
           value={
             <>
               {usage.data.chatbots.toLocaleString()} /{" "}
-              {plan.limits.chatbots === "unlimited" ? (
+              {plan?.limits.chatbots === "unlimited" ? (
                 <Infinity className="inline" size={32} />
               ) : (
-                <>{plan.limits.chatbots.toLocaleString()}</>
+                <>{plan?.limits.chatbots.toLocaleString() || 0}</>
               )}
             </>
           }
@@ -50,10 +51,10 @@ const Usage = ({ plan }: { plan: Plan }) => {
           value={
             <>
               {usage.data.messagesPerMonth.toLocaleString()} /{" "}
-              {plan.limits.messagesPerMonth === "unlimited" ? (
+              {plan?.limits.messagesPerMonth === "unlimited" ? (
                 <Infinity className="inline" size={32} />
               ) : (
-                <>{plan.limits.messagesPerMonth.toLocaleString()}</>
+                <>{plan?.limits.messagesPerMonth.toLocaleString() || 0}</>
               )}
             </>
           }
@@ -64,10 +65,10 @@ const Usage = ({ plan }: { plan: Plan }) => {
           value={
             <>
               {usage.data.links.toLocaleString()} /{" "}
-              {plan.limits.links === "unlimited" ? (
+              {plan?.limits.links === "unlimited" ? (
                 <Infinity className="inline" size={32} />
               ) : (
-                <>{plan.limits.links.toLocaleString()}</>
+                <>{plan?.limits.links.toLocaleString() || 0}</>
               )}
             </>
           }
@@ -78,10 +79,10 @@ const Usage = ({ plan }: { plan: Plan }) => {
           value={
             <>
               {usage.data.documents.toLocaleString()} /{" "}
-              {plan.limits.documents === "unlimited" ? (
+              {plan?.limits.documents === "unlimited" ? (
                 <Infinity className="inline" size={32} />
               ) : (
-                <>{plan.limits.documents.toLocaleString()}</>
+                <>{plan?.limits.documents.toLocaleString() || 0}</>
               )}
             </>
           }
