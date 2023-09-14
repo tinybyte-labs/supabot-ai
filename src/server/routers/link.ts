@@ -81,7 +81,7 @@ export const linkRouter = router({
       if (!plan) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Invalid plan type",
+          message: "No subscription plan found! Please subscribe to a plan",
         });
       }
 
@@ -149,7 +149,7 @@ export const linkRouter = router({
       if (!plan) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Invalid plan type",
+          message: "No subscription plan found! Please subscribe to a plan",
         });
       }
 

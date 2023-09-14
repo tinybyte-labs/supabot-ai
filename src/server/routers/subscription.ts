@@ -1,28 +1,8 @@
 import { TRPCError } from "@trpc/server";
 import { protectedProcedure, router } from "../trpc";
 import { getFirstAndLastDay } from "@/utils/getStartAndLastDate";
-import { plans } from "@/data/plans";
 
 export const subscriptionRouter = router({
-  plan: protectedProcedure.query(async ({ ctx }) => {
-    if (!ctx.auth.orgId) {
-      throw new TRPCError({
-        code: "FORBIDDEN",
-        message: "No organization selected",
-      });
-    }
-    const org = await ctx.db.organization.findUnique({
-      where: { id: ctx.auth.orgId },
-      select: { plan: true },
-    });
-    if (!org) {
-      throw new TRPCError({
-        code: "NOT_FOUND",
-        message: "Organization not found!",
-      });
-    }
-    return plans.find((plan) => plan.id === org.plan);
-  }),
   usage: protectedProcedure.query(async ({ ctx }) => {
     const orgId = ctx.auth.orgId;
     if (!orgId) {

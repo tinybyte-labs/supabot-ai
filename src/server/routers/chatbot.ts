@@ -103,7 +103,7 @@ export const chatbotRouter = router({
       if (!plan) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "Invalid plan type",
+          message: "No subscription plan found! Please subscribe to a plan",
         });
       }
       if (plan.limits.chatbots !== "unlimited") {
