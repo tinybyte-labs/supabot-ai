@@ -2,8 +2,6 @@ import PlansGrid from "@/components/PlansGrid";
 import SecondaryPageHeader from "@/components/SecondaryPageHeader";
 import { useToast } from "@/components/ui/use-toast";
 import { useOrganization } from "@/hooks/useOrganization";
-import { Plan } from "@/types/plan";
-import { PlanInterval } from "@/types/plan-interval";
 import { trpc } from "@/utils/trpc";
 import { useStripe } from "@stripe/react-stripe-js";
 import { useState } from "react";

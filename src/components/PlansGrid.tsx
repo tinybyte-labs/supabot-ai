@@ -12,6 +12,8 @@ import { PlanInterval } from "@/types/plan-interval";
 import { Plan } from "@/types/plan";
 import { plans } from "@/data/plans";
 
+const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
+
 const features = (planId: string) => {
   const plan = plans.find((plan) => plan.id === planId);
   if (!plan) return [];
@@ -21,21 +23,31 @@ const features = (planId: string) => {
         plan.limits.chatbots === "unlimited"
           ? "Unlimited"
           : `Up to ${plan.limits.chatbots.toLocaleString()}`
-      } chatbot`,
+      } chatbot${
+        plan.limits.chatbots === "unlimited" || plan.limits.chatbots > 1
+          ? "s"
+          : ""
+      }`,
     },
     {
       text: `${
         plan.limits.links === "unlimited"
           ? "Unlimited"
           : `Up to ${plan.limits.links.toLocaleString()}`
-      } links`,
+      } link${
+        plan.limits.links === "unlimited" || plan.limits.links > 1 ? "s" : ""
+      }`,
     },
     {
       text: `${
         plan.limits.documents === "unlimited"
           ? "Unlimited"
           : `Up to ${plan.limits.documents.toLocaleString()}`
-      } documents`,
+      } document${
+        plan.limits.documents === "unlimited" || plan.limits.documents > 1
+          ? "s"
+          : ""
+      }`,
     },
     {
       text: `${
@@ -90,17 +102,19 @@ const pricingItems: {
   {
     id: "team",
     name: "Team",
-    description: "For startups & small projects",
+    description: "For small to medium teams",
     features: features("team"),
   },
   {
     id: "business",
     name: "Business",
+    description: "For larger teams with increased usage",
     features: features("business"),
   },
   {
     id: "enterprise",
     name: "Enterprise",
+    description: "For businesses with custom needs",
     features: features("enterprise"),
   },
 ];
@@ -157,13 +171,17 @@ const PlansGrid = ({
                     Most Popular
                   </div>
                 )}
-                <div className="flex flex-col items-center gap-3 border-b p-4 pt-8">
+                <div className="flex flex-col items-center gap-3 border-b p-4 pt-8 text-center">
                   <h3 className="text-2xl font-semibold">{item.name}</h3>
-                  <p className="text-muted-foreground">{item.description}</p>
-                  <p className="text-5xl font-semibold">
-                    ${(interval === "monthly" ? price : price / 12).toFixed(1)}
+                  <p className="text-sm text-muted-foreground">
+                    {item.description}
                   </p>
-                  <p className="text-muted-foreground">
+                  <p className="text-5xl font-semibold">
+                    {(interval === "monthly" ? price : price / 12)
+                      .toFixed(1)
+                      .replace(rx, "$1")}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
                     per month, billed {interval}
                   </p>
                 </div>
