@@ -7,9 +7,7 @@ const SecondaryPageHeader = ({ title, subtitle }: SecondaryPageHeaderProps) => {
   return (
     <div>
       <h1 className="text-xl font-semibold">{title}</h1>
-      {!!subtitle && (
-        <p className="text-sm text-muted-foreground">{subtitle}</p>
-      )}
+      {!!subtitle && <p className="mt-1 text-muted-foreground">{subtitle}</p>}
     </div>
   );
 };

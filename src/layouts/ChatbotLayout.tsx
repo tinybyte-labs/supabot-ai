@@ -12,7 +12,6 @@ import {
   Users,
   MessagesSquare,
   LinkIcon,
-  FileText,
   Palette,
   Settings,
   MessageSquareIcon,
@@ -26,20 +25,18 @@ const ChatbotLayout = ({ children }: { children: ReactNode }) => {
 
   return (
     <ChatbotProvider>
-      <div className="flex h-screen w-screen flex-col overflow-hidden">
-        <DevWarningBar />
-        <div className="relative flex flex-1 overflow-hidden">
-          <div className="w-64 border-r bg-card text-card-foreground max-lg:hidden">
-            <SideBar />
-          </div>
-          <main className="flex flex-1 flex-col overflow-auto">{children}</main>
-        </div>
-        <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-          <SheetContent className="p-0" side="left">
-            <SideBar />
-          </SheetContent>
-        </Sheet>
+      <DevWarningBar />
+      <div className="fixed bottom-0 left-0 top-0 w-64 border-r bg-card text-card-foreground max-lg:hidden">
+        <SideBar />
       </div>
+      <main className="flex min-h-screen flex-1 flex-col lg:ml-64">
+        {children}
+      </main>
+      <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+        <SheetContent className="p-0" side="left">
+          <SideBar />
+        </SheetContent>
+      </Sheet>
     </ChatbotProvider>
   );
 };

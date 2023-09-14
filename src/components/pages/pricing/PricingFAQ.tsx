@@ -29,7 +29,7 @@ const FAQS = [
 
 const PricingFAQ = () => {
   return (
-    <section id="pricing-faq">
+    <section id="pricing-faq" className="py-24">
       <div className="container">
         <div className="mx-auto max-w-screen-md">
           <h2 className="text-center text-3xl font-bold md:text-5xl">

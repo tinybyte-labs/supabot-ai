@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 const EndCTA = () => {
   return (
-    <section>
+    <section id="end-cta" className="py-24">
       <div className="container">
         <div className="mx-auto max-w-screen-md">
           <h2 className="text-center text-3xl font-bold md:text-5xl">

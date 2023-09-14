@@ -28,7 +28,7 @@ export default function SideBarNav({ list }: SideBarNavProps) {
               {group.title}
             </div>
           )}
-          <div className="flex flex-col gap-1 overflow-hidden">
+          <div className="flex flex-col gap-1">
             {group.items.map((item, j) => {
               const isActive = item.end
                 ? asPath.split("?")[0] === item.href.split("?")[0]

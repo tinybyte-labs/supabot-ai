@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 const Hero = () => {
   return (
-    <section>
+    <section id="hero" className="py-24">
       <div className="container">
         <div className="mx-auto max-w-screen-sm md:max-w-screen-lg">
           <div className="bg-gradient-to-br from-accent-foreground to-accent-foreground/70 bg-clip-text py-1">

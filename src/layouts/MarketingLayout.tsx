@@ -9,10 +9,10 @@ import { ReactNode } from "react";
 const MarketingLayout = ({ children }: { children: ReactNode }) => {
   return (
     <div className="flex min-h-screen flex-col">
-      <Background />
       <DevWarningBar />
+      <Background />
       <MarketingHeader />
-      <div className="flex-1">{children}</div>
+      <main className="flex-1">{children}</main>
       <MarketingFooter />
       <Script
         strategy="lazyOnload"

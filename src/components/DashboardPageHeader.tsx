@@ -32,7 +32,7 @@ const DashboardPageHeader = ({
             {!!subtitle && <p className="text-muted-foreground">{subtitle}</p>}
           </div>
         </div>
-        {children}
+        <div>{children}</div>
       </div>
     </header>
   );

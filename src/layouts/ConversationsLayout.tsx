@@ -41,50 +41,52 @@ const ConversationsLayout = ({ children }: { children: ReactNode }) => {
 
   return (
     <ChatbotLayout>
-      <DashboardPageHeader
-        title="Conversations"
-        containerClassName="max-w-full"
-      />
-      <div className="flex flex-1 overflow-hidden">
-        <div className="flex w-80 flex-col gap-1 overflow-y-auto border-r p-2">
-          {conversationsQuery.isLoading ? (
-            <p>Loading...</p>
-          ) : conversationsQuery.isError ? (
-            <p>{conversationsQuery.error.message}</p>
-          ) : conversationsQuery.data.length === 0 ? (
-            <div className="flex flex-1 flex-col items-center justify-center gap-4">
-              <p className="text-center text-sm text-muted-foreground">
-                No results.
-              </p>
-              <Button
-                variant="outline"
-                onClick={() => conversationsQuery.refetch()}
-                disabled={conversationsQuery.isRefetching}
-              >
-                Refresh
-              </Button>
-            </div>
-          ) : (
-            <SideBarNav
-              list={[
-                {
-                  items: conversationsQuery.data.map((conversation) => ({
-                    href: `/chatbots/${chatbotId}/conversations/${conversation.id}`,
-                    label: conversation.title || conversation.id,
-                    subtitle: formatDistanceToNow(
-                      new Date(conversation.updatedAt),
-                      {
-                        addSuffix: true,
-                      },
-                    ),
-                    icon: <MessagesSquare size={22} />,
-                  })),
-                },
-              ]}
-            />
-          )}
+      <div className="flex h-screen flex-col overflow-hidden">
+        <DashboardPageHeader
+          title="Conversations"
+          containerClassName="max-w-full"
+        />
+        <div className="flex flex-1 overflow-hidden">
+          <div className="flex w-80 flex-col gap-1 overflow-y-auto border-r p-2">
+            {conversationsQuery.isLoading ? (
+              <p>Loading...</p>
+            ) : conversationsQuery.isError ? (
+              <p>{conversationsQuery.error.message}</p>
+            ) : conversationsQuery.data.length === 0 ? (
+              <div className="flex flex-1 flex-col items-center justify-center gap-4">
+                <p className="text-center text-sm text-muted-foreground">
+                  No results.
+                </p>
+                <Button
+                  variant="outline"
+                  onClick={() => conversationsQuery.refetch()}
+                  disabled={conversationsQuery.isRefetching}
+                >
+                  Refresh
+                </Button>
+              </div>
+            ) : (
+              <SideBarNav
+                list={[
+                  {
+                    items: conversationsQuery.data.map((conversation) => ({
+                      href: `/chatbots/${chatbotId}/conversations/${conversation.id}`,
+                      label: conversation.title || conversation.id,
+                      subtitle: formatDistanceToNow(
+                        new Date(conversation.updatedAt),
+                        {
+                          addSuffix: true,
+                        },
+                      ),
+                      icon: <MessagesSquare size={22} />,
+                    })),
+                  },
+                ]}
+              />
+            )}
+          </div>
+          <div className="flex flex-1 flex-col overflow-hidden">{children}</div>
         </div>
-        <div className="flex flex-1 flex-col overflow-hidden">{children}</div>
       </div>
     </ChatbotLayout>
   );

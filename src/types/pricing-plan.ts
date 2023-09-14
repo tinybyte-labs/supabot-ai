@@ -2,9 +2,10 @@ export type SubscriptionInterval = "monthly" | "annually";
 
 export type SubscriptionPlan = {
   id: string;
+  type: string;
   price: number;
   interval: SubscriptionInterval;
-  title: string;
+  name: string;
   description: string;
   isPopular?: boolean;
 };

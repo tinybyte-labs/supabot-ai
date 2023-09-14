@@ -11,11 +11,8 @@ const PricingPage: NextPageWithLayout = () => {
       <Head>
         <title>{`Pricing - ${APP_NAME}`}</title>
       </Head>
-
-      <main className="space-y-48 py-32">
-        <SubscriptionPlans />
-        <PricingFAQ />
-      </main>
+      <SubscriptionPlans />
+      <PricingFAQ />
     </>
   );
 };

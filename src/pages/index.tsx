@@ -19,12 +19,10 @@ const HomePage: NextPageWithLayout = () => {
           content={`Transform your web experience with ${APP_NAME}, the future of conversational AI. Craft a personalized chatbot tailored to your website's content. Enhance customer engagement and boost conversions.`}
         />
       </Head>
-      <main className="space-y-48 py-32">
-        <Hero />
-        <Demo />
-        <Features />
-        <EndCTA />
-      </main>
+      <Hero />
+      <Demo />
+      <Features />
+      <EndCTA />
     </>
   );
 };
