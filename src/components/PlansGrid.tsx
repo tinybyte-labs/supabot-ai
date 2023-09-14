@@ -7,7 +7,7 @@ import {
 import { features } from "@/data/features";
 import { cn } from "@/lib/utils";
 import { SubscriptionPlan } from "@/types/pricing-plan";
-import { Check, HelpCircle } from "lucide-react";
+import { Check, HelpCircle, Loader2 } from "lucide-react";
 
 const PlansGrid = ({
   plans,
@@ -15,10 +15,12 @@ const PlansGrid = ({
   currentPlan,
   onPlanClick,
   buttonLabel,
+  loading,
 }: {
   plans: SubscriptionPlan[];
   hidePopularBadge?: boolean;
   currentPlan?: string;
+  loading?: boolean;
   onPlanClick?: (plan: SubscriptionPlan) => void;
   buttonLabel?: (plan: SubscriptionPlan) => string;
 }) => {
@@ -93,14 +95,18 @@ const PlansGrid = ({
                   variant={popular ? "default" : "secondary"}
                   className="flex w-full rounded-full"
                   size="lg"
-                  disabled={isActive}
+                  disabled={isActive || loading}
                   onClick={() => onPlanClick?.(plan)}
                 >
-                  {isActive
-                    ? "Current Plan"
-                    : buttonLabel
-                    ? buttonLabel(plan)
-                    : "Get Started"}
+                  {loading ? (
+                    <Loader2 size={20} className="animate-spin" />
+                  ) : isActive ? (
+                    "Current Plan"
+                  ) : buttonLabel ? (
+                    buttonLabel(plan)
+                  ) : (
+                    "Get Started"
+                  )}
                 </Button>
               </div>
             </div>

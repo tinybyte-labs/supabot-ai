@@ -16,6 +16,8 @@ import { APP_NAME } from "@/utils/constants";
 import Script from "next/script";
 import * as gtag from "@/utils/gtag";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Elements } from "@stripe/react-stripe-js";
+import { stripePromise } from "@/lib/stripe";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -50,24 +52,25 @@ function App({ Component, pageProps }: AppPropsWithLayout) {
   }, [closeSidebar, router.events, sidebarOpen]);
 
   return (
-    <ThemeProvider attribute="class" enableSystem>
-      <ClerkProvider {...pageProps}>
-        <NextNProgress
-          color="#2563EB"
-          height={2}
-          options={{ showSpinner: false }}
-        />
-        <TooltipProvider>
-          <div className={cn(inter.className, "antialiased")}>
-            <Head>
-              <title>{APP_NAME}</title>
-            </Head>
-            <Script
-              strategy="lazyOnload"
-              src={`https://www.googletagmanager.com/gtag/js?id=${gtag.MEASUREMENT_ID}`}
-            />
-            <Script id="google-analytics" strategy="lazyOnload">
-              {`
+    <Elements stripe={stripePromise}>
+      <ThemeProvider attribute="class" enableSystem>
+        <ClerkProvider {...pageProps}>
+          <NextNProgress
+            color="#2563EB"
+            height={2}
+            options={{ showSpinner: false }}
+          />
+          <TooltipProvider>
+            <div className={cn(inter.className, "antialiased")}>
+              <Head>
+                <title>{APP_NAME}</title>
+              </Head>
+              <Script
+                strategy="lazyOnload"
+                src={`https://www.googletagmanager.com/gtag/js?id=${gtag.MEASUREMENT_ID}`}
+              />
+              <Script id="google-analytics" strategy="lazyOnload">
+                {`
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
@@ -76,13 +79,14 @@ function App({ Component, pageProps }: AppPropsWithLayout) {
               });
               console.log("GA SENT");
             `}
-            </Script>
-            {getLayout(<Component {...pageProps} />)}
-          </div>
-        </TooltipProvider>
-        <Toaster />
-      </ClerkProvider>
-    </ThemeProvider>
+              </Script>
+              {getLayout(<Component {...pageProps} />)}
+            </div>
+          </TooltipProvider>
+          <Toaster />
+        </ClerkProvider>
+      </ThemeProvider>
+    </Elements>
   );
 }
 

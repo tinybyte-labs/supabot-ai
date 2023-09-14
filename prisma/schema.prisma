@@ -39,6 +39,7 @@ model Organization {
   publicMetadata       Json?    @map("public_metadata")
   createdBy            String?  @map("created_by")
   plan                 String   @default("free")
+  customerId           String?  @unique @map("customer_id")
   subscriptionId       String?  @unique @map("subscription_id")
   billingCycleStartDay Int      @default(1) @map("billing_cycle_start_day")
 

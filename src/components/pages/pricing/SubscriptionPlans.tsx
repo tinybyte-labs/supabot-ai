@@ -37,7 +37,12 @@ const SubscriptionPlans = () => {
         <PlansGrid
           plans={currentPlans}
           buttonLabel={(plan) => `Get started with ${plan.name}`}
-          onPlanClick={() => router.push("/register")}
+          onPlanClick={() =>
+            router.push({
+              pathname: "/register",
+              search: "redirect_url=/plan-billing#plans",
+            })
+          }
         />
       </div>
     </section>

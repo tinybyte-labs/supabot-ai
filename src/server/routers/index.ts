@@ -6,6 +6,7 @@ import { conversationRouter } from "./conversation";
 import { linkRouter } from "./link";
 import { messageRouter } from "./message";
 import { quickPromptRouter } from "./quickPrompt";
+import { stripeRouter } from "./stripe";
 import { subscriptionRouter } from "./subscription";
 import { utilsRouter } from "./utils";
 
@@ -19,6 +20,7 @@ export const appRouter = router({
   message: messageRouter,
   clerk: clerkRouter,
   subscription: subscriptionRouter,
+  stripe: stripeRouter,
 });
 
 export type AppRouter = typeof appRouter;

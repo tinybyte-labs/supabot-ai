@@ -20,6 +20,7 @@ const Page: NextPageWithLayout = () => {
       </div>
     );
   }
+
   if (plan.isError) {
     return <p>{plan.error.message}</p>;
   }
