@@ -48,7 +48,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       case "customer.subscription.deleted":
         caller.stripe.webhooks.customerSubscriptionDeleted({ event });
         break;
-
       default:
         console.log("Unhandled Stripe Event", {
           id: event.id,

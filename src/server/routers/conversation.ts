@@ -42,7 +42,6 @@ export const conversationRouter = router({
       let ipInfo: IpInfo | null = null;
       if (ctx.clientIp) {
         ipInfo = await getIpInfo(ctx.clientIp);
-        console.log({ ipInfo });
       }
       return ctx.db.conversation.create({
         data: {

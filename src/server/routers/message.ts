@@ -163,7 +163,6 @@ function getContextTextFromChunks(
   for (const sect of chunks) {
     const encoded = tokenizer.encode(contextText);
     tokenCount += encoded.text.length;
-    console.log({ tokenCount });
     if (tokenCount >= 1000) {
       break;
     }

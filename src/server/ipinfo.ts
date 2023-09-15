@@ -15,7 +15,6 @@ export const getIpInfo = async (ip: string): Promise<IpInfo | null> => {
   const res = await fetch(
     `https://ipinfo.io/${ip}?token=${process.env.IPINFO_KEY}`,
   );
-  console.log({ res });
   if (!res.ok) {
     return null;
   }

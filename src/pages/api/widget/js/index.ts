@@ -35,7 +35,6 @@ export default async function handler(
   const SCRIPT_TEMPLATE = `
 !(function() {
   function initialize() {
-    console.log("initializing")
     const xm = ${settings.mx ?? 18};
     const ym = ${settings.my ?? 18};
     const p = "${(chatbot.settings as ChatbotSettings)?.position ?? "right"}";
@@ -222,7 +221,6 @@ export default async function handler(
       btn.style.transform = "scale(1)";
       hovering = false;
     };
-    console.log("initialized")
   }
 
   if(document.readyState === 'complete') {

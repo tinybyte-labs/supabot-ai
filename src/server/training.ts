@@ -44,11 +44,6 @@ export const trainLink = async (linkId: string) => {
 
     // fetch the website
     const docs = await getDocumentsFromWeb(new URL(link.url));
-    for (const doc of docs) {
-      console.log("-----------------");
-      console.log(doc);
-      console.log("-----------------");
-    }
     await addDocuments(docs, link.chatbotId, linkId);
 
     // update the link status to success.

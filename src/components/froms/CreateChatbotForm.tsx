@@ -51,7 +51,6 @@ export default function CreateChatbotForm() {
 
   useEffect(() => {
     setName(name);
-    console.log(name);
   }, [name, setName]);
 
   return (

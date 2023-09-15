@@ -71,14 +71,13 @@ function App({ Component, pageProps }: AppPropsWithLayout) {
               />
               <Script id="google-analytics" strategy="lazyOnload">
                 {`
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', '${gtag.MEASUREMENT_ID}', {
-              page_path: window.location.pathname,
-              });
-              console.log("GA SENT");
-            `}
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', '${gtag.MEASUREMENT_ID}', {
+                  page_path: window.location.pathname,
+                  });
+                `}
               </Script>
               {getLayout(<Component {...pageProps} />)}
             </div>

@@ -2,7 +2,6 @@ import * as cheerio from "cheerio";
 
 export default async function fetchUrlsFromWebsite(url: string) {
   let pathnames = await fetchPathnames(new URL(url));
-  console.log(pathnames);
   const urls = pathnames.map((path) => new URL(path, url).href);
   return urls.sort((a, b) => a.localeCompare(b));
 }
@@ -23,9 +22,7 @@ const fetchPathnames = async (
           pathnames,
         );
         pathnames.push(...newPathnames);
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (error) {}
     }
   }
 
@@ -33,7 +30,6 @@ const fetchPathnames = async (
 };
 
 const getAllUrlsFromWebpage = async (pageUrl: URL) => {
-  console.log(pageUrl.href);
   try {
     const res = await fetch(pageUrl);
     const $ = cheerio.load(await res.text());
