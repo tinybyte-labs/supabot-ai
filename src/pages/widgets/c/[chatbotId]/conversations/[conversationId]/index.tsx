@@ -151,7 +151,6 @@ const ConversationPage: NextPageWithLayout = () => {
       );
 
       sendMessage.mutateAsync({
-        chatbotId: chatbot.id,
         conversationId: conversation.data.id,
         message,
         userId: user?.id,
@@ -160,7 +159,6 @@ const ConversationPage: NextPageWithLayout = () => {
       setTimeout(() => handleScrollToBottom(), 100);
     },
     [
-      chatbot.id,
       conversation.data?.id,
       conversation.isSuccess,
       handleScrollToBottom,

@@ -3,7 +3,6 @@ import { publicProcedure, router } from "../trpc";
 import { embedText, moderateText, openai } from "../openai";
 import { ResponseTypes } from "openai-edge";
 import { getDocuments } from "../vector-store";
-import { Chatbot } from "@prisma/client";
 import GPT3Tokenizer from "gpt3-tokenizer";
 import { TRPCError } from "@trpc/server";
 import { getFirstAndLastDay } from "@/utils/getStartAndLastDate";
@@ -27,52 +26,39 @@ export const messageRouter = router({
   send: publicProcedure
     .input(
       z.object({
-        chatbotId: z.string(),
         conversationId: z.string(),
         message: z.string().min(1).max(500),
         userId: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const orgId = ctx.auth.orgId;
-      if (!orgId) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "No organization selected",
-        });
-      }
-      const org = await ctx.db.organization.findUnique({
-        where: { id: orgId },
+      const conversation = await ctx.db.conversation.findUnique({
+        where: { id: input.conversationId },
         select: {
-          plan: true,
-          billingCycleStartDay: true,
+          chatbot: {
+            select: {
+              id: true,
+              name: true,
+              organization: {
+                select: {
+                  id: true,
+                  billingCycleStartDay: true,
+                  plan: true,
+                },
+              },
+            },
+          },
         },
       });
-      if (!org) {
+      if (!conversation) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Organization not found!",
+          message: "Conversation not found!",
         });
       }
-      if (org.billingCycleStartDay === null) {
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Billing cycle start day not found. Please subscribe",
-        });
-      }
-      const chatbot = await ctx.db.chatbot.findUnique({
-        where: { id: input.chatbotId },
-        select: {
-          name: true,
-        },
-      });
-      if (!chatbot) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Chatbot not found!",
-        });
-      }
-      const plan = plans.find((plan) => plan.id === org.plan);
+      const plan = plans.find(
+        (plan) => plan.id === conversation.chatbot.organization.plan,
+      );
       if (!plan) {
         throw new TRPCError({
           code: "FORBIDDEN",
@@ -81,11 +67,13 @@ export const messageRouter = router({
       }
       if (plan.limits.messagesPerMonth !== "unlimited") {
         const { firstDay, lastDay } = getFirstAndLastDay(
-          org.billingCycleStartDay,
+          conversation.chatbot.organization.billingCycleStartDay,
         );
         const last30DaysMessageCount = await ctx.db.message.count({
           where: {
-            conversation: { chatbot: { organizationId: orgId } },
+            conversation: {
+              chatbot: { organizationId: conversation.chatbot.organization.id },
+            },
             createdAt: {
               gte: firstDay,
               lte: lastDay,
@@ -108,11 +96,10 @@ export const messageRouter = router({
           ...(input.userId ? { userId: input.userId } : {}),
         },
       });
-
       const { message, sources } = await generateAiResponse({
         message: input.message,
-        chatbotId: input.chatbotId,
-        chatbotName: chatbot.name,
+        chatbotId: conversation.chatbot.id,
+        chatbotName: conversation.chatbot.name,
       });
 
       const botMessage = await ctx.db.message.create({
