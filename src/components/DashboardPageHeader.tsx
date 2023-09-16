@@ -1,6 +1,8 @@
 import { ReactNode } from "react";
 import ToggleSidebarButton from "./ToggleSidebarButton";
 import { cn } from "@/lib/utils";
+import Head from "next/head";
+import { APP_NAME } from "@/utils/constants";
 
 export interface DashboardPageHeaderProps {
   title: string;
@@ -19,6 +21,9 @@ const DashboardPageHeader = ({
 }: DashboardPageHeaderProps) => {
   return (
     <header className={cn("border-b", className)}>
+      <Head>
+        <title>{`${title} - ${APP_NAME}`}</title>
+      </Head>
       <div
         className={cn(
           "container flex min-h-[88px] gap-4 py-6 max-md:flex-col md:items-center",
