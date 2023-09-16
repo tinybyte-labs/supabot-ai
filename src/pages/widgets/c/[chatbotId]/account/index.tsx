@@ -14,13 +14,12 @@ import ChatbotWidgetLayout, {
 } from "@/layouts/ChatbotWidgetLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChatbotUser } from "@prisma/client";
-import { LogOut, User2 } from "lucide-react";
+import { User } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const AccountPage: NextPageWithLayout = () => {
-  const { user, signOut } = useChatbotWidget();
+  const { user } = useChatbotWidget();
 
   return (
     <>
@@ -57,11 +56,16 @@ const Profile = () => {
   if (!user) return null;
 
   return (
-    <div className="p-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-semibold leading-tight tracking-tight">
-          Your Account
-        </h1>
+    <div className="p-4">
+      <div className="mb-8 flex items-center justify-between">
+        <Avatar className="h-20 w-20">
+          <AvatarFallback>
+            <User size={32} />
+          </AvatarFallback>
+        </Avatar>
+        <Button variant="destructive" onClick={signOut}>
+          Log Out
+        </Button>
       </div>
       <Form {...form}>
         <form className="grid gap-6">
@@ -92,9 +96,6 @@ const Profile = () => {
             )}
           />
           <Button type="submit">Update</Button>
-          <Button variant="destructive" type="button" onClick={signOut}>
-            Log Out
-          </Button>
         </form>
       </Form>
     </div>

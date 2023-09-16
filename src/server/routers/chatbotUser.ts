@@ -28,7 +28,7 @@ export const chatbotUserRouter = router({
       return ctx.db.chatbotUser.create({
         data: {
           chatbotId: input.chatbotId,
-          ...(input.email ? { email: input.email } : {}),
+          email: input.email,
           ...(input.name ? { name: input.name } : {}),
         },
       });

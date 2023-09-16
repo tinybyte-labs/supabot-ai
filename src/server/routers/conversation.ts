@@ -111,4 +111,39 @@ export const conversationRouter = router({
         },
       });
     }),
+  publicList: publicProcedure
+    .input(
+      z.object({
+        chatbotId: z.string(),
+        userId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      return ctx.db.conversation.findMany({
+        where: {
+          chatbotId: input.chatbotId,
+          userId: input.userId,
+        },
+        select: {
+          id: true,
+          title: true,
+          updatedAt: true,
+          createdAt: true,
+          status: true,
+          messages: {
+            select: {
+              role: true,
+              body: true,
+            },
+            orderBy: {
+              updatedAt: "desc",
+            },
+            take: 1,
+          },
+        },
+        orderBy: {
+          updatedAt: "desc",
+        },
+      });
+    }),
 });

@@ -190,7 +190,7 @@ const ConversationPage: NextPageWithLayout = () => {
     <div className="flex h-full w-full flex-1 flex-col overflow-hidden">
       <header className="flex items-center gap-3 border-b p-2">
         <Button size="icon" variant="ghost" asChild>
-          <Link href={`/widgets/c/${chatbot.id}`}>
+          <Link href={`/widgets/c/${chatbot.id}/conversations`}>
             <p className="sr-only">go to home</p>
             <ArrowLeft size={20} />
           </Link>

@@ -1,6 +1,7 @@
 import ChatboxStyle from "@/components/ChatboxStyle";
 import ChatboxWatermark from "@/components/ChatboxWatermark";
 import { useToast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
 import { trpc } from "@/utils/trpc";
 import { ChatbotSettings } from "@/utils/validators";
 import { Chatbot, ChatbotUser } from "@prisma/client";
@@ -20,7 +21,7 @@ export type ChatboxContext = {
   chatbot: Chatbot;
   user?: ChatbotUser | null;
   signOut: () => void;
-  signIn: (email?: string, name?: string) => void;
+  signIn: (email: string, name?: string) => void;
 };
 
 const Context = createContext<ChatboxContext | null>(null);
@@ -65,7 +66,7 @@ const ChatbotWidgetLayout = ({
     },
   });
 
-  const signIn = (email?: string, name?: string) =>
+  const signIn = (email: string, name?: string) =>
     logIn.mutate({ email, name, chatbotId });
 
   const signOut = () => {
@@ -117,16 +118,27 @@ const ChatbotWidgetLayout = ({
                 href: `/widgets/c/${router.query.chatbotId}/account`,
                 icon: <User size={20} />,
               },
-            ].map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="flex flex-1 flex-col items-center justify-center"
-              >
-                {item.icon}
-                <p className="text-sm">{item.label}</p>
-              </Link>
-            ))}
+            ].map((item) => {
+              const isActive = item.exact
+                ? router.asPath === item.href
+                : router.asPath.startsWith(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "flex flex-1 flex-col items-center justify-center",
+                    {
+                      "text-foreground": isActive,
+                      "text-muted-foreground hover:text-foreground": !isActive,
+                    },
+                  )}
+                >
+                  {item.icon}
+                  <p className="mt-0.5 text-sm">{item.label}</p>
+                </Link>
+              );
+            })}
           </div>
         )}
         <ChatboxWatermark />

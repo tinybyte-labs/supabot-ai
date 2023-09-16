@@ -46,7 +46,7 @@ export const updateQuickPromptValidator = z.object({
 
 export const chatbotUserLogInValidator = z.object({
   chatbotId: z.string(),
-  email: z.string().email().optional(),
+  email: z.string().email(),
   name: z.string().max(80).optional(),
 });
 

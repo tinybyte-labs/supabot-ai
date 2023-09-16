@@ -159,12 +159,13 @@ model QuickPrompt {
 }
 
 model ChatbotUser {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  email     String?
-  name      String?
-  chatbotId String   @map("chatbot_id")
+  id              String    @id @default(cuid())
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  email           String
+  name            String?
+  emailVerifiedAt DateTime? @map("email_verified_at")
+  chatbotId       String    @map("chatbot_id")
 
   chatbot       Chatbot        @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
   conversations Conversation[]
