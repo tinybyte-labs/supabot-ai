@@ -14,7 +14,7 @@ export type ChatboxContext = {
 
 const Context = createContext<ChatboxContext | null>(null);
 
-const ChatbotBoxLayout = ({ children }: { children: ReactNode }) => {
+const ChatbotWidgetLayout = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
   const [user, setUser] = useState<ChatbotUser | null>(null);
   const chatbot = trpc.chatbot.findById.useQuery(
@@ -45,7 +45,7 @@ const ChatbotBoxLayout = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export default ChatbotBoxLayout;
+export default ChatbotWidgetLayout;
 
 export const useChatbox = () => {
   const context = useContext(Context);

@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import ChatbotBoxLayout, { useChatbox } from "@/layouts/ChatboxLayout";
+import ChatbotWidgetLayout, { useChatbox } from "@/layouts/ChatbotWidgetLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
 import { Loader2, SendHorizonal } from "lucide-react";
@@ -80,6 +80,8 @@ const ChatBoxHome: NextPageWithLayout = () => {
   );
 };
 
-ChatBoxHome.getLayout = (page) => <ChatbotBoxLayout>{page}</ChatbotBoxLayout>;
+ChatBoxHome.getLayout = (page) => (
+  <ChatbotWidgetLayout>{page}</ChatbotWidgetLayout>
+);
 
 export default ChatBoxHome;
