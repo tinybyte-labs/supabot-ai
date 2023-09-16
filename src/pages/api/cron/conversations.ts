@@ -24,12 +24,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           },
           orderBy: { createdAt: "desc" },
         });
-        if (
-          isBefore(
-            subHours(new Date(), 4),
-            lastMessage ? lastMessage.createdAt : conversation.createdAt,
-          )
-        ) {
+
+        const date = lastMessage
+          ? lastMessage.createdAt
+          : conversation.createdAt;
+
+        if (isBefore(date, subHours(new Date(), 4))) {
           const prismaResponse = await prisma.conversation.update({
             where: { id: conversation.id },
             data: { status: "CLOSED", closedAt: new Date() },
