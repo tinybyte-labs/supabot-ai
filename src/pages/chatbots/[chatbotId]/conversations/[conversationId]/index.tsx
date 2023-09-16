@@ -4,29 +4,28 @@ import UserMessageBubble from "@/components/UserMessageBubble";
 import { Button } from "@/components/ui/button";
 import { COUNTRIES } from "@/data/countries";
 import ConversationsLayout from "@/layouts/ConversationsLayout";
+import { useChatbot } from "@/providers/ChatbotProvider";
 import { IpInfo } from "@/server/ipinfo";
 import { NextPageWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
-import { format, formatDistanceToNow } from "date-fns";
-import { Loader2, MoreVertical, RefreshCw } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { Loader2, RefreshCw } from "lucide-react";
 import { useRouter } from "next/router";
 import { Fragment, useCallback, useEffect, useRef } from "react";
 
 const ConversationPage: NextPageWithLayout = () => {
   const scrollElRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const chatbotId = router.query.chatbotId as string;
   const conversationId = router.query.conversationId as string;
-  const chatbot = trpc.chatbot.findById.useQuery(chatbotId, {
-    enabled: router.isReady,
-  });
-  const conversation = trpc.conversation.getById.useQuery(
-    { id: conversationId, chatbotId },
-    { enabled: chatbot.isSuccess },
+  const chatbotId = router.query.chatbotId as string;
+  const { chatbot, isLoaded } = useChatbot();
+  const conversation = trpc.conversation.protectedGetById.useQuery(
+    { conversationId, chatbotId },
+    { enabled: router.isReady },
   );
   const messages = trpc.message.list.useQuery(
     { conversationId },
-    { enabled: conversation.isSuccess },
+    { enabled: router.isReady },
   );
   const ipInfo = conversation.data?.ipInfo as IpInfo | null;
 
@@ -58,8 +57,16 @@ const ConversationPage: NextPageWithLayout = () => {
     };
   }, [handleScrollToBottom, messages.data]);
 
-  if (!chatbot.isSuccess) {
-    return <p>Loading...</p>;
+  if (!isLoaded) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center">
+        <Loader2 size={24} className="animate-spin" />
+      </div>
+    );
+  }
+
+  if (!chatbot) {
+    return null;
   }
 
   if (conversation.isLoading) {
@@ -72,7 +79,7 @@ const ConversationPage: NextPageWithLayout = () => {
 
   return (
     <>
-      <ChatboxStyle {...((chatbot.data.settings as any) || {})} />
+      <ChatboxStyle {...((chatbot.settings as any) || {})} />
       <div className="flex flex-1 overflow-hidden">
         <div className="chatbox flex flex-1 flex-col overflow-hidden">
           <div className="sticky top-0 z-20 flex h-14 items-center border-b bg-card px-4 text-card-foreground">
@@ -101,10 +108,10 @@ const ConversationPage: NextPageWithLayout = () => {
               <p>{messages.error.message}</p>
             ) : (
               <div className="flex-1 space-y-6 p-4">
-                {(chatbot.data.settings as any)?.welcomeMessage && (
+                {(chatbot.settings as any)?.welcomeMessage && (
                   <BotMessageBubble
                     name="BOT"
-                    message={(chatbot.data.settings as any)?.welcomeMessage}
+                    message={(chatbot.settings as any)?.welcomeMessage}
                     date={conversation.data.createdAt}
                   />
                 )}
@@ -192,15 +199,15 @@ const ConversationPage: NextPageWithLayout = () => {
               {[
                 {
                   label: "Id",
-                  value: "Unknown",
-                },
-                {
-                  label: "Name",
-                  value: "Unknown",
+                  value: conversation.data.user?.id || "Unknown",
                 },
                 {
                   label: "Email",
-                  value: "Unknown",
+                  value: conversation.data.user?.email || "Unknown",
+                },
+                {
+                  label: "Name",
+                  value: conversation.data.user?.name || "Unknown",
                 },
               ].map((item, i) => (
                 <div key={i} className="flex text-sm">

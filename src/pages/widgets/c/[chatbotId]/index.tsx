@@ -1,7 +1,9 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import ChatbotWidgetLayout, { useChatbox } from "@/layouts/ChatbotWidgetLayout";
+import ChatbotWidgetLayout, {
+  useChatbotWidget,
+} from "@/layouts/ChatbotWidgetLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
 import { Loader2, SendHorizonal } from "lucide-react";
@@ -9,7 +11,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 
 const ChatBoxHome: NextPageWithLayout = () => {
-  const { chatbot, user } = useChatbox();
+  const { chatbot, user } = useChatbotWidget();
   const router = useRouter();
   const { toast } = useToast();
   const startConversation = trpc.conversation.create.useMutation({

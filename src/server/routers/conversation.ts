@@ -4,6 +4,51 @@ import { TRPCError } from "@trpc/server";
 import { IpInfo, getIpInfo } from "../ipinfo";
 
 export const conversationRouter = router({
+  protectedGetById: protectedProcedure
+    .input(
+      z.object({
+        conversationId: z.string(),
+        chatbotId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const conversation = await ctx.db.conversation.findFirst({
+        where: {
+          id: input.conversationId,
+          chatbot: { id: input.chatbotId, organizationId: ctx.auth.orgId },
+        },
+        select: {
+          id: true,
+          title: true,
+          ipInfo: true,
+          url: true,
+          status: true,
+          createdAt: true,
+          updatedAt: true,
+          userId: true,
+          ipAddress: true,
+          closedAt: true,
+          user: {
+            select: {
+              id: true,
+              email: true,
+              name: true,
+            },
+          },
+        },
+      });
+      console.log({
+        conversation,
+        orgId: ctx.auth.orgId,
+      });
+      if (!conversation) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Conversation not found!",
+        });
+      }
+      return conversation;
+    }),
   getById: publicProcedure
     .input(
       z.object({
@@ -16,15 +61,9 @@ export const conversationRouter = router({
       const conversation = await ctx.db.conversation.findUnique({
         where: { id: input.id, chatbotId: input.chatbotId },
       });
-      if (!conversation) {
+      if (!conversation || conversation.userId !== input.userId) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Conversation not found!",
-        });
-      }
-      if (conversation.userId && conversation.userId !== input.userId) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
           message: "Conversation not found!",
         });
       }

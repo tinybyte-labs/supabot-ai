@@ -4,13 +4,15 @@ import ThemeTogglerIconButton from "@/components/ThemeTogglerIconButton";
 import UserMessageBubble from "@/components/UserMessageBubble";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import ChatbotWidgetLayout, { useChatbox } from "@/layouts/ChatbotWidgetLayout";
+import ChatbotWidgetLayout, {
+  useChatbotWidget,
+} from "@/layouts/ChatbotWidgetLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
 import { ChatbotSettings } from "@/utils/validators";
 import { Message } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
-import { ArrowLeft, Loader2, RefreshCw, SendIcon } from "lucide-react";
+import { ArrowLeft, Loader2, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {
@@ -24,7 +26,7 @@ import {
 
 const ConversationPage: NextPageWithLayout = () => {
   const router = useRouter();
-  const { user, chatbot } = useChatbox();
+  const { user, chatbot } = useChatbotWidget();
   const [message, setMessage] = useState("");
   const { toast } = useToast();
   const utils = trpc.useContext();
@@ -292,7 +294,7 @@ const ConversationPage: NextPageWithLayout = () => {
 };
 
 ConversationPage.getLayout = (page) => (
-  <ChatbotWidgetLayout>{page}</ChatbotWidgetLayout>
+  <ChatbotWidgetLayout hideTabBar>{page}</ChatbotWidgetLayout>
 );
 
 export default ConversationPage;
