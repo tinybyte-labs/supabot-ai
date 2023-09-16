@@ -1,5 +1,6 @@
 import ChatboxStyle from "@/components/ChatboxStyle";
 import ChatboxWatermark from "@/components/ChatboxWatermark";
+import { useToast } from "@/components/ui/use-toast";
 import { trpc } from "@/utils/trpc";
 import { ChatbotSettings } from "@/utils/validators";
 import { Chatbot, ChatbotUser } from "@prisma/client";
@@ -11,12 +12,15 @@ import {
   createContext,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 
 export type ChatboxContext = {
   chatbot: Chatbot;
   user?: ChatbotUser | null;
+  signOut: () => void;
+  signIn: (email?: string, name?: string) => void;
 };
 
 const Context = createContext<ChatboxContext | null>(null);
@@ -29,30 +33,56 @@ const ChatbotWidgetLayout = ({
   hideTabBar?: boolean;
 }) => {
   const router = useRouter();
+  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [userId, setUserId] = useState("");
-  const chatbot = trpc.chatbot.findById.useQuery(
-    (router.query.chatbotId as string) || "",
-    { enabled: router.isReady },
-  );
-  const userQuery = trpc.chatbotUser.getUser.useQuery(userId, {
+  const chatbotId = router.query.chatbotId as string;
+  const storageKey = useMemo(() => `${chatbotId}_user`, [chatbotId]);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  const chatbot = trpc.chatbot.findById.useQuery(chatbotId, {
+    enabled: router.isReady,
+  });
+
+  const userQuery = trpc.chatbotUser.getUser.useQuery(userId || "", {
     enabled: !!userId,
   });
 
-  useEffect(() => {
-    if (chatbot.data) {
-      const userId = localStorage.getItem(`${chatbot.data.id}_user`);
-      if (userId) {
-        setUserId(userId);
-      }
+  const logIn = trpc.chatbotUser.logIn.useMutation({
+    onSettled: () => {
+      setIsLoading(true);
+    },
+    onSuccess: (user) => {
+      localStorage.setItem(storageKey, user.id);
+      router.reload();
+    },
+    onError: (error) => {
       setIsLoading(false);
-    }
-  }, [chatbot.data]);
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
 
-  if (chatbot.isLoading || isLoading || (userId && userQuery.isLoading)) {
+  const signIn = (email?: string, name?: string) =>
+    logIn.mutate({ email, name, chatbotId });
+
+  const signOut = () => {
+    setIsLoading(true);
+    localStorage.removeItem(storageKey);
+    router.reload();
+  };
+
+  useEffect(() => {
+    const userId = localStorage.getItem(storageKey);
+    setUserId(userId);
+  }, [storageKey]);
+
+  if (chatbot.isLoading || (userId && userQuery.isLoading) || isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 size={24} />
+        <Loader2 size={24} className="animate-spin" />
       </div>
     );
   }
@@ -62,10 +92,12 @@ const ChatbotWidgetLayout = ({
   }
 
   return (
-    <Context.Provider value={{ user: userQuery.data, chatbot: chatbot.data }}>
+    <Context.Provider
+      value={{ user: userQuery.data, chatbot: chatbot.data, signOut, signIn }}
+    >
       <ChatboxStyle {...((chatbot.data.settings ?? {}) as ChatbotSettings)} />
       <div className="chatbox flex h-screen w-screen flex-col overflow-hidden">
-        <div className="flex-1 overflow-hidden">{children}</div>
+        <div className="flex flex-1 flex-col overflow-hidden">{children}</div>
         {!hideTabBar && (
           <div className="flex h-16 border-t">
             {[

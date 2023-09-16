@@ -178,7 +178,7 @@ const ConversationPage: NextPageWithLayout = () => {
   if (conversation.isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 size={24} />
+        <Loader2 size={24} className="animate-spin" />
       </div>
     );
   }

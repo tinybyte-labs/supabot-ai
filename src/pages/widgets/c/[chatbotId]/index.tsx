@@ -32,7 +32,7 @@ const ChatBoxHome: NextPageWithLayout = () => {
   };
 
   return (
-    <div className="relative flex h-full w-full flex-col space-y-4 p-4">
+    <div className="relative flex h-full w-full flex-1 flex-col space-y-4 overflow-auto p-4">
       <div className="p-4">
         <div className="flex items-center gap-2">
           <Avatar className="-ml-1 mr-2 h-12 w-12 rounded-lg">
