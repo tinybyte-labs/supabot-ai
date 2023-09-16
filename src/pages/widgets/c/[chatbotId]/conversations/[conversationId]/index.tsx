@@ -53,7 +53,7 @@ const ConversationPage: NextPageWithLayout = () => {
     { chatbotId: chatbot.id },
     { enabled: messages.isSuccess },
   );
-  const updateMessage = trpc.message.update.useMutation();
+  const updateMessage = trpc.message.react.useMutation();
 
   const handleMessageReact = async (
     message: Message,

@@ -1,12 +1,18 @@
 import { z } from "zod";
 import { publicProcedure, router } from "../trpc";
 import { embedText, moderateText, openai } from "../openai";
-import { ResponseTypes } from "openai-edge";
+import {
+  ChatCompletionRequestMessage,
+  ChatCompletionRequestMessageRoleEnum,
+  ResponseTypes,
+} from "openai-edge";
 import { getDocuments } from "../vector-store";
 import GPT3Tokenizer from "gpt3-tokenizer";
 import { TRPCError } from "@trpc/server";
 import { getFirstAndLastDay } from "@/utils/getStartAndLastDate";
 import { plans } from "@/data/plans";
+
+const tokenizer = new GPT3Tokenizer({ type: "gpt3" });
 
 export const messageRouter = router({
   list: publicProcedure
@@ -33,8 +39,9 @@ export const messageRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const conversation = await ctx.db.conversation.findUnique({
-        where: { id: input.conversationId },
+        where: { id: input.conversationId, status: "OPEN" },
         select: {
+          status: true,
           chatbot: {
             select: {
               id: true,
@@ -46,6 +53,14 @@ export const messageRouter = router({
                   plan: true,
                 },
               },
+            },
+          },
+          messages: {
+            select: {
+              id: true,
+              body: true,
+              role: true,
+              reaction: true,
             },
           },
         },
@@ -62,7 +77,7 @@ export const messageRouter = router({
       if (!plan) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "No subscription plan found! Please subscribe to a plan",
+          message: "Invalid subscription plan!",
         });
       }
       if (plan.limits.messagesPerMonth !== "unlimited") {
@@ -87,7 +102,27 @@ export const messageRouter = router({
           });
         }
       }
-
+      const moderatedQuery = await moderateText(input.message.trim());
+      const { message, sources } = await generateAiResponse({
+        messages: [
+          ...conversation.messages.map(
+            (message) =>
+              ({
+                role:
+                  message.role === "BOT"
+                    ? ChatCompletionRequestMessageRoleEnum.Assistant
+                    : ChatCompletionRequestMessageRoleEnum.User,
+                content: message.body,
+              }) satisfies ChatCompletionRequestMessage,
+          ),
+          {
+            role: ChatCompletionRequestMessageRoleEnum.User,
+            content: moderatedQuery,
+          },
+        ],
+        chatbotId: conversation.chatbot.id,
+        chatbotName: conversation.chatbot.name,
+      });
       const userMessage = await ctx.db.message.create({
         data: {
           body: input.message,
@@ -96,12 +131,6 @@ export const messageRouter = router({
           ...(input.userId ? { userId: input.userId } : {}),
         },
       });
-      const { message, sources } = await generateAiResponse({
-        message: input.message,
-        chatbotId: conversation.chatbot.id,
-        chatbotName: conversation.chatbot.name,
-      });
-
       const botMessage = await ctx.db.message.create({
         data: {
           body: message,
@@ -115,7 +144,7 @@ export const messageRouter = router({
 
       return { userMessage, botMessage };
     }),
-  update: publicProcedure
+  react: publicProcedure
     .input(
       z.object({
         id: z.string(),
@@ -141,8 +170,6 @@ Context:"""
 function getContextTextFromChunks(
   chunks: { content: string; source?: string }[],
 ) {
-  const tokenizer = new GPT3Tokenizer({ type: "gpt3" });
-
   let contextText = "";
   let sources: string[] = [];
   let tokenCount = 0;
@@ -162,17 +189,16 @@ function getContextTextFromChunks(
 }
 
 async function generateAiResponse({
-  message,
+  messages,
   chatbotId,
   chatbotName,
 }: {
   chatbotId: string;
   chatbotName: string;
-  message: string;
+  messages: ChatCompletionRequestMessage[];
 }) {
-  const sanitizedQuery = message.trim();
-  const moderatedQuery = await moderateText(sanitizedQuery);
-  const embedding = await embedText(moderatedQuery);
+  const lastMessage = messages[messages.length - 1];
+  const embedding = await embedText(lastMessage.content || "");
   const docs = await getDocuments(chatbotId, embedding);
   const { contextText, sources } = getContextTextFromChunks(
     docs.map((doc) => ({ content: doc.content, source: doc.source })),
@@ -183,6 +209,27 @@ async function generateAiResponse({
     chatbotName,
   ).replaceAll("{{CONTEXT}}", contextText);
 
+  let totalContext = systemContent;
+  const limitedMessages: ChatCompletionRequestMessage[] = [];
+  let tokenCount = 0;
+  for (let i = messages.length - 1; i >= 0; i--) {
+    const message = messages[i];
+    totalContext += `\n${message.role}:${message.content}`;
+    const encoded = tokenizer.encode(totalContext);
+    tokenCount += encoded.text.length;
+    if (tokenCount >= 4000) {
+      break;
+    }
+    limitedMessages.push(message);
+  }
+  console.log({ tokenCount });
+  console.log([
+    {
+      role: "system",
+      content: systemContent,
+    },
+    ...limitedMessages.reverse(),
+  ]);
   const response = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
     messages: [
@@ -190,10 +237,7 @@ async function generateAiResponse({
         role: "system",
         content: systemContent,
       },
-      {
-        role: "user",
-        content: moderatedQuery,
-      },
+      ...limitedMessages.reverse(),
     ],
     temperature: 0,
     max_tokens: 512,
