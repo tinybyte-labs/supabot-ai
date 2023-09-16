@@ -2,11 +2,12 @@ import DashboardPageHeader from "@/components/DashboardPageHeader";
 import { trpc } from "@/utils/trpc";
 import { ReactNode, useEffect } from "react";
 import { useRouter } from "next/router";
-import { MessagesSquare } from "lucide-react";
+import { Loader2, MessagesSquare, RefreshCw } from "lucide-react";
 import SideBarNav from "@/components/SideBarNav";
 import { formatDistanceToNow } from "date-fns";
 import ChatbotLayout from "./ChatbotLayout";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const ConversationsLayout = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
@@ -45,7 +46,30 @@ const ConversationsLayout = ({ children }: { children: ReactNode }) => {
         <DashboardPageHeader
           title="Conversations"
           containerClassName="max-w-full"
-        />
+        >
+          <div className="flex items-center gap-4">
+            {conversationsQuery.isLoading ? (
+              <>
+                <Skeleton className="h-10 w-24" />
+              </>
+            ) : (
+              <>
+                <Button
+                  disabled={conversationsQuery.isRefetching}
+                  variant="outline"
+                  onClick={() => conversationsQuery.refetch()}
+                >
+                  {conversationsQuery.isRefetching ? (
+                    <Loader2 size={18} className="-ml-1 mr-2 animate-spin" />
+                  ) : (
+                    <RefreshCw size={18} className="-ml-1 mr-2" />
+                  )}
+                  Refresh
+                </Button>
+              </>
+            )}
+          </div>
+        </DashboardPageHeader>
         <div className="flex flex-1 overflow-hidden">
           <div className="flex w-80 flex-col gap-1 overflow-y-auto border-r p-2">
             {conversationsQuery.isLoading ? (

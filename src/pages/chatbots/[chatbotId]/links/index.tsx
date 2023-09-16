@@ -27,7 +27,14 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
-import { Loader2, MoreHorizontal, Plus, RotateCw, Trash2 } from "lucide-react";
+import {
+  Loader2,
+  MoreHorizontal,
+  Plus,
+  RefreshCw,
+  RotateCw,
+  Trash2,
+} from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
 
@@ -154,7 +161,7 @@ const LinksPage: NextPageWithLayout = () => {
                 {linksQuery.isRefetching ? (
                   <Loader2 size={18} className="-ml-1 mr-2 animate-spin" />
                 ) : (
-                  <RotateCw size={18} className="-ml-1 mr-2" />
+                  <RefreshCw size={18} className="-ml-1 mr-2" />
                 )}
                 Refresh
               </Button>
