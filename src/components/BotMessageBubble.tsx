@@ -4,6 +4,8 @@ import { Message } from "@prisma/client";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
+import { ChatbotSettings } from "@/utils/validators";
+import { cn } from "@/lib/utils";
 
 const BotMessageBubble = ({
   message,
@@ -12,6 +14,7 @@ const BotMessageBubble = ({
   onReact,
   sources = [],
   date,
+  theme,
 }: {
   message: string;
   name?: string;
@@ -19,6 +22,7 @@ const BotMessageBubble = ({
   onReact?: (reaction: Message["reaction"]) => void;
   sources?: string[];
   date?: Date;
+  theme: ChatbotSettings["theme"];
 }) => {
   return (
     <div className="flex justify-start pr-12">
@@ -28,7 +32,11 @@ const BotMessageBubble = ({
         </p>
 
         <div className="relative rounded-2xl rounded-tl-sm bg-secondary p-4 text-secondary-foreground">
-          <ReactMarkdown className="prose max-w-none dark:prose-invert">
+          <ReactMarkdown
+            className={cn("prose max-w-none", {
+              "prose-invert": theme === "dark",
+            })}
+          >
             {message}
           </ReactMarkdown>
           {typeof onReact !== "undefined" && (

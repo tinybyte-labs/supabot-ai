@@ -32,7 +32,6 @@ import {
   PopoverTrigger,
 } from "@radix-ui/react-popover";
 import ColorPicker from "@/components/ColorPicker";
-import Image from "next/image";
 import { defaultChatbotSettings } from "@/data/defaultChatbotSettings";
 
 const ChatbotCustomizationPage: NextPageWithLayout = () => {
@@ -238,6 +237,29 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="settings.theme"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Theme</FormLabel>
+                    <FormControl>
+                      <Tabs
+                        value={field.value}
+                        onValueChange={(value) => field.onChange(value)}
+                      >
+                        <TabsList>
+                          <TabsTrigger value="light">Light</TabsTrigger>
+                          <TabsTrigger value="dark">Dark</TabsTrigger>
+                        </TabsList>
+                      </Tabs>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <Button type="submit" disabled={updateChatbot.isLoading}>
                 {updateChatbot.isLoading && <ButtonLoader />}
                 Update
@@ -280,13 +302,18 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
               color: form.watch().settings?.primaryForegroundColor,
             }}
           >
-            <Image
-              src="/x-icon.svg"
-              alt="Chatbot Icon"
-              width={32}
-              height={32}
-              className="h-8 w-8 object-contain"
-            />
+            <svg
+              width="1em"
+              height="1em"
+              viewBox="0 0 16 16"
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-8 w-8"
+            >
+              <path
+                fill="currentColor"
+                d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018.751.751 0 0 1-.018-1.042L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z"
+              />
+            </svg>
           </div>
         </div>
       </div>

@@ -12,7 +12,6 @@ const ChatbotDemoPage = () => {
   }
   return (
     <>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-muted"></main>
       <Script
         strategy="lazyOnload"
         src={`${BASE_DOMAIN}/api/widget/js?id=${chatbotId}`}

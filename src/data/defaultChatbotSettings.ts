@@ -9,4 +9,5 @@ export const defaultChatbotSettings: ChatbotSettings = {
   position: "right",
   mx: 18,
   my: 18,
+  theme: "light",
 };

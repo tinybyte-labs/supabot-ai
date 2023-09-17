@@ -41,7 +41,6 @@ export default async function handler(
     const style = document.createElement("style");
     style.id = "sb-style";
     style.innerHTML = \`
-      .light,
       :root {
         --sb-primary: ${
           settings.primaryColor ?? defaultChatbotSettings.primaryColor
@@ -50,19 +49,25 @@ export default async function handler(
           settings.primaryForegroundColor ??
           defaultChatbotSettings.primaryForegroundColor
         };
-        --sb-border: #E4E4E7;
-        --sb-background: #ffffff;
-        --sb-foreground: #09090b;
-      }
-      .dark {
+        ${
+          settings.theme === "dark"
+            ? `
         --sb-border: #27272a;
         --sb-background: #09090b;
         --sb-foreground: #ffffff;
+        `
+            : `
+        --sb-border: #E4E4E7;
+        --sb-background: #ffffff;
+        --sb-foreground: #09090b;
+        `
+        }
       }
     \`
     const btn = document.createElement("button");
     btn.id = "sb-btn";
     btn.style.backgroundColor = "var(--sb-primary)";
+    btn.style.color = "var(--sb-primary-foreground)";
     btn.style.position = "fixed";
     btn.style.display = "flex";
     btn.style.alignItems = "center";
@@ -176,7 +181,9 @@ export default async function handler(
     let chatboxOpen = false;
 
     const showChatbox = () => {
-      btn.innerHTML = "<img src='${BASE_DOMAIN}/x-icon.svg' alt='Chatbot Icon' style='width: 32px; height: 32px; object-fit: contain; padding: 0; margin: 0; pointer-events: none;' />";
+      btn.innerHTML = \`<svg width="512" height="512" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style='width: 32px; height: 32px;'>
+      <path fill="currentColor" d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326a.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275a.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018a.751.751 0 0 1-.018-1.042L6.94 8L3.72 4.78a.75.75 0 0 1 0-1.06Z"/>
+  </svg>\`;
       iframe.style.opacity = 1;
       iframe.style.pointerEvents = "auto";
       iframe.style.transform = "scale(1)";
@@ -184,7 +191,9 @@ export default async function handler(
     };
 
     const hideChatbox = () => {
-      btn.innerHTML = "<img src='${BASE_DOMAIN}/chatbot-icon.svg' alt='Chatbot Icon' style='width: 32px; height: 32px; object-fit: contain; padding: 0; margin: 0; pointer-events: none;' />";
+      btn.innerHTML = \`<svg width="512" height="512" viewBox="0 0 15 15" xmlns="http://www.w3.org/2000/svg" style='width: 32px; height: 32px;'>
+      <path fill="currentColor" d="M1.5 0C.671 0 0 .67 0 1.5v8.993c0 .83.671 1.5 1.5 1.5h3.732l1.852 2.775a.5.5 0 0 0 .832 0l1.851-2.775H13.5c.829 0 1.5-.67 1.5-1.5V1.5c0-.83-.671-1.5-1.5-1.5h-12Z"/>
+  </svg>\`;
       iframe.style.opacity = 0;
       iframe.style.pointerEvents = "none";
       iframe.style.transform = "scale(0)";

@@ -273,6 +273,7 @@ const ConversationPage: NextPageWithLayout = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button size="icon" variant="ghost">
+                <p className="sr-only">Menu</p>
                 <MoreVertical size={20} />
               </Button>
             </DropdownMenuTrigger>
@@ -301,6 +302,7 @@ const ConversationPage: NextPageWithLayout = () => {
                   name="BOT"
                   message={chatbotSettings.welcomeMessage}
                   date={conversationQuery.data.createdAt}
+                  theme={chatbotSettings.theme}
                 />
               )}
               {messagesQuery.data.map((message) => (
@@ -313,6 +315,7 @@ const ConversationPage: NextPageWithLayout = () => {
                       reaction={message.reaction}
                       sources={(message.metadata as any)?.sources as string[]}
                       date={message.createdAt}
+                      theme={chatbotSettings.theme}
                     />
                   ) : message.role === "USER" ? (
                     <UserMessageBubble

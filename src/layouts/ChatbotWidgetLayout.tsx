@@ -1,11 +1,12 @@
-import ChatboxStyle from "@/components/ChatboxStyle";
 import ChatboxWatermark from "@/components/ChatboxWatermark";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
+import { getTwHSL } from "@/utils/getTwHSL";
 import { trpc } from "@/utils/trpc";
 import { ChatbotSettings } from "@/utils/validators";
 import { Chatbot, ChatbotUser } from "@prisma/client";
 import { Home, Loader2, MessagesSquare, User } from "lucide-react";
+import { ThemeProvider } from "next-themes";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {
@@ -42,7 +43,7 @@ const ChatbotWidgetLayout = ({
   const storageKey = useMemo(() => `${chatbotId}_user`, [chatbotId]);
   const [userId, setUserId] = useState<string | null>(null);
 
-  const chatbot = trpc.chatbot.findById.useQuery(chatbotId, {
+  const chatbotQuery = trpc.chatbot.findById.useQuery(chatbotId, {
     enabled: router.isReady,
   });
 
@@ -101,77 +102,96 @@ const ChatbotWidgetLayout = ({
     setUserId(userId);
   }, [storageKey]);
 
-  if (chatbot.isLoading || (userId && userQuery.isLoading) || isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader2 size={24} className="animate-spin" />
-      </div>
-    );
-  }
-
-  if (chatbot.error) {
-    return <div>{chatbot.error.message}</div>;
-  }
-
   return (
-    <Context.Provider
-      value={{
-        user: userQuery.data,
-        chatbot: chatbot.data,
-        signOut,
-        signIn,
-        startConversation,
-        startConversationLoading: startConversationMutation.isLoading,
-      }}
+    <ThemeProvider
+      forcedTheme={
+        ((chatbotQuery.data?.settings ?? {}) as ChatbotSettings)?.theme ||
+        "light"
+      }
+      attribute="class"
     >
-      <ChatboxStyle {...((chatbot.data.settings ?? {}) as ChatbotSettings)} />
-      <div className="chatbox flex h-screen w-screen flex-col overflow-hidden">
-        <div className="flex flex-1 flex-col overflow-hidden">{children}</div>
-        {!hideTabBar && (
-          <div className="flex h-16 border-t">
-            {[
-              {
-                label: "Home",
-                icon: <Home size={20} />,
-                href: `/widgets/c/${router.query.chatbotId}`,
-                exact: true,
-              },
-              {
-                label: "Conversations",
-                icon: <MessagesSquare size={20} />,
-                href: `/widgets/c/${router.query.chatbotId}/conversations`,
-              },
-              {
-                label: "Account",
-                href: `/widgets/c/${router.query.chatbotId}/account`,
-                icon: <User size={20} />,
-              },
-            ].map((item) => {
-              const isActive = item.exact
-                ? router.asPath === item.href
-                : router.asPath.startsWith(item.href);
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "flex flex-1 flex-col items-center justify-center",
-                    {
-                      "text-foreground": isActive,
-                      "text-muted-foreground": !isActive,
-                    },
-                  )}
-                >
-                  {item.icon}
-                  <p className="mt-0.5 text-sm">{item.label}</p>
-                </Link>
-              );
-            })}
+      {chatbotQuery.isLoading ||
+      (userId && userQuery.isLoading) ||
+      isLoading ? (
+        <div className="flex min-h-screen items-center justify-center">
+          <Loader2 size={24} className="animate-spin" />
+        </div>
+      ) : chatbotQuery.isError ? (
+        <div>{chatbotQuery.error.message}</div>
+      ) : (
+        <Context.Provider
+          value={{
+            user: userQuery.data,
+            chatbot: chatbotQuery.data,
+            signOut,
+            signIn,
+            startConversation,
+            startConversationLoading: startConversationMutation.isLoading,
+          }}
+        >
+          <style>
+            {`.chatbox {
+            --primary: ${getTwHSL(
+              (chatbotQuery.data?.settings as ChatbotSettings)?.primaryColor ||
+                "",
+            )};
+            --primary-foreground: ${getTwHSL(
+              (chatbotQuery.data?.settings as ChatbotSettings)
+                ?.primaryForegroundColor || "",
+            )};
+          }`}
+          </style>
+          <div className="chatbox flex h-screen w-screen flex-col overflow-hidden">
+            <div className="flex flex-1 flex-col overflow-hidden">
+              {children}
+            </div>
+            {!hideTabBar && (
+              <div className="flex h-16 border-t">
+                {[
+                  {
+                    label: "Home",
+                    icon: <Home size={20} />,
+                    href: `/widgets/c/${router.query.chatbotId}`,
+                    exact: true,
+                  },
+                  {
+                    label: "Conversations",
+                    icon: <MessagesSquare size={20} />,
+                    href: `/widgets/c/${router.query.chatbotId}/conversations`,
+                  },
+                  {
+                    label: "Account",
+                    href: `/widgets/c/${router.query.chatbotId}/account`,
+                    icon: <User size={20} />,
+                  },
+                ].map((item) => {
+                  const isActive = item.exact
+                    ? router.asPath === item.href
+                    : router.asPath.startsWith(item.href);
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        "flex flex-1 flex-col items-center justify-center",
+                        {
+                          "text-foreground": isActive,
+                          "text-muted-foreground": !isActive,
+                        },
+                      )}
+                    >
+                      {item.icon}
+                      <p className="mt-0.5 text-sm">{item.label}</p>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+            <ChatboxWatermark />
           </div>
-        )}
-        <ChatboxWatermark />
-      </div>
-    </Context.Provider>
+        </Context.Provider>
+      )}
+    </ThemeProvider>
   );
 };
 

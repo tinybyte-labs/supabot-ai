@@ -53,24 +53,23 @@ function App({ Component, pageProps }: AppPropsWithLayout) {
 
   return (
     <Elements stripe={stripePromise}>
-      <ThemeProvider attribute="class" enableSystem>
-        <ClerkProvider {...pageProps}>
-          <NextNProgress
-            color="#2563EB"
-            height={2}
-            options={{ showSpinner: false }}
-          />
-          <TooltipProvider>
-            <div className={cn(inter.className, "antialiased")}>
-              <Head>
-                <title>{APP_NAME}</title>
-              </Head>
-              <Script
-                strategy="lazyOnload"
-                src={`https://www.googletagmanager.com/gtag/js?id=${gtag.MEASUREMENT_ID}`}
-              />
-              <Script id="google-analytics" strategy="lazyOnload">
-                {`
+      <ClerkProvider {...pageProps}>
+        <NextNProgress
+          color="#2563EB"
+          height={2}
+          options={{ showSpinner: false }}
+        />
+        <TooltipProvider>
+          <div className={cn(inter.className, "antialiased")}>
+            <Head>
+              <title>{APP_NAME}</title>
+            </Head>
+            <Script
+              strategy="lazyOnload"
+              src={`https://www.googletagmanager.com/gtag/js?id=${gtag.MEASUREMENT_ID}`}
+            />
+            <Script id="google-analytics" strategy="lazyOnload">
+              {`
                   window.dataLayer = window.dataLayer || [];
                   function gtag(){dataLayer.push(arguments);}
                   gtag('js', new Date());
@@ -78,13 +77,12 @@ function App({ Component, pageProps }: AppPropsWithLayout) {
                   page_path: window.location.pathname,
                   });
                 `}
-              </Script>
-              {getLayout(<Component {...pageProps} />)}
-            </div>
-          </TooltipProvider>
-          <Toaster />
-        </ClerkProvider>
-      </ThemeProvider>
+            </Script>
+            {getLayout(<Component {...pageProps} />)}
+          </div>
+        </TooltipProvider>
+        <Toaster />
+      </ClerkProvider>
     </Elements>
   );
 }

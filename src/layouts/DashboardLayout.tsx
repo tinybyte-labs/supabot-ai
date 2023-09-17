@@ -7,6 +7,7 @@ import SideBarNav, { SideBarNavProps } from "@/components/SideBarNav";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { useAtom } from "jotai";
 import { CreditCard, LayoutGrid, Settings } from "lucide-react";
+import { ThemeProvider } from "next-themes";
 import Link from "next/link";
 import { ReactNode, useMemo } from "react";
 
@@ -14,7 +15,7 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
   const [sidebarOpen, setSidebarOpen] = useAtom(sidebarOpenAtom);
 
   return (
-    <>
+    <ThemeProvider enableSystem attribute="class">
       <DevWarningBar />
       <div className="fixed bottom-0 left-0 top-0 w-64 border-r bg-card text-card-foreground max-lg:hidden">
         <SideBar />
@@ -25,7 +26,7 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
           <SideBar />
         </SheetContent>
       </Sheet>
-    </>
+    </ThemeProvider>
   );
 };
 

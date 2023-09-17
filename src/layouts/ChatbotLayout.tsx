@@ -16,6 +16,7 @@ import {
   Settings,
   MessageSquareIcon,
 } from "lucide-react";
+import { ThemeProvider } from "next-themes";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { ReactNode } from "react";
@@ -24,20 +25,22 @@ const ChatbotLayout = ({ children }: { children: ReactNode }) => {
   const [sidebarOpen, setSidebarOpen] = useAtom(sidebarOpenAtom);
 
   return (
-    <ChatbotProvider>
-      <DevWarningBar />
-      <div className="fixed bottom-0 left-0 top-0 w-64 border-r bg-card text-card-foreground max-lg:hidden">
-        <SideBar />
-      </div>
-      <main className="flex min-h-screen flex-1 flex-col lg:ml-64">
-        {children}
-      </main>
-      <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-        <SheetContent className="p-0" side="left">
+    <ThemeProvider enableSystem attribute="class">
+      <ChatbotProvider>
+        <DevWarningBar />
+        <div className="fixed bottom-0 left-0 top-0 w-64 border-r bg-card text-card-foreground max-lg:hidden">
           <SideBar />
-        </SheetContent>
-      </Sheet>
-    </ChatbotProvider>
+        </div>
+        <main className="flex min-h-screen flex-1 flex-col lg:ml-64">
+          {children}
+        </main>
+        <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+          <SheetContent className="p-0" side="left">
+            <SideBar />
+          </SheetContent>
+        </Sheet>
+      </ChatbotProvider>
+    </ThemeProvider>
   );
 };
 

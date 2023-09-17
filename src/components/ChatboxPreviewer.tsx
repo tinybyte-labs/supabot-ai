@@ -1,4 +1,4 @@
-import { ArrowLeft, RefreshCw } from "lucide-react";
+import { ArrowLeft, MoreVertical, RefreshCw } from "lucide-react";
 import { Button } from "./ui/button";
 import BotMessageBubble from "./BotMessageBubble";
 import UserMessageBubble from "./UserMessageBubble";
@@ -6,9 +6,9 @@ import { APP_NAME, DOMAIN } from "@/utils/constants";
 import ChatboxInputBar from "./ChatboxInputBar";
 import { useState } from "react";
 import ChatboxWatermark from "./ChatboxWatermark";
-import ChatboxStyle from "./ChatboxStyle";
-import ThemeTogglerIconButton from "./ThemeTogglerIconButton";
 import { ChatbotSettings } from "@/utils/validators";
+import { cn } from "@/lib/utils";
+import { getTwHSL } from "@/utils/getTwHSL";
 
 export type ChatboxPreviewerProps = {
   title: string;
@@ -17,9 +17,23 @@ export type ChatboxPreviewerProps = {
 const ChatboxPreviewer = ({ title, settings }: ChatboxPreviewerProps) => {
   const [message, setMessage] = useState("");
   return (
-    <>
-      <ChatboxStyle {...settings} />
-      <div className="chatbox flex h-[640px] w-[400px] flex-col overflow-hidden rounded-xl border bg-background text-foreground shadow-2xl">
+    <div className={cn(settings?.theme || "light")}>
+      <style>
+        {`.chatbox-previewer {
+            --primary: ${getTwHSL(settings?.primaryColor || "")};
+            --primary-foreground: ${getTwHSL(
+              settings?.primaryForegroundColor || "",
+            )};
+          }`}
+      </style>
+      <div
+        className={cn(
+          "chatbox-previewer flex h-[640px] w-[400px] flex-col overflow-hidden rounded-xl border bg-background text-foreground shadow-2xl",
+        )}
+        style={{
+          colorScheme: settings?.theme || "light",
+        }}
+      >
         <header className="flex items-center gap-3 border-b p-2">
           <Button size="icon" variant="ghost">
             <p className="sr-only">go to home</p>
@@ -33,7 +47,10 @@ const ChatboxPreviewer = ({ title, settings }: ChatboxPreviewerProps) => {
               <p className="sr-only">Refresh Conversation</p>
               <RefreshCw size={20} />
             </Button>
-            <ThemeTogglerIconButton />
+            <Button size="icon" variant="ghost">
+              <p className="sr-only">Menu</p>
+              <MoreVertical size={20} />
+            </Button>
           </div>
         </header>
         <div className="flex-1 overflow-y-auto">
@@ -43,6 +60,7 @@ const ChatboxPreviewer = ({ title, settings }: ChatboxPreviewerProps) => {
                 <BotMessageBubble
                   message={settings.welcomeMessage}
                   date={new Date()}
+                  theme={settings.theme}
                 />
               )}
             <UserMessageBubble
@@ -55,6 +73,7 @@ const ChatboxPreviewer = ({ title, settings }: ChatboxPreviewerProps) => {
               onReact={() => {}}
               reaction="LIKE"
               sources={[`https://${DOMAIN}`]}
+              theme={settings?.theme}
             />
           </div>
         </div>
@@ -66,7 +85,7 @@ const ChatboxPreviewer = ({ title, settings }: ChatboxPreviewerProps) => {
         />
         <ChatboxWatermark />
       </div>
-    </>
+    </div>
   );
 };
 

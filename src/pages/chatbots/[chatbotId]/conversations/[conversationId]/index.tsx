@@ -1,5 +1,4 @@
 import BotMessageBubble from "@/components/BotMessageBubble";
-import ChatboxStyle from "@/components/ChatboxStyle";
 import UserMessageBubble from "@/components/UserMessageBubble";
 import { Button } from "@/components/ui/button";
 import { COUNTRIES } from "@/data/countries";
@@ -7,7 +6,9 @@ import ConversationsLayout from "@/layouts/ConversationsLayout";
 import { useChatbot } from "@/providers/ChatbotProvider";
 import { IpInfo } from "@/server/ipinfo";
 import { NextPageWithLayout } from "@/types/next";
+import { getTwHSL } from "@/utils/getTwHSL";
 import { trpc } from "@/utils/trpc";
+import { ChatbotSettings } from "@/utils/validators";
 import { formatDistanceToNow } from "date-fns";
 import { Loader2, RefreshCw } from "lucide-react";
 import { useRouter } from "next/router";
@@ -79,9 +80,19 @@ const ConversationPage: NextPageWithLayout = () => {
 
   return (
     <>
-      <ChatboxStyle {...((chatbot.settings as any) || {})} />
-      <div className="flex flex-1 overflow-hidden">
-        <div className="chatbox flex flex-1 flex-col overflow-hidden">
+      <style>
+        {`.chatbox {
+            --primary: ${getTwHSL(
+              (chatbot.settings as ChatbotSettings)?.primaryColor || "",
+            )};
+            --primary-foreground: ${getTwHSL(
+              (chatbot.settings as ChatbotSettings)?.primaryForegroundColor ||
+                "",
+            )};
+          }`}
+      </style>
+      <div className="chatbox flex flex-1 overflow-hidden">
+        <div className="flex flex-1 flex-col overflow-hidden">
           <div className="sticky top-0 z-20 flex h-14 items-center border-b bg-card px-4 text-card-foreground">
             <p className="flex-1 font-semibold">
               {conversation.data?.title || conversation.data?.id}
@@ -108,11 +119,12 @@ const ConversationPage: NextPageWithLayout = () => {
               <p>{messages.error.message}</p>
             ) : (
               <div className="flex-1 space-y-6 p-4">
-                {(chatbot.settings as any)?.welcomeMessage && (
+                {(chatbot.settings as ChatbotSettings)?.welcomeMessage && (
                   <BotMessageBubble
                     name="BOT"
                     message={(chatbot.settings as any)?.welcomeMessage}
                     date={conversation.data.createdAt}
+                    theme={(chatbot.settings as ChatbotSettings)?.theme}
                   />
                 )}
 
@@ -126,6 +138,7 @@ const ConversationPage: NextPageWithLayout = () => {
                         reaction={message.reaction}
                         sources={(message.metadata as any)?.sources as string[]}
                         date={message.createdAt}
+                        theme={(chatbot.settings as ChatbotSettings)?.theme}
                       />
                     ) : message.role === "USER" ? (
                       <UserMessageBubble

@@ -1,9 +1,11 @@
 import { chatbotNameAtom } from "@/atoms/chatbotNameAtom";
 import ChatboxPreviewer from "@/components/ChatboxPreviewer";
 import CreateChatbotForm from "@/components/froms/CreateChatbotForm";
+import { defaultChatbotSettings } from "@/data/defaultChatbotSettings";
 import AuthLayout from "@/layouts/AuthLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { APP_NAME } from "@/utils/constants";
+import { getTwHSL } from "@/utils/getTwHSL";
 import { useAtomValue } from "jotai";
 import Head from "next/head";
 
@@ -25,10 +27,12 @@ const NewChatbotPage: NextPageWithLayout = () => {
             <CreateChatbotForm />
           </div>
         </div>
+
         <div className="flex items-center justify-center rounded-2xl bg-secondary p-16 max-lg:hidden">
           <ChatboxPreviewer
             title={name}
             settings={{
+              ...defaultChatbotSettings,
               welcomeMessage: "Hello! How can I help you today?",
             }}
           />

@@ -16,6 +16,7 @@ export const chatbotSettingsSchema = z.object({
   position: z.enum(["left", "right"]).optional(),
   mx: z.number().optional(),
   my: z.number().optional(),
+  theme: z.enum(["light", "dark"]).default("light").optional(),
 });
 
 export type ChatbotSettings = z.infer<typeof chatbotSettingsSchema>;
