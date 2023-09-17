@@ -19,7 +19,7 @@ const ConversationPage: NextPageWithLayout = () => {
   const conversationId = router.query.conversationId as string;
   const chatbotId = router.query.chatbotId as string;
   const { chatbot, isLoaded } = useChatbot();
-  const conversation = trpc.conversation.protectedGetById.useQuery(
+  const conversation = trpc.conversation.getById.useQuery(
     { conversationId, chatbotId },
     { enabled: router.isReady },
   );

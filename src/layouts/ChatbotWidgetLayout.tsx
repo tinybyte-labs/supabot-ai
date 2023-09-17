@@ -22,6 +22,8 @@ export type ChatboxContext = {
   user?: ChatbotUser | null;
   signOut: () => void;
   signIn: (email: string, name?: string) => void;
+  startConversation: () => void;
+  startConversationLoading: boolean;
 };
 
 const Context = createContext<ChatboxContext | null>(null);
@@ -75,6 +77,25 @@ const ChatbotWidgetLayout = ({
     router.reload();
   };
 
+  const startConversationMutation = trpc.conversation.create.useMutation({
+    onSuccess: (data) => {
+      router.push(`/widgets/c/${chatbotId}/conversations/${data.id}`);
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const startConversation = () =>
+    startConversationMutation.mutate({
+      chatbotId: chatbotId,
+      userId: userQuery.data?.id,
+    });
+
   useEffect(() => {
     const userId = localStorage.getItem(storageKey);
     setUserId(userId);
@@ -94,7 +115,14 @@ const ChatbotWidgetLayout = ({
 
   return (
     <Context.Provider
-      value={{ user: userQuery.data, chatbot: chatbot.data, signOut, signIn }}
+      value={{
+        user: userQuery.data,
+        chatbot: chatbot.data,
+        signOut,
+        signIn,
+        startConversation,
+        startConversationLoading: startConversationMutation.isLoading,
+      }}
     >
       <ChatboxStyle {...((chatbot.data.settings ?? {}) as ChatbotSettings)} />
       <div className="chatbox flex h-screen w-screen flex-col overflow-hidden">
@@ -130,7 +158,7 @@ const ChatbotWidgetLayout = ({
                     "flex flex-1 flex-col items-center justify-center",
                     {
                       "text-foreground": isActive,
-                      "text-muted-foreground hover:text-foreground": !isActive,
+                      "text-muted-foreground": !isActive,
                     },
                   )}
                 >

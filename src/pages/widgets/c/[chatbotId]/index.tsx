@@ -1,35 +1,16 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
 import ChatbotWidgetLayout, {
   useChatbotWidget,
 } from "@/layouts/ChatbotWidgetLayout";
 import { NextPageWithLayout } from "@/types/next";
-import { trpc } from "@/utils/trpc";
-import { Loader2, SendHorizonal } from "lucide-react";
+import { Loader2, SendHorizonal, User } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/router";
+import Link from "next/link";
 
 const ChatBoxHome: NextPageWithLayout = () => {
-  const { chatbot, user } = useChatbotWidget();
-  const router = useRouter();
-  const { toast } = useToast();
-  const startConversation = trpc.conversation.create.useMutation({
-    onSuccess: (data) => {
-      router.push(`/widgets/c/${chatbot.id}/conversations/${data.id}`);
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-
-  const handleStartConversation = () => {
-    startConversation.mutate({ chatbotId: chatbot.id, userId: user?.id });
-  };
+  const { chatbot, startConversation, startConversationLoading, user } =
+    useChatbotWidget();
 
   return (
     <div className="relative flex h-full w-full flex-1 flex-col space-y-4 overflow-auto p-4">
@@ -48,18 +29,32 @@ const ChatBoxHome: NextPageWithLayout = () => {
             </AvatarFallback>
           </Avatar>
           <p className="text-xl font-semibold">{chatbot.name}</p>
+          <div className="flex-1"></div>
+          {user ? (
+            <Link href={`/widgets/c/${chatbot.id}/account`}>
+              <Avatar>
+                <AvatarFallback>
+                  <User size={20} />
+                </AvatarFallback>
+              </Avatar>
+            </Link>
+          ) : (
+            <Button variant="outline" asChild>
+              <Link href={`/widgets/c/${chatbot.id}/account`}>Log In</Link>
+            </Button>
+          )}
         </div>
         <div className="mt-16">
           <h1 className="text-3xl font-semibold leading-tight tracking-tight">
-            Hi there 👋
+            Hi {user?.name || "there"} 👋
             <br />
             How can we help?
           </h1>
         </div>
       </div>
       <Button
-        onClick={handleStartConversation}
-        disabled={startConversation.isLoading}
+        onClick={startConversation}
+        disabled={startConversationLoading}
         className="h-fit rounded-lg border border-foreground/10 bg-background py-3 hover:bg-secondary"
         variant="secondary"
       >
@@ -72,7 +67,7 @@ const ChatBoxHome: NextPageWithLayout = () => {
           </p>
         </div>
 
-        {startConversation.isLoading ? (
+        {startConversationLoading ? (
           <Loader2 size={20} className="animate-spin" />
         ) : (
           <SendHorizonal size={20} />
