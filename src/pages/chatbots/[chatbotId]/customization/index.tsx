@@ -94,7 +94,7 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
 
   return (
     <div className="container mb-32 mt-8 md:mt-16">
-      <div className="flex gap-8 lg:gap-12">
+      <div className="flex items-start gap-8 lg:gap-12">
         <div className="flex-1">
           <Form {...form}>
             <form

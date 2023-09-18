@@ -222,14 +222,7 @@ async function generateAiResponse({
     }
     limitedMessages.push(message);
   }
-  console.log({ tokenCount });
-  console.log([
-    {
-      role: "system",
-      content: systemContent,
-    },
-    ...limitedMessages.reverse(),
-  ]);
+  const reversedMessages = limitedMessages.reverse();
   const response = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
     messages: [
@@ -237,7 +230,7 @@ async function generateAiResponse({
         role: "system",
         content: systemContent,
       },
-      ...limitedMessages.reverse(),
+      ...reversedMessages,
     ],
     temperature: 0,
     max_tokens: 512,

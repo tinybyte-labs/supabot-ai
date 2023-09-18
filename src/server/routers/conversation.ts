@@ -37,10 +37,6 @@ export const conversationRouter = router({
           },
         },
       });
-      console.log({
-        conversation,
-        orgId: ctx.auth.orgId,
-      });
       if (!conversation) {
         throw new TRPCError({
           code: "FORBIDDEN",
