@@ -3,8 +3,6 @@ import "@/styles/globals.css";
 import { AppPropsWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
 import { ClerkProvider } from "@clerk/nextjs";
-import { ThemeProvider } from "next-themes";
-import NextNProgress from "nextjs-progressbar";
 import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { useCallback, useEffect } from "react";
@@ -54,11 +52,6 @@ function App({ Component, pageProps }: AppPropsWithLayout) {
   return (
     <Elements stripe={stripePromise}>
       <ClerkProvider {...pageProps}>
-        <NextNProgress
-          color="#2563EB"
-          height={2}
-          options={{ showSpinner: false }}
-        />
         <TooltipProvider>
           <div className={cn(inter.className, "antialiased")}>
             <Head>
