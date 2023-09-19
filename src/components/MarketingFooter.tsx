@@ -1,4 +1,4 @@
-import { Twitter, Github, Instagram } from "lucide-react";
+import { Twitter, Github } from "lucide-react";
 import Link from "next/link";
 import FullLogo from "./FullLogo";
 import { APP_NAME } from "@/utils/constants";
@@ -9,10 +9,10 @@ const MarketingFooter = () => {
       <div className="container">
         <div className="grid grid-cols-2 gap-8 py-8 md:grid-cols-3 md:gap-12 md:py-16 lg:grid-cols-6">
           <div className="col-span-2 flex flex-col gap-6 md:col-span-3">
-            <Link href="/home">
+            <a href="/home">
               <FullLogo className="h-12 w-fit" />
               <p className="sr-only">{APP_NAME}</p>
-            </Link>
+            </a>
             <p className="text-muted-foreground">
               Transform your web experience with {APP_NAME}, the future of
               conversational AI. Craft a personalized chatbot tailored to your

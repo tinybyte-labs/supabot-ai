@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-html-link-for-pages */
 import { useAuth } from "@clerk/nextjs";
 import Link from "next/link";
 import { Skeleton } from "./ui/skeleton";
@@ -114,7 +115,7 @@ export default function MarketingHeader() {
             </>
           ) : isSignedIn ? (
             <Button asChild className="rounded-full px-6">
-              <Link href="/chatbots">Dashboard</Link>
+              <a href="/chatbots">Dashboard</a>
             </Button>
           ) : (
             <>
@@ -123,10 +124,10 @@ export default function MarketingHeader() {
                 variant="ghost"
                 className="rounded-full px-6 max-lg:hidden"
               >
-                <Link href="/signin">Sign In</Link>
+                <a href="/signin">Sign In</a>
               </Button>
               <Button asChild className="rounded-full px-6">
-                <Link href="/register">Get started</Link>
+                <a href="/register">Get started</a>
               </Button>
             </>
           )}
@@ -174,7 +175,7 @@ export default function MarketingHeader() {
               </>
             ) : isSignedIn ? (
               <Button asChild size="lg" onClick={closeSidebar}>
-                <Link href="/chatbots">Dashboard</Link>
+                <a href="/chatbots">Dashboard</a>
               </Button>
             ) : (
               <>
@@ -184,10 +185,10 @@ export default function MarketingHeader() {
                   size="lg"
                   onClick={closeSidebar}
                 >
-                  <Link href="/signin">Sign In</Link>
+                  <a href="/signin">Sign In</a>
                 </Button>
                 <Button asChild size="lg" onClick={closeSidebar}>
-                  <Link href="/register">Get started</Link>
+                  <a href="/register">Get started</a>
                 </Button>
               </>
             )}

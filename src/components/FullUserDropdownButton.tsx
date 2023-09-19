@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-html-link-for-pages */
 import { useAuth, useSession } from "@clerk/nextjs";
 import { Skeleton } from "./ui/skeleton";
 import {
@@ -109,10 +110,10 @@ const FullUserDropdownButton = () => {
           <DropdownMenuLabel>Links</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
-            <Link href="/chatbots">Dashboard</Link>
+            <a href="/chatbots">Dashboard</a>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href="/home">Homepage</Link>
+            <a href="/home">Homepage</a>
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
