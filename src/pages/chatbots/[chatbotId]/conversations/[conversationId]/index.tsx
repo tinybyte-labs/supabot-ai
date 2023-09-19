@@ -11,12 +11,14 @@ import { trpc } from "@/utils/trpc";
 import { ChatbotSettings } from "@/utils/validators";
 import { formatDistanceToNow } from "date-fns";
 import { Loader2, RefreshCw } from "lucide-react";
+import { useTheme } from "next-themes";
 import { useRouter } from "next/router";
 import { Fragment, useCallback, useEffect, useRef } from "react";
 
 const ConversationPage: NextPageWithLayout = () => {
   const scrollElRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const { resolvedTheme } = useTheme();
   const conversationId = router.query.conversationId as string;
   const chatbotId = router.query.chatbotId as string;
   const { chatbot, isLoaded } = useChatbot();
@@ -124,7 +126,7 @@ const ConversationPage: NextPageWithLayout = () => {
                     name="BOT"
                     message={(chatbot.settings as any)?.welcomeMessage}
                     date={conversation.data.createdAt}
-                    theme={(chatbot.settings as ChatbotSettings)?.theme}
+                    theme={resolvedTheme === "dark" ? "dark" : "light"}
                   />
                 )}
 
@@ -138,7 +140,7 @@ const ConversationPage: NextPageWithLayout = () => {
                         reaction={message.reaction}
                         sources={(message.metadata as any)?.sources as string[]}
                         date={message.createdAt}
-                        theme={(chatbot.settings as ChatbotSettings)?.theme}
+                        theme={resolvedTheme === "dark" ? "dark" : "light"}
                       />
                     ) : message.role === "USER" ? (
                       <UserMessageBubble
