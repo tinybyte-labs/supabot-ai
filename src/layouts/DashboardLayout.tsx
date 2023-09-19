@@ -10,12 +10,18 @@ import { CreditCard, LayoutGrid, Settings } from "lucide-react";
 import { ThemeProvider } from "next-themes";
 import Link from "next/link";
 import { ReactNode, useMemo } from "react";
+import NextNProgress from "nextjs-progressbar";
 
 const DashboardLayout = ({ children }: { children: ReactNode }) => {
   const [sidebarOpen, setSidebarOpen] = useAtom(sidebarOpenAtom);
 
   return (
     <ThemeProvider enableSystem attribute="class">
+      <NextNProgress
+        color="#2563EB"
+        height={2}
+        options={{ showSpinner: false }}
+      />
       <DevWarningBar />
       <div className="fixed bottom-0 left-0 top-0 w-64 border-r bg-card text-card-foreground max-lg:hidden">
         <SideBar />
