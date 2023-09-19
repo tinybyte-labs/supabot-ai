@@ -11,6 +11,8 @@ import { ThemeProvider } from "next-themes";
 import Link from "next/link";
 import { ReactNode, useMemo } from "react";
 import NextNProgress from "nextjs-progressbar";
+import Script from "next/script";
+import { BASE_DOMAIN } from "@/utils/constants";
 
 const DashboardLayout = ({ children }: { children: ReactNode }) => {
   const [sidebarOpen, setSidebarOpen] = useAtom(sidebarOpenAtom);
@@ -32,6 +34,10 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
           <SideBar />
         </SheetContent>
       </Sheet>
+      <Script
+        strategy="lazyOnload"
+        src={`${BASE_DOMAIN}/api/widget/js?id=${process.env.NEXT_PUBLIC_DEMO_CHATBOT_ID}`}
+      ></Script>
     </ThemeProvider>
   );
 };
