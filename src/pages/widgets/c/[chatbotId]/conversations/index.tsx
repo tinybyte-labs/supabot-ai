@@ -66,9 +66,12 @@ const ConversationsPage: NextPageWithLayout = () => {
                   <div className="mt-1 flex flex-wrap items-center gap-2">
                     <Badge variant="secondary">{conversation.status}</Badge>
                     <p className="text-sm text-muted-foreground">
-                      {formatDistanceToNow(new Date(conversation.updatedAt), {
-                        addSuffix: true,
-                      })}
+                      {formatDistanceToNow(
+                        new Date(conversation.messages[0].updatedAt),
+                        {
+                          addSuffix: true,
+                        },
+                      )}
                     </p>
                   </div>
                 </Link>

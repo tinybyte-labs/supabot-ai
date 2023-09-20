@@ -123,7 +123,7 @@ const ConversationsLayout = ({ children }: { children: ReactNode }) => {
                           subtitle: `${
                             conversation.status
                           } • ${formatDistanceToNow(
-                            new Date(conversation.updatedAt),
+                            new Date(conversation.messages[0].updatedAt),
                             {
                               addSuffix: true,
                             },

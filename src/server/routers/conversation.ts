@@ -3,6 +3,7 @@ import { protectedProcedure, publicProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { IpInfo, getIpInfo } from "../ipinfo";
 import { Conversation } from "@prisma/client";
+import { compareDesc } from "date-fns";
 
 export const conversationRouter = router({
   getById: protectedProcedure
@@ -95,23 +96,58 @@ export const conversationRouter = router({
             select: {
               role: true,
               body: true,
+              updatedAt: true,
             },
             orderBy: {
               updatedAt: "desc",
             },
             take: 1,
           },
-          _count: {
-            select: {
-              messages: true,
-            },
-          },
-        },
-        orderBy: {
-          updatedAt: "desc",
         },
       });
-      return conversations.filter((conv) => conv._count.messages > 0);
+      return conversations
+        .filter((conv) => conv.messages.length > 0)
+        .sort((a, b) =>
+          compareDesc(a.messages[0].updatedAt, b.messages[0].updatedAt),
+        );
+    }),
+  update: protectedProcedure
+    .input(
+      z.object({
+        conversationId: z.string(),
+        data: z.object({
+          status: z.enum(["OPEN", "CLOSED"]).optional(),
+        }),
+      }),
+    )
+    .mutation(async (opts) => {
+      const conversation = await opts.ctx.db.conversation.findFirst({
+        where: {
+          id: opts.input.conversationId,
+          chatbot: {
+            organizationId: opts.ctx.auth.orgId,
+          },
+        },
+      });
+      if (!conversation) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Conversation not found!",
+        });
+      }
+      return opts.ctx.db.conversation.update({
+        where: { id: opts.input.conversationId },
+        data: {
+          ...(opts.input.data.status
+            ? {
+                status: opts.input.data.status,
+                ...(opts.input.data.status === "CLOSED"
+                  ? { closedAt: new Date() }
+                  : {}),
+              }
+            : {}),
+        },
+      });
     }),
   publicGetById: publicProcedure
     .input(
@@ -159,23 +195,23 @@ export const conversationRouter = router({
             select: {
               role: true,
               body: true,
+              updatedAt: true,
             },
             orderBy: {
               updatedAt: "desc",
             },
             take: 1,
           },
-          _count: {
-            select: {
-              messages: true,
-            },
-          },
         },
         orderBy: {
           updatedAt: "desc",
         },
       });
-      return conversations.filter((conv) => conv._count.messages > 0);
+      return conversations
+        .filter((conv) => conv.messages.length > 0)
+        .sort((a, b) =>
+          compareDesc(a.messages[0].updatedAt, b.messages[0].updatedAt),
+        );
     }),
   publicUpdate: publicProcedure
     .input(
@@ -207,7 +243,14 @@ export const conversationRouter = router({
       return opts.ctx.db.conversation.update({
         where: { id: opts.input.conversationId },
         data: {
-          ...(opts.input.data.status ? { status: opts.input.data.status } : {}),
+          ...(opts.input.data.status
+            ? {
+                status: opts.input.data.status,
+                ...(opts.input.data.status === "CLOSED"
+                  ? { closedAt: new Date() }
+                  : {}),
+              }
+            : {}),
         },
       });
     }),

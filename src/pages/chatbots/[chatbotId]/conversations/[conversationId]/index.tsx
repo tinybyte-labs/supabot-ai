@@ -1,6 +1,13 @@
 import BotMessageBubble from "@/components/BotMessageBubble";
 import UserMessageBubble from "@/components/UserMessageBubble";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useToast } from "@/components/ui/use-toast";
 import { COUNTRIES } from "@/data/countries";
 import ConversationsLayout from "@/layouts/ConversationsLayout";
 import { useChatbot } from "@/providers/ChatbotProvider";
@@ -10,7 +17,7 @@ import { getTwHSL } from "@/utils/getTwHSL";
 import { trpc } from "@/utils/trpc";
 import { ChatbotSettings } from "@/utils/validators";
 import { formatDistanceToNow } from "date-fns";
-import { Loader2, RefreshCw } from "lucide-react";
+import { Loader2, MoreVertical, RefreshCw } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/router";
 import { Fragment, useCallback, useEffect, useRef } from "react";
@@ -22,6 +29,7 @@ const ConversationPage: NextPageWithLayout = () => {
   const conversationId = router.query.conversationId as string;
   const chatbotId = router.query.chatbotId as string;
   const { chatbot, isLoaded } = useChatbot();
+  const { toast } = useToast();
   const conversation = trpc.conversation.getById.useQuery(
     { conversationId, chatbotId },
     { enabled: router.isReady },
@@ -30,7 +38,32 @@ const ConversationPage: NextPageWithLayout = () => {
     { conversationId },
     { enabled: router.isReady },
   );
+  const utils = trpc.useContext();
+  const updateConversationMutation = trpc.conversation.update.useMutation({
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Conversation status changed to closed",
+      });
+      utils.conversation.list.invalidate({ chatbotId });
+      utils.conversation.getById.invalidate({ chatbotId, conversationId });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   const ipInfo = conversation.data?.ipInfo as IpInfo | null;
+
+  const closeConversation = () =>
+    updateConversationMutation.mutate({
+      conversationId,
+      data: { status: "CLOSED" },
+    });
 
   const handleScrollToBottom = useCallback(
     (behavior: ScrollBehavior = "smooth") => {
@@ -95,10 +128,10 @@ const ConversationPage: NextPageWithLayout = () => {
       </style>
       <div className="chatbox flex flex-1 overflow-hidden">
         <div className="flex flex-1 flex-col overflow-hidden">
-          <div className="sticky top-0 z-20 flex h-14 items-center border-b bg-card px-4 text-card-foreground">
-            <p className="flex-1 font-semibold">
+          <div className="sticky top-0 z-20 flex h-14 items-center border-b bg-card pl-4 pr-2 text-card-foreground">
+            <h2 className="flex-1 text-xl font-bold tracking-tight">
               {conversation.data?.title || conversation.data?.id}
-            </p>
+            </h2>
             <div className="flex justify-end gap-2">
               <Button
                 variant="ghost"
@@ -112,6 +145,24 @@ const ConversationPage: NextPageWithLayout = () => {
                   <RefreshCw size={20} />
                 )}
               </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <MoreVertical size={20} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem
+                    disabled={
+                      conversation.data.status === "CLOSED" ||
+                      updateConversationMutation.isLoading
+                    }
+                    onClick={closeConversation}
+                  >
+                    Close Conversation
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
           <div ref={scrollElRef} className="flex-1 overflow-y-auto">
