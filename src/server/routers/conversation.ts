@@ -2,6 +2,7 @@ import { z } from "zod";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { IpInfo, getIpInfo } from "../ipinfo";
+import { Conversation } from "@prisma/client";
 
 export const conversationRouter = router({
   getById: protectedProcedure
@@ -72,12 +73,17 @@ export const conversationRouter = router({
     .input(
       z.object({
         chatbotId: z.string(),
+        status: z.enum(["OPEN", "CLOSED"]).optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
       const conversations = await ctx.db.conversation.findMany({
         where: {
-          chatbot: { id: input.chatbotId, organizationId: ctx.auth.orgId },
+          chatbot: {
+            id: input.chatbotId,
+            organizationId: ctx.auth.orgId,
+          },
+          ...(!!input.status ? { status: input.status } : {}),
         },
         select: {
           id: true,
