@@ -3,6 +3,7 @@ import { chatbotRouter } from "./chatbot";
 import { chatbotUserRouter } from "./chatbotUser";
 import { clerkRouter } from "./clerk";
 import { conversationRouter } from "./conversation";
+import { feedbackRouter } from "./feedback";
 import { linkRouter } from "./link";
 import { messageRouter } from "./message";
 import { organizationRouter } from "./organization";
@@ -23,6 +24,7 @@ export const appRouter = router({
   clerk: clerkRouter,
   subscription: subscriptionRouter,
   stripe: stripeRouter,
+  feedback: feedbackRouter,
 });
 
 export type AppRouter = typeof appRouter;

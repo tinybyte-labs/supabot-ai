@@ -24,6 +24,7 @@ model User {
 
   organizations OrganizationMembership[]
   chatbots      Chatbot[]
+  feedbacks     Feedback[]
 
   @@map("users")
 }
@@ -232,4 +233,17 @@ model Message {
   user         ChatbotUser? @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("messages")
+}
+
+model Feedback {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  userId    String?  @map("user_id")
+  url       String?
+  message   String?
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("feedbacks")
 }
