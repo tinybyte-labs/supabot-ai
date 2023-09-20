@@ -115,65 +115,63 @@ const LinksPage: NextPageWithLayout = () => {
   return (
     <>
       <DashboardPageHeader title="Links">
-        <div className="flex items-center gap-4">
-          {linksQuery.isLoading ? (
-            <>
-              <Skeleton className="h-10 w-24" />
-              <Skeleton className="h-10 w-24" />
-            </>
-          ) : table.getSelectedRowModel().rows.length > 0 ? (
-            <>
-              <p className="mr-2 text-sm text-muted-foreground">
-                {table.getSelectedRowModel().rows.length} row(s) selected
-              </p>
-              <Button
-                disabled={isBusey}
-                variant="secondary"
-                onClick={onRetrainMany}
-              >
-                {retrainMany.isLoading ? (
-                  <Loader2 size={18} className="-ml-1 mr-2 animate-spin" />
-                ) : (
-                  <RotateCw size={18} className="-ml-1 mr-2" />
-                )}
-                Retrain Link(s)
-              </Button>
-              <Button
-                disabled={isBusey}
-                variant="destructive"
-                onClick={onDeleteMany}
-              >
-                {deleteMany.isLoading ? (
-                  <Loader2 size={18} className="-ml-1 mr-2 animate-spin" />
-                ) : (
-                  <Trash2 size={18} className="-ml-1 mr-2" />
-                )}
-                Delete Link(s)
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button
-                disabled={isBusey}
-                variant="outline"
-                onClick={() => linksQuery.refetch()}
-              >
-                {linksQuery.isRefetching ? (
-                  <Loader2 size={18} className="-ml-1 mr-2 animate-spin" />
-                ) : (
-                  <RefreshCw size={18} className="-ml-1 mr-2" />
-                )}
-                Refresh
-              </Button>
-              <Button disabled={isBusey} onClick={openModal}>
-                <Plus size={18} className="-ml-1 mr-2" />
-                Add Link
-              </Button>
-            </>
-          )}
-        </div>
+        {linksQuery.isLoading ? (
+          <>
+            <Skeleton className="h-10 w-24" />
+            <Skeleton className="h-10 w-24" />
+          </>
+        ) : table.getSelectedRowModel().rows.length > 0 ? (
+          <>
+            <p className="mr-2 text-sm text-muted-foreground">
+              {table.getSelectedRowModel().rows.length} row(s) selected
+            </p>
+            <Button
+              disabled={isBusey}
+              variant="secondary"
+              onClick={onRetrainMany}
+            >
+              {retrainMany.isLoading ? (
+                <Loader2 size={18} className="-ml-1 mr-2 animate-spin" />
+              ) : (
+                <RotateCw size={18} className="-ml-1 mr-2" />
+              )}
+              Retrain Link(s)
+            </Button>
+            <Button
+              disabled={isBusey}
+              variant="destructive"
+              onClick={onDeleteMany}
+            >
+              {deleteMany.isLoading ? (
+                <Loader2 size={18} className="-ml-1 mr-2 animate-spin" />
+              ) : (
+                <Trash2 size={18} className="-ml-1 mr-2" />
+              )}
+              Delete Link(s)
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button
+              disabled={isBusey}
+              variant="outline"
+              onClick={() => linksQuery.refetch()}
+            >
+              {linksQuery.isRefetching ? (
+                <Loader2 size={18} className="-ml-1 mr-2 animate-spin" />
+              ) : (
+                <RefreshCw size={18} className="-ml-1 mr-2" />
+              )}
+              Refresh
+            </Button>
+            <Button disabled={isBusey} onClick={openModal}>
+              <Plus size={18} className="-ml-1 mr-2" />
+              Add Link
+            </Button>
+          </>
+        )}
       </DashboardPageHeader>
-      <div className="container mb-32 mt-8 md:mt-16">
+      <div className="container">
         {linksQuery.isLoading ? (
           <div className="flex items-center justify-center rounded-lg border py-32">
             <Loader2 size={24} className="animate-spin" />

@@ -13,6 +13,7 @@ import { ReactNode, useMemo } from "react";
 import NextNProgress from "nextjs-progressbar";
 import Script from "next/script";
 import { BASE_DOMAIN } from "@/utils/constants";
+import AppBar from "@/components/AppBar";
 
 const DashboardLayout = ({ children }: { children: ReactNode }) => {
   const [sidebarOpen, setSidebarOpen] = useAtom(sidebarOpenAtom);
@@ -28,7 +29,10 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
       <div className="fixed bottom-0 left-0 top-0 w-64 border-r bg-card text-card-foreground max-lg:hidden">
         <SideBar />
       </div>
-      <main className="min-h-screen flex-1 flex-col lg:ml-64">{children}</main>
+      <main className="min-h-screen flex-1 flex-col pb-16 lg:ml-64">
+        <AppBar />
+        {children}
+      </main>
       <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
         <SheetContent className="p-0" side="left">
           <SideBar />

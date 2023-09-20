@@ -164,54 +164,52 @@ const QuickPromptsPage: NextPageWithLayout = () => {
   return (
     <>
       <DashboardPageHeader title="Quick Prompts">
-        <div className="flex items-center gap-4">
-          {quickPromptsQuery.isLoading ? (
-            <>
-              <Skeleton className="h-10 w-24" />
-              <Skeleton className="h-10 w-24" />
-            </>
-          ) : table.getSelectedRowModel().rows.length > 0 ? (
-            <>
-              <p className="mr-2 text-sm text-muted-foreground">
-                {table.getSelectedRowModel().rows.length} row(s) selected
-              </p>
-              <Button
-                disabled={isBusey}
-                variant="destructive"
-                onClick={onDeleteMany}
-              >
-                {deleteMany.isLoading ? (
-                  <Loader2 size={18} className="-ml-1 mr-2 animate-spin" />
-                ) : (
-                  <Trash2 size={18} className="-ml-1 mr-2" />
-                )}
-                Delete Prompt(s)
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button
-                disabled={isBusey}
-                variant="outline"
-                onClick={() => quickPromptsQuery.refetch()}
-              >
-                {quickPromptsQuery.isRefetching ? (
-                  <Loader2 size={18} className="-ml-1 mr-2 animate-spin" />
-                ) : (
-                  <RotateCw size={18} className="-ml-1 mr-2" />
-                )}
-                Refresh
-              </Button>
-              <Button disabled={isBusey} onClick={openModal}>
-                <Plus size={18} className="-ml-1 mr-2" />
-                Add Prompt
-              </Button>
-            </>
-          )}
-        </div>
+        {quickPromptsQuery.isLoading ? (
+          <>
+            <Skeleton className="h-10 w-24" />
+            <Skeleton className="h-10 w-24" />
+          </>
+        ) : table.getSelectedRowModel().rows.length > 0 ? (
+          <>
+            <p className="mr-2 text-sm text-muted-foreground">
+              {table.getSelectedRowModel().rows.length} row(s) selected
+            </p>
+            <Button
+              disabled={isBusey}
+              variant="destructive"
+              onClick={onDeleteMany}
+            >
+              {deleteMany.isLoading ? (
+                <Loader2 size={18} className="-ml-1 mr-2 animate-spin" />
+              ) : (
+                <Trash2 size={18} className="-ml-1 mr-2" />
+              )}
+              Delete Prompt(s)
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button
+              disabled={isBusey}
+              variant="outline"
+              onClick={() => quickPromptsQuery.refetch()}
+            >
+              {quickPromptsQuery.isRefetching ? (
+                <Loader2 size={18} className="-ml-1 mr-2 animate-spin" />
+              ) : (
+                <RotateCw size={18} className="-ml-1 mr-2" />
+              )}
+              Refresh
+            </Button>
+            <Button disabled={isBusey} onClick={openModal}>
+              <Plus size={18} className="-ml-1 mr-2" />
+              Add Prompt
+            </Button>
+          </>
+        )}
       </DashboardPageHeader>
 
-      <div className="container mb-32 mt-8 md:mt-16">
+      <div className="container">
         {quickPromptsQuery.isLoading ? (
           <div className="flex items-center justify-center rounded-lg border py-32">
             <Loader2 size={24} className="animate-spin" />

@@ -29,22 +29,16 @@ const Page: NextPageWithLayout = (props) => {
 
   return (
     <>
-      <Head>
-        <title>{`Chatbots - ${APP_NAME}`}</title>
-      </Head>
-
       <DashboardPageHeader title="Chatbots">
-        <div className="flex items-center gap-4">
-          <Button asChild className="whitespace-nowrap">
-            <Link href="/chatbots/new">
-              <Plus size={20} className="-ml-1 mr-2" />
-              Create Chatbot
-            </Link>
-          </Button>
-        </div>
+        <Button asChild>
+          <Link href="/chatbots/new">
+            <Plus size={20} className="-ml-1 mr-2" />
+            Create Chatbot
+          </Link>
+        </Button>
       </DashboardPageHeader>
 
-      <div className="container mb-32 mt-8 md:mt-16">
+      <div className="container">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {chatbots.map((chatbot) => (
             <Link

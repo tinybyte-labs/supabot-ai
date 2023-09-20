@@ -28,14 +28,11 @@ const Page: NextPageWithLayout = () => {
 
   return (
     <>
-      <Head>
-        <title>{`Plan & Billing - ${APP_NAME}`}</title>
-      </Head>
-
       <DashboardPageHeader title="Plan & Billing">
         <Badge>{plan?.name || "Free"}</Badge>
       </DashboardPageHeader>
-      <div className="container mb-32 mt-8 space-y-16 md:mt-16">
+
+      <div className="container space-y-16">
         <CurrentPlan />
         <Usage />
         <Plans />

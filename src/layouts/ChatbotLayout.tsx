@@ -23,8 +23,16 @@ import { ReactNode } from "react";
 import NextNProgress from "nextjs-progressbar";
 import Script from "next/script";
 import { BASE_DOMAIN } from "@/utils/constants";
+import AppBar from "@/components/AppBar";
+import { cn } from "@/lib/utils";
 
-const ChatbotLayout = ({ children }: { children: ReactNode }) => {
+const ChatbotLayout = ({
+  children,
+  noBottomPadding,
+}: {
+  children: ReactNode;
+  noBottomPadding?: boolean;
+}) => {
   const [sidebarOpen, setSidebarOpen] = useAtom(sidebarOpenAtom);
 
   return (
@@ -39,7 +47,13 @@ const ChatbotLayout = ({ children }: { children: ReactNode }) => {
         <div className="fixed bottom-0 left-0 top-0 w-64 border-r bg-card text-card-foreground max-lg:hidden">
           <SideBar />
         </div>
-        <main className="flex min-h-screen flex-1 flex-col lg:ml-64">
+        <main
+          className={cn("flex min-h-screen flex-1 flex-col lg:ml-64", {
+            "pb-16": !noBottomPadding,
+          })}
+        >
+          <AppBar />
+
           {children}
         </main>
         <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>

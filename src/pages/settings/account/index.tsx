@@ -7,7 +7,8 @@ const AccountSettingsPage: NextPageWithLayout = () => {
   return (
     <>
       <DashboardPageHeader title="Account" />
-      <div className="mx-auto w-fit py-16">
+
+      <div className="mx-auto w-fit">
         <UserProfile />
       </div>
     </>

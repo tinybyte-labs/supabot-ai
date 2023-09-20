@@ -48,7 +48,7 @@ export default function SideBarNav({ list }: SideBarNavProps) {
                     <div className="ml-3 flex-1 overflow-hidden">
                       <p className="truncate">{item.label}</p>
                       {!!item.subtitle && (
-                        <p className="text-xs text-muted-foreground">
+                        <p className="mt-0.5 text-xs text-muted-foreground">
                           {item.subtitle}
                         </p>
                       )}

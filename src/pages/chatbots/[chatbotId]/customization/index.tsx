@@ -93,7 +93,7 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
     updateChatbot.mutate(data);
 
   return (
-    <div className="container mb-32 mt-8 md:mt-16">
+    <div className="container">
       <div className="flex items-start gap-8 lg:gap-12">
         <div className="flex-1">
           <Form {...form}>

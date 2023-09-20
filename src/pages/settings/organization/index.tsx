@@ -7,7 +7,7 @@ const OrganizationSettingsPage: NextPageWithLayout = () => {
   return (
     <>
       <DashboardPageHeader title="Organization" />
-      <div className="mx-auto w-fit py-16">
+      <div className="mx-auto w-fit">
         <OrganizationProfile />
       </div>
     </>

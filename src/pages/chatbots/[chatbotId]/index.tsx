@@ -45,16 +45,14 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
   return (
     <>
       <DashboardPageHeader title="Overview">
-        <div className="flex items-center gap-4">
-          <Button variant="outline" asChild>
-            <Link href={`/demo/c/${chatbotId}`} target="_blank">
-              Demo
-              <ExternalLink size={18} className="-mr-1 ml-2" />
-            </Link>
-          </Button>
-        </div>
+        <Button variant="outline" asChild>
+          <Link href={`/demo/c/${chatbotId}`} target="_blank">
+            Demo
+            <ExternalLink size={18} className="-mr-1 ml-2" />
+          </Link>
+        </Button>
       </DashboardPageHeader>
-      <div className="container mb-32 mt-8 space-y-16 md:mt-16">
+      <div className="container space-y-16">
         <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

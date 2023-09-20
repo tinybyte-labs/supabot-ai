@@ -74,18 +74,38 @@ export const conversationRouter = router({
         chatbotId: z.string(),
       }),
     )
-    .query(({ ctx, input }) => {
-      return ctx.db.conversation.findMany({
+    .query(async ({ ctx, input }) => {
+      const conversations = await ctx.db.conversation.findMany({
         where: {
           chatbot: { id: input.chatbotId, organizationId: ctx.auth.orgId },
         },
-        include: {
-          user: true,
+        select: {
+          id: true,
+          title: true,
+          updatedAt: true,
+          createdAt: true,
+          status: true,
+          messages: {
+            select: {
+              role: true,
+              body: true,
+            },
+            orderBy: {
+              updatedAt: "desc",
+            },
+            take: 1,
+          },
+          _count: {
+            select: {
+              messages: true,
+            },
+          },
         },
         orderBy: {
           updatedAt: "desc",
         },
       });
+      return conversations.filter((conv) => conv._count.messages > 0);
     }),
   publicGetById: publicProcedure
     .input(
