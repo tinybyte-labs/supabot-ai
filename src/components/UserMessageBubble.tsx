@@ -12,19 +12,18 @@ const UserMessageBubble = ({
   return (
     <div className="flex justify-end pl-12">
       <div className="flex flex-col items-end">
-        <div className="mb-2 flex items-center justify-end gap-3 text-right">
-          {date && (
-            <p className="text-xs text-muted-foreground">
-              {formatDistanceToNow(date, { addSuffix: true })}
-            </p>
-          )}
-          <p className="text-sm font-medium uppercase text-muted-foreground">
-            {name}
-          </p>
-        </div>
-        <div className="rounded-2xl rounded-tr-sm bg-primary p-4 font-medium text-primary-foreground">
+        <p className="mb-1 text-sm font-medium uppercase text-muted-foreground">
+          {name}
+        </p>
+
+        <div className="rounded-xl rounded-tr-sm bg-primary p-4 font-medium text-primary-foreground">
           {message}
         </div>
+        {date && (
+          <p className="mt-1 text-xs text-muted-foreground">
+            {formatDistanceToNow(date, { addSuffix: true })}
+          </p>
+        )}
       </div>
     </div>
   );

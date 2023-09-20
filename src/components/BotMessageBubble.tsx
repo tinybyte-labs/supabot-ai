@@ -27,11 +27,11 @@ const BotMessageBubble = ({
   return (
     <div className="flex justify-start pr-12">
       <div className="flex flex-col items-start">
-        <p className="mb-2 text-sm font-medium uppercase text-muted-foreground">
+        <p className="mb-1 text-sm font-medium uppercase text-muted-foreground">
           {name}
         </p>
 
-        <div className="relative rounded-2xl rounded-tl-sm bg-secondary p-4 text-secondary-foreground">
+        <div className="relative rounded-xl rounded-tl-sm bg-secondary p-4 text-secondary-foreground">
           <ReactMarkdown
             className={cn("prose max-w-none", {
               "prose-invert": theme === "dark",
@@ -40,7 +40,7 @@ const BotMessageBubble = ({
             {message}
           </ReactMarkdown>
           {typeof onReact !== "undefined" && (
-            <div className="absolute -bottom-4 right-4 mt-2 space-x-2">
+            <div className="absolute -bottom-5 right-4 mt-2 space-x-2">
               <Button
                 size="icon"
                 variant={reaction === "LIKE" ? "default" : "outline"}
