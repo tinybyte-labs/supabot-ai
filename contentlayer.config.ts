@@ -23,6 +23,7 @@ export const BlogPost = defineDocumentType(() => ({
       required: true,
     },
     related: { type: "list", of: { type: "string" } },
+    draft: { type: "boolean", default: true },
   },
   computedFields: {
     slug: {

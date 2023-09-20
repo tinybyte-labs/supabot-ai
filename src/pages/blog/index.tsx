@@ -77,6 +77,7 @@ export default BlogPage;
 
 export const getStaticProps: GetStaticProps<Props> = () => {
   const blogPosts = allBlogPosts
+    .filter((b) => !(process.env.NODE_ENV === "production" && b.draft))
     .sort((a, b) =>
       compareDesc(new Date(a.publishedAt), new Date(b.publishedAt)),
     )

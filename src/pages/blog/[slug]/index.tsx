@@ -49,6 +49,7 @@ const BlogPostPage: NextPageWithLayout<Props> = ({
         <div className="flex-1">
           <div>
             <p className="mb-4 font-medium text-muted-foreground">
+              {blogPost.draft ? `Draft • ` : ``}
               <time dateTime={blogPost.publishedAt}>
                 {format(parseISO(blogPost.publishedAt), "LLL d, yyyy")}
               </time>
@@ -135,9 +136,10 @@ BlogPostPage.getLayout = (page) => <MarketingLayout>{page}</MarketingLayout>;
 export default BlogPostPage;
 
 export const getStaticPaths: GetStaticPaths = () => {
-  const posts = allBlogPosts;
   return {
-    paths: posts.map((post) => ({ params: { slug: post.slug } })),
+    paths: allBlogPosts
+      .filter((b) => !(process.env.NODE_ENV === "production" && b.draft))
+      .map((post) => ({ params: { slug: post.slug } })),
     fallback: false,
   };
 };
