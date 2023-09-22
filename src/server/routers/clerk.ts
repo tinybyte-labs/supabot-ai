@@ -6,24 +6,36 @@ import {
   userSchmea,
 } from "../clerkEvent";
 import { publicProcedure, router } from "../trpc";
+import { WelcomeEmail, sendEmail } from "@/lib/email";
+import { APP_NAME } from "@/utils/constants";
 
 export const clerkRouter = router({
-  userCreated: publicProcedure.input(userSchmea).mutation(({ ctx, input }) =>
-    ctx.db.user.create({
-      data: {
-        id: input.id,
-        email: input.email_addresses[0].email_address,
-        firstName: input.first_name,
-        lastName: input.last_name,
-        lastSignInAt: input.last_sign_in_at
-          ? new Date(input.last_sign_in_at)
-          : null,
-        imageUrl: input.image_url,
-        profileImageUrl: input.profile_image_url,
-        publicMetadata: input.public_metadata,
-      },
+  userCreated: publicProcedure
+    .input(userSchmea)
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.user.create({
+        data: {
+          id: input.id,
+          email: input.email_addresses[0].email_address,
+          firstName: input.first_name,
+          lastName: input.last_name,
+          lastSignInAt: input.last_sign_in_at
+            ? new Date(input.last_sign_in_at)
+            : null,
+          imageUrl: input.image_url,
+          profileImageUrl: input.profile_image_url,
+          publicMetadata: input.public_metadata,
+        },
+      });
+
+      const email = input.email_addresses[0].email_address;
+      await sendEmail({
+        from: "Rohid <rohid@supabotai.com>",
+        subject: `Welcome to ${APP_NAME} 👋`,
+        to: [email],
+        react: WelcomeEmail({ email }),
+      });
     }),
-  ),
   userUpdated: publicProcedure.input(userSchmea).mutation(({ ctx, input }) =>
     ctx.db.user.update({
       where: { id: input.id },

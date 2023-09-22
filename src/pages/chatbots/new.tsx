@@ -5,7 +5,6 @@ import { defaultChatbotSettings } from "@/data/defaultChatbotSettings";
 import AuthLayout from "@/layouts/AuthLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { APP_NAME } from "@/utils/constants";
-import { getTwHSL } from "@/utils/getTwHSL";
 import { useAtomValue } from "jotai";
 import Head from "next/head";
 
