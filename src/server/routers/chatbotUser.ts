@@ -1,6 +1,7 @@
 import { chatbotUserLogInValidator } from "@/utils/validators";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 import { z } from "zod";
+import { TRPCError } from "@trpc/server";
 
 export const chatbotUserRouter = router({
   logIn: publicProcedure
@@ -48,6 +49,35 @@ export const chatbotUserRouter = router({
           chatbot: { id: input.chatbotId, organizationId: ctx.auth.orgId },
         },
         include: { _count: { select: { conversations: true } } },
+      });
+    }),
+  blockUser: protectedProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+        blocked: z.boolean().default(true),
+      }),
+    )
+    .mutation(async (opts) => {
+      if (!opts.ctx.auth.orgId) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "No org selected" });
+      }
+      const user = await opts.ctx.db.chatbotUser.findUnique({
+        where: {
+          id: opts.input.userId,
+          chatbot: {
+            organizationId: opts.ctx.auth.orgId,
+          },
+        },
+      });
+      if (!user) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found!" });
+      }
+      return opts.ctx.db.chatbotUser.update({
+        where: { id: user.id },
+        data: {
+          blocked: opts.input.blocked,
+        },
       });
     }),
 });

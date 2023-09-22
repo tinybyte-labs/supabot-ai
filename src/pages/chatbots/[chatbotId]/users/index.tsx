@@ -8,6 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useToast } from "@/components/ui/use-toast";
 import ChatbotLayout from "@/layouts/ChatbotLayout";
 import { useChatbot } from "@/providers/ChatbotProvider";
 import { NextPageWithLayout } from "@/types/next";
@@ -20,31 +21,31 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Loader2, MoreHorizontal } from "lucide-react";
+import { Loader2, MoreHorizontal, RefreshCw } from "lucide-react";
 import { useMemo } from "react";
 
 type Data = ChatbotUser & { _count: { conversations: number } };
 
 const columns: ColumnDef<Data>[] = [
-  {
-    id: "select",
-    enableSorting: false,
-    enableHiding: false,
-    header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected()}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-  },
+  // {
+  //   id: "select",
+  //   enableSorting: false,
+  //   enableHiding: false,
+  //   header: ({ table }) => (
+  //     <Checkbox
+  //       checked={table.getIsAllPageRowsSelected()}
+  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+  //       aria-label="Select all"
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <Checkbox
+  //       checked={row.getIsSelected()}
+  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+  //       aria-label="Select row"
+  //     />
+  //   ),
+  // },
   {
     accessorKey: "id",
     header: () => <div>ID</div>,
@@ -63,6 +64,13 @@ const columns: ColumnDef<Data>[] = [
     cell: ({ row }) => <div>{row.original._count.conversations || "0"}</div>,
   },
   {
+    accessorKey: "blocked",
+    header: () => <div>Blocked</div>,
+    cell: ({ row }) => (
+      <Checkbox checked={row.original.blocked} aria-readonly />
+    ),
+  },
+  {
     id: "actions",
     enableHiding: false,
     enableSorting: false,
@@ -73,6 +81,30 @@ const columns: ColumnDef<Data>[] = [
 ];
 
 const ActionButton = ({ data }: { data: Data }) => {
+  const { toast } = useToast();
+  const utils = trpc.useContext();
+  const blockMutation = trpc.chatbotUser.blockUser.useMutation({
+    onSuccess(data) {
+      toast({
+        title: "Success",
+        description: `${data.id} has been ${
+          data.blocked ? "blocked" : "unblocked"
+        }`,
+      });
+      utils.chatbotUser.list.invalidate();
+    },
+    onError(error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const toggleBlock = () =>
+    blockMutation.mutate({ userId: data.id, blocked: !data.blocked });
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -82,7 +114,12 @@ const ActionButton = ({ data }: { data: Data }) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem>Block User</DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={toggleBlock}
+          disabled={blockMutation.isLoading}
+        >
+          {data.blocked ? "Unblock User" : "Block User"}
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -112,7 +149,20 @@ const ChatbotUsersPage: NextPageWithLayout = () => {
 
   return (
     <>
-      <DashboardPageHeader title="Users" />
+      <DashboardPageHeader title="Users">
+        <Button
+          disabled={chatbotUsersQuery.isLoading}
+          variant="outline"
+          onClick={() => chatbotUsersQuery.refetch()}
+        >
+          {chatbotUsersQuery.isRefetching ? (
+            <Loader2 size={18} className="-ml-1 mr-2 animate-spin" />
+          ) : (
+            <RefreshCw size={18} className="-ml-1 mr-2" />
+          )}
+          Refresh
+        </Button>
+      </DashboardPageHeader>
 
       <div className="container">
         {chatbotUsersQuery.isLoading ? (

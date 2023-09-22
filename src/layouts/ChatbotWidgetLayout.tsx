@@ -1,4 +1,5 @@
 import ChatboxWatermark from "@/components/ChatboxWatermark";
+import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { getTwHSL } from "@/utils/getTwHSL";
@@ -115,6 +116,13 @@ const ChatbotWidgetLayout = ({
       isLoading ? (
         <div className="flex min-h-screen items-center justify-center">
           <Loader2 size={24} className="animate-spin" />
+        </div>
+      ) : userQuery.data?.blocked ? (
+        <div className="flex min-h-screen flex-col items-center justify-center text-center">
+          <p className="mb-8 text-muted-foreground">You have been blocked</p>
+          <Button onClick={signOut} disabled={isLoading} variant="outline">
+            Log Out
+          </Button>
         </div>
       ) : chatbotQuery.isError ? (
         <div>{chatbotQuery.error.message}</div>

@@ -168,6 +168,7 @@ model ChatbotUser {
   name            String?
   emailVerifiedAt DateTime? @map("email_verified_at")
   chatbotId       String    @map("chatbot_id")
+  blocked         Boolean   @default(false)
 
   chatbot       Chatbot        @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
   conversations Conversation[]
