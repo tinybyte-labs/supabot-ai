@@ -73,7 +73,15 @@ const WelcomeEmail = ({ email = "jhon@example.com" }: { email: string }) => {
             <Text className="text-sm text-zinc-400">
               This email was intended for{" "}
               <Link href={`mailto:${email}`}>{email}</Link>. If you were not
-              expecting this email, you can ignore this email.
+              expecting this email, you can ignore this email. If you don&apos;t
+              want to receive emails like this in the future, you can{" "}
+              <Link
+                href="{{{RESEND_UNSUBSCRIBE_URL}}}"
+                className="text-gray-600"
+              >
+                unsubscribe here
+              </Link>
+              .
             </Text>
           </Container>
         </Body>
