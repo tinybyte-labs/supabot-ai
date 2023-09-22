@@ -4,15 +4,21 @@ import {
   organizationSchema,
   sessionSchema,
   userSchmea,
-} from "../clerkEvent";
-import { publicProcedure, router } from "../trpc";
-import { WelcomeEmail, sendEmail } from "@/lib/email";
+} from "@/server/clerkEvent";
+import { publicProcedure, router } from "@/server/trpc";
+import { WelcomeEmail } from "@/lib/emails";
 import { APP_NAME } from "@/utils/constants";
+import { nanoid } from "@/lib/utils";
+import { resend } from "@/lib/resend";
 
-export const clerkRouter = router({
+export const clerkWebhookRouter = router({
   userCreated: publicProcedure
     .input(userSchmea)
     .mutation(async ({ ctx, input }) => {
+      const alreadyExists = await ctx.db.user.findUnique({
+        where: { id: input.id },
+      });
+      if (alreadyExists) return;
       await ctx.db.user.create({
         data: {
           id: input.id,
@@ -29,11 +35,20 @@ export const clerkRouter = router({
       });
 
       const email = input.email_addresses[0].email_address;
-      await sendEmail({
+      await resend.emails.send({
         from: "Rohid <rohid@supabotai.com>",
         subject: `Welcome to ${APP_NAME} 👋`,
         to: [email],
         react: WelcomeEmail({ email }),
+        headers: {
+          "X-Entity-Ref-ID": nanoid(),
+        },
+        tags: [
+          {
+            name: "category",
+            value: "welcome_email",
+          },
+        ],
       });
     }),
   userUpdated: publicProcedure.input(userSchmea).mutation(({ ctx, input }) =>
