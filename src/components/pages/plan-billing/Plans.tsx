@@ -44,7 +44,7 @@ const Plans = () => {
         } plan.`}
       />
       <PlansGrid
-        buttonLabel={(plan) => `Upgrade to ${plan.name}`}
+        buttonLabel={() => `Change Plan`}
         onPlanClick={handleUpgrade}
         loading={loading}
         currentPriceId={organizaton?.priceId}
