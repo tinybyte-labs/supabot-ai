@@ -5,7 +5,7 @@
   "scripts": {
     "stripe:dev": "stripe listen --forward-to localhost:3000/api/webhook/stripe",
     "ngrok:dev": "ngrok http --domain=willing-monitor-locally.ngrok-free.app 3000",
-    "dev": "concurrently \"pnpm ngrok:dev\" \"pnpm stripe:dev\" \"next dev\"",
+    "dev": "concurrently \"pnpm ngrok:dev\" \"pnpm stripe:dev\" \"prisma studio\" \"next dev\"",
     "build": "prisma generate && prisma migrate deploy && contentlayer build && next build",
     "start": "next start",
     "lint": "next lint"

@@ -56,3 +56,9 @@ export const chatbotUserUpdateValidator = z.object({
   email: z.string().email().optional(),
   name: z.string().max(80).optional(),
 });
+
+export const sendHelpRequestSchema = z.object({
+  email: z.string().email(),
+  subject: z.string().min(1).max(100),
+  message: z.string().min(1).max(500),
+});

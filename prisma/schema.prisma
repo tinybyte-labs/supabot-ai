@@ -22,9 +22,10 @@ model User {
   profileImageUrl String?   @map("profile_image_url")
   publicMetadata  Json?     @map("public_metadata")
 
-  organizations OrganizationMembership[]
-  chatbots      Chatbot[]
-  feedbacks     Feedback[]
+  organizations        OrganizationMembership[]
+  chatbots             Chatbot[]
+  feedbacks            Feedback[]
+  resolvedHelpRequests HelpRequest[]
 
   @@map("users")
 }
@@ -246,4 +247,26 @@ model Feedback {
   user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("feedbacks")
+}
+
+enum HelpRequestPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model HelpRequest {
+  id         String              @id @default(cuid())
+  createdAt  DateTime            @default(now()) @map("created_at")
+  updatedAt  DateTime            @updatedAt @map("updated_at")
+  email      String?
+  subject    String?
+  message    String?
+  priority   HelpRequestPriority @default(MEDIUM)
+  resolved   Boolean             @default(false)
+  resolvedBy String?
+
+  resolver User? @relation(fields: [resolvedBy], references: [id], onDelete: SetNull)
+
+  @@map("help_requests")
 }
