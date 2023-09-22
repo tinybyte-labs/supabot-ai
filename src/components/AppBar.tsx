@@ -4,13 +4,14 @@ import { MessageSquare } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import FoodbackForm from "./froms/FoodbackForm";
 import { useState } from "react";
+import Link from "next/link";
 
 const AppBar = () => {
   const [feedbackPopoverOpen, setFeedbackPopoverOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-30 border-b bg-background text-foreground">
-      <div className="container flex h-14 max-w-none items-center justify-end gap-4">
+      <div className="container flex h-14 max-w-none items-center justify-end gap-2">
         <ToggleSidebarButton />
         <div className="flex-1"></div>
         <Popover
@@ -27,6 +28,9 @@ const AppBar = () => {
             <FoodbackForm onSuccess={() => setFeedbackPopoverOpen(false)} />
           </PopoverContent>
         </Popover>
+        <Button asChild variant="ghost">
+          <Link href="/help">Help</Link>
+        </Button>
       </div>
     </header>
   );
