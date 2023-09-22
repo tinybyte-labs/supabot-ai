@@ -1,5 +1,6 @@
 export const APP_NAME = "SupaBot AI";
 export const DOMAIN = "supabotai.com";
+export const SUPPORT_EMAIL = "support@supabotai.com";
 
 export const BASE_DOMAIN =
   process.env.NEXT_PUBLIC_VERCEL_ENV === "production"

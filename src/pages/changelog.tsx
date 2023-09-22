@@ -6,14 +6,12 @@ import Head from "next/head";
 
 const ChangelogPage: NextPageWithLayout = () => {
   return (
-    <div>
+    <main>
       <Head>
         <title>{`Changelog - ${APP_NAME}`}</title>
       </Head>
-      <main>
-        <PageHeader title="Changelog" subtitle="Comming soon" />
-      </main>
-    </div>
+      <PageHeader title="Changelog" subtitle="Comming soon" />
+    </main>
   );
 };
 

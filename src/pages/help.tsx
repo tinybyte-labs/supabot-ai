@@ -76,8 +76,7 @@ const HelpPage: NextPageWithLayout = () => {
                   <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="jhon@example.com"
-                      autoFocus
+                      placeholder="Enter you email address"
                       {...field}
                       readOnly={isSignedIn || !isLoaded}
                     />
