@@ -1,4 +1,5 @@
 import BotMessageBubble from "@/components/BotMessageBubble";
+import ErrorBox from "@/components/ErrorBox";
 import UserMessageBubble from "@/components/UserMessageBubble";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,14 +14,14 @@ import ConversationsLayout from "@/layouts/ConversationsLayout";
 import { useChatbot } from "@/providers/ChatbotProvider";
 import { IpInfo } from "@/server/ipinfo";
 import { NextPageWithLayout } from "@/types/next";
-import { getTwHSL } from "@/utils/getTwHSL";
+import { getChatbotStyle } from "@/utils";
 import { trpc } from "@/utils/trpc";
 import { ChatbotSettings } from "@/utils/validators";
 import { formatDistanceToNow } from "date-fns";
 import { Loader2, MoreVertical, RefreshCw } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/router";
-import { Fragment, useCallback, useEffect, useRef } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef } from "react";
 
 const ConversationPage: NextPageWithLayout = () => {
   const scrollElRef = useRef<HTMLDivElement>(null);
@@ -28,13 +29,17 @@ const ConversationPage: NextPageWithLayout = () => {
   const { resolvedTheme } = useTheme();
   const conversationId = router.query.conversationId as string;
   const chatbotId = router.query.chatbotId as string;
-  const { chatbot, isLoaded } = useChatbot();
+  const { chatbot } = useChatbot();
   const { toast } = useToast();
-  const conversation = trpc.conversation.getById.useQuery(
+  const chatbotSettings: ChatbotSettings = useMemo(
+    () => ({ ...(chatbot?.settings as any) }),
+    [chatbot?.settings],
+  );
+  const conversationQuery = trpc.conversation.getById.useQuery(
     { conversationId, chatbotId },
     { enabled: router.isReady },
   );
-  const messages = trpc.message.list.useQuery(
+  const messagesQuery = trpc.message.list.useQuery(
     { conversationId },
     { enabled: router.isReady },
   );
@@ -57,7 +62,7 @@ const ConversationPage: NextPageWithLayout = () => {
     },
   });
 
-  const ipInfo = conversation.data?.ipInfo as IpInfo | null;
+  const ipInfo = conversationQuery.data?.ipInfo as IpInfo | null;
 
   const closeConversation = () =>
     updateConversationMutation.mutate({
@@ -81,65 +86,54 @@ const ConversationPage: NextPageWithLayout = () => {
   }, [handleScrollToBottom]);
 
   useEffect(() => {
-    if (!messages.data) {
+    if (!messagesQuery.data) {
       return;
     }
     let timeout: NodeJS.Timeout | null = null;
-    if (messages.data?.length > 0) {
+    if (messagesQuery.data?.length > 0) {
       timeout = setTimeout(() => handleScrollToBottom(), 100);
     }
     return () => {
       if (timeout) clearTimeout(timeout);
     };
-  }, [handleScrollToBottom, messages.data]);
+  }, [handleScrollToBottom, messagesQuery.data]);
 
-  if (!isLoaded) {
+  if (conversationQuery.isLoading) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center">
+      <div className="flex flex-1 items-center justify-center">
         <Loader2 size={24} className="animate-spin" />
       </div>
     );
   }
 
-  if (!chatbot) {
-    return null;
-  }
-
-  if (conversation.isLoading) {
-    return <p>Loading...</p>;
-  }
-
-  if (conversation.isError) {
-    return <p>{conversation.error.message}</p>;
+  if (conversationQuery.isError) {
+    return (
+      <ErrorBox
+        title="Failed to load conversation"
+        description={conversationQuery.error.message}
+        onRetry={() => conversationQuery.refetch()}
+        isRefetching={conversationQuery.isRefetching}
+      />
+    );
   }
 
   return (
     <>
-      <style>
-        {`.chatbox {
-            --primary: ${getTwHSL(
-              (chatbot.settings as ChatbotSettings)?.primaryColor || "",
-            )};
-            --primary-foreground: ${getTwHSL(
-              (chatbot.settings as ChatbotSettings)?.primaryForegroundColor ||
-                "",
-            )};
-          }`}
-      </style>
+      <style>{getChatbotStyle("chatbox", chatbotSettings)}</style>
       <div className="chatbox flex flex-1 overflow-hidden">
         <div className="flex flex-1 flex-col overflow-hidden">
           <div className="sticky top-0 z-20 flex h-14 items-center border-b bg-card pl-4 pr-2 text-card-foreground">
             <h2 className="flex-1 text-xl font-bold tracking-tight">
-              {conversation.data?.title || conversation.data?.id}
+              {conversationQuery.data?.title || conversationQuery.data?.id}
             </h2>
             <div className="flex justify-end gap-2">
               <Button
                 variant="ghost"
                 size="icon"
-                disabled={messages.isRefetching}
-                onClick={() => messages.refetch()}
+                disabled={messagesQuery.isRefetching}
+                onClick={() => messagesQuery.refetch()}
               >
-                {messages.isRefetching ? (
+                {messagesQuery.isRefetching ? (
                   <Loader2 size={20} className="animate-spin" />
                 ) : (
                   <RefreshCw size={20} />
@@ -154,7 +148,7 @@ const ConversationPage: NextPageWithLayout = () => {
                 <DropdownMenuContent>
                   <DropdownMenuItem
                     disabled={
-                      conversation.data.status === "CLOSED" ||
+                      conversationQuery.data.status === "CLOSED" ||
                       updateConversationMutation.isLoading
                     }
                     onClick={closeConversation}
@@ -166,38 +160,40 @@ const ConversationPage: NextPageWithLayout = () => {
             </div>
           </div>
           <div ref={scrollElRef} className="flex-1 overflow-y-auto">
-            {messages.isLoading ? (
+            {messagesQuery.isLoading ? (
               <p>Loading...</p>
-            ) : messages.isError ? (
-              <p>{messages.error.message}</p>
+            ) : messagesQuery.isError ? (
+              <p>{messagesQuery.error.message}</p>
             ) : (
               <div className="flex-1 space-y-6 p-4">
-                {(chatbot.settings as ChatbotSettings)?.welcomeMessage && (
+                {chatbotSettings.welcomeMessage && (
                   <BotMessageBubble
                     name="BOT"
-                    message={(chatbot.settings as any)?.welcomeMessage}
-                    date={conversation.data.createdAt}
+                    message={chatbotSettings.welcomeMessage}
+                    date={conversationQuery.data.createdAt}
                     theme={resolvedTheme === "dark" ? "dark" : "light"}
+                    preview
                   />
                 )}
 
-                {messages.data.map((message) => (
+                {messagesQuery.data.map((message) => (
                   <Fragment key={message.id}>
                     {message.role === "BOT" ? (
                       <BotMessageBubble
                         name="BOT"
                         message={message.body}
-                        onReact={() => {}}
                         reaction={message.reaction}
                         sources={(message.metadata as any)?.sources as string[]}
                         date={message.createdAt}
                         theme={resolvedTheme === "dark" ? "dark" : "light"}
+                        preview
                       />
                     ) : message.role === "USER" ? (
                       <UserMessageBubble
                         name="YOU"
                         message={message.body}
                         date={message.createdAt}
+                        preview
                       />
                     ) : null}
                   </Fragment>
@@ -213,33 +209,33 @@ const ConversationPage: NextPageWithLayout = () => {
               {[
                 {
                   label: "Id",
-                  value: conversation.data.id,
+                  value: conversationQuery.data.id,
                 },
                 {
                   label: "Path",
-                  value: conversation.data.url
-                    ? new URL(conversation.data.url).pathname
+                  value: conversationQuery.data.url
+                    ? new URL(conversationQuery.data.url).pathname
                     : "Unknown",
                 },
                 {
                   label: "Status",
-                  value: conversation.data.status ?? "Unknown",
+                  value: conversationQuery.data.status ?? "Unknown",
                 },
                 {
                   label: "Started",
                   value: formatDistanceToNow(
-                    new Date(conversation.data.createdAt),
+                    new Date(conversationQuery.data.createdAt),
                     {
                       addSuffix: true,
                     },
                   ),
                 },
-                ...(conversation.data.closedAt
+                ...(conversationQuery.data.closedAt
                   ? [
                       {
                         label: "Closed",
                         value: formatDistanceToNow(
-                          new Date(conversation.data.closedAt),
+                          new Date(conversationQuery.data.closedAt),
                           {
                             addSuffix: true,
                           },
@@ -265,15 +261,15 @@ const ConversationPage: NextPageWithLayout = () => {
               {[
                 {
                   label: "Id",
-                  value: conversation.data.user?.id || "Unknown",
+                  value: conversationQuery.data.user?.id || "Unknown",
                 },
                 {
                   label: "Email",
-                  value: conversation.data.user?.email || "Unknown",
+                  value: conversationQuery.data.user?.email || "Unknown",
                 },
                 {
                   label: "Name",
-                  value: conversation.data.user?.name || "Unknown",
+                  value: conversationQuery.data.user?.name || "Unknown",
                 },
               ].map((item, i) => (
                 <div key={i} className="flex text-sm">

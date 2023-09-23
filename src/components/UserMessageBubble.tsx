@@ -4,10 +4,12 @@ const UserMessageBubble = ({
   message,
   name = "YOU",
   date,
+  preview,
 }: {
   message: string;
   name?: string;
   date?: Date;
+  preview?: boolean;
 }) => {
   return (
     <div className="flex justify-end pl-12">

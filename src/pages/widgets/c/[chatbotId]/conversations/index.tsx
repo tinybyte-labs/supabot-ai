@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import ChatbotWidgetLayout, {
   useChatbotWidget,
 } from "@/layouts/ChatbotWidgetLayout";
@@ -44,7 +45,15 @@ const ConversationsPage: NextPageWithLayout = () => {
       {user ? (
         <div className="flex-1 overflow-auto">
           {conversationsQuery.isLoading ? (
-            <p>Loading...</p>
+            new Array(5).fill(1).map((_, i) => (
+              <div className="flex flex-col border-b p-4" key={i}>
+                <Skeleton className="h-6 w-2/3" />
+                <div className="mt-1 flex flex-wrap items-center gap-2">
+                  <Skeleton className="h-5 w-16" />
+                  <Skeleton className="h-5 w-24" />
+                </div>
+              </div>
+            ))
           ) : conversationsQuery.isError ? (
             <p>{conversationsQuery.error.message}</p>
           ) : (

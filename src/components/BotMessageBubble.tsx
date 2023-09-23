@@ -6,6 +6,7 @@ import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { ChatbotSettings } from "@/utils/validators";
 import { cn } from "@/lib/utils";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 const BotMessageBubble = ({
   message,
@@ -15,6 +16,7 @@ const BotMessageBubble = ({
   sources = [],
   date,
   theme,
+  preview,
 }: {
   message: string;
   name?: string;
@@ -23,6 +25,7 @@ const BotMessageBubble = ({
   sources?: string[];
   date?: Date;
   theme: ChatbotSettings["theme"];
+  preview?: boolean;
 }) => {
   return (
     <div className="flex justify-start pr-12">
@@ -39,27 +42,70 @@ const BotMessageBubble = ({
           >
             {message}
           </ReactMarkdown>
-          {typeof onReact !== "undefined" && (
-            <div className="absolute -bottom-5 right-4 mt-2 space-x-2">
-              <Button
-                size="icon"
-                variant={reaction === "LIKE" ? "default" : "outline"}
-                className="h-8 w-8"
-                onClick={() => onReact?.("LIKE")}
-              >
-                <p className="sr-only">Like</p>
-                <ThumbsUp size={16} />
-              </Button>
-              <Button
-                size="icon"
-                variant={reaction === "DISLIKE" ? "default" : "outline"}
-                className="h-8 w-8"
-                onClick={() => onReact?.("DISLIKE")}
-              >
-                <p className="sr-only">Dislike</p>
-                <ThumbsDown size={16} />
-              </Button>
-            </div>
+          {preview && reaction ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="absolute -bottom-6 right-4 mt-2 space-x-2">
+                  <div
+                    className={cn(
+                      "flex h-8 w-8 items-center justify-center rounded-md",
+                      {
+                        "bg-primary text-primary-foreground":
+                          reaction === "LIKE",
+                        "bg-destructive text-destructive-foreground":
+                          reaction === "DISLIKE",
+                      },
+                    )}
+                  >
+                    <p className="sr-only">{reaction}</p>
+                    {reaction === "LIKE" ? (
+                      <ThumbsUp size={16} />
+                    ) : (
+                      <ThumbsDown size={16} />
+                    )}
+                  </div>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                Customer {reaction === "LIKE" ? "liked" : "disliked"} this
+                message.
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            !!onReact && (
+              <div className="absolute -bottom-6 right-4 mt-2 space-x-2">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon"
+                      variant={reaction === "LIKE" ? "default" : "outline"}
+                      className="h-8 w-8"
+                      onClick={() => onReact?.("LIKE")}
+                    >
+                      <p className="sr-only">Like</p>
+                      <ThumbsUp size={16} />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Like this message</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon"
+                      variant={
+                        reaction === "DISLIKE" ? "destructive" : "outline"
+                      }
+                      className="h-8 w-8"
+                      onClick={() => onReact?.("DISLIKE")}
+                    >
+                      <p className="sr-only">Dislike</p>
+                      <ThumbsDown size={16} />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Dislike this message</TooltipContent>
+                </Tooltip>
+              </div>
+            )
           )}
         </div>
 

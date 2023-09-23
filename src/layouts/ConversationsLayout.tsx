@@ -15,6 +15,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const ConversationsLayout = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
@@ -90,7 +91,13 @@ const ConversationsLayout = ({ children }: { children: ReactNode }) => {
             </div>
             <div className="p-2">
               {conversationsQuery.isLoading ? (
-                <p>Loading...</p>
+                <div className="flex flex-col gap-1">
+                  <Skeleton className="h-[54px]" />
+                  <Skeleton className="h-[54px]" />
+                  <Skeleton className="h-[54px]" />
+                  <Skeleton className="h-[54px]" />
+                  <Skeleton className="h-[54px]" />
+                </div>
               ) : conversationsQuery.isError ? (
                 <p>{conversationsQuery.error.message}</p>
               ) : conversationsQuery.data.length === 0 ? (
