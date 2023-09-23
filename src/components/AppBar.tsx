@@ -11,7 +11,7 @@ const AppBar = () => {
 
   return (
     <header className="sticky top-0 z-30 border-b bg-background text-foreground">
-      <div className="container flex h-14 max-w-none items-center justify-end gap-2">
+      <div className="flex h-14 items-center justify-end gap-2 px-4">
         <ToggleSidebarButton />
         <div className="flex-1"></div>
         <Popover

@@ -1,3 +1,4 @@
+import CloseChatboxButton from "@/components/CloseChatboxButton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import ChatbotWidgetLayout, {
@@ -14,7 +15,7 @@ const ChatBoxHome: NextPageWithLayout = () => {
 
   return (
     <div className="relative flex h-full w-full flex-1 flex-col space-y-4 overflow-auto p-4">
-      <div className="p-4">
+      <header className="p-2">
         <div className="flex items-center gap-2">
           <Avatar className="-ml-1 mr-2 h-12 w-12 rounded-lg">
             {chatbot?.image && <AvatarImage src={chatbot.image} />}
@@ -28,8 +29,7 @@ const ChatBoxHome: NextPageWithLayout = () => {
               />
             </AvatarFallback>
           </Avatar>
-          <p className="text-xl font-semibold">{chatbot.name}</p>
-          <div className="flex-1"></div>
+          <p className="flex-1 text-xl font-semibold">{chatbot.name}</p>
           {user ? (
             <Link href={`/widgets/c/${chatbot.id}/account`}>
               <Avatar>
@@ -43,6 +43,7 @@ const ChatBoxHome: NextPageWithLayout = () => {
               <Link href={`/widgets/c/${chatbot.id}/account`}>Log In</Link>
             </Button>
           )}
+          <CloseChatboxButton />
         </div>
         <div className="mt-16">
           <h1 className="text-3xl font-semibold leading-tight tracking-tight">
@@ -51,7 +52,7 @@ const ChatBoxHome: NextPageWithLayout = () => {
             How can we help?
           </h1>
         </div>
-      </div>
+      </header>
       <Button
         onClick={startConversation}
         disabled={startConversationLoading}

@@ -136,10 +136,10 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
 
               <FormField
                 control={form.control}
-                name="settings.messageBoxText"
+                name="settings.greetingText"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Message Box Text</FormLabel>
+                    <FormLabel>Greeting Text</FormLabel>
                     <FormControl>
                       <Input placeholder="Hi there 👋" {...field} />
                     </FormControl>

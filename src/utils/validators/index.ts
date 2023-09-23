@@ -8,7 +8,7 @@ export const createChatbotValidator = z.object({
     .max(32, "Name must be at most 32 characters."),
 });
 export const chatbotSettingsSchema = z.object({
-  messageBoxText: z.string().max(100).optional(),
+  greetingText: z.string().max(100).optional(),
   welcomeMessage: z.string().max(500).optional(),
   placeholderText: z.string().max(80).optional(),
   primaryColor: z.string().optional(),

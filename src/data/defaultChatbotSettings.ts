@@ -3,7 +3,7 @@ import { ChatbotSettings } from "@/utils/validators";
 export const defaultChatbotSettings: ChatbotSettings = {
   welcomeMessage: "Hello! How can I assist you today?",
   placeholderText: "Ask me anything...",
-  messageBoxText: "Hi there 👋",
+  greetingText: "Hi there 👋",
   primaryColor: "#2563EB",
   primaryForegroundColor: "#FFFFFF",
   position: "right",

@@ -101,7 +101,7 @@ export default async function handler(
     iframe.style.height = "calc(100vh - 8rem)";
     iframe.style.maxWidth = "420px";
     iframe.style.maxHeight = "720px";
-    iframe.style.borderRadius = "10px";
+    iframe.style.borderRadius = "16px";
     iframe.style.boxShadow = "rgba(0, 0, 0, 0.15) 0px 8px 32px";
     iframe.style.zIndex = 100;
     iframe.style.backgroundColor = "var(--sb-background)";
@@ -127,11 +127,11 @@ export default async function handler(
     };
     
     ${
-      settings.messageBoxText
+      settings.greetingText
         ? `
       msgBox = document.createElement("div");
       msgBox.id = "sb-msg-box";
-      msgBox.innerText = "${settings.messageBoxText}";
+      msgBox.innerText = "${settings.greetingText}";
       msgBox.style.padding = "12px";
       msgBox.style.backgroundColor = "var(--sb-background)";
       msgBox.style.color = "var(--sb-foreground)";
@@ -230,6 +230,12 @@ export default async function handler(
       btn.style.transform = "scale(1)";
       hovering = false;
     };
+    window.addEventListener('message', function(event) {
+      console.log(event.data);
+      if(event.data === "CLOSE_CHATBOX") {
+        hideChatbox();
+      }
+    });
   }
 
   if(document.readyState === 'complete') {

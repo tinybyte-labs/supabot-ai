@@ -1,5 +1,6 @@
+import CloseChatboxButton from "@/components/CloseChatboxButton";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonLoader } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -9,10 +10,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/use-toast";
 import ChatbotWidgetLayout, {
   useChatbotWidget,
 } from "@/layouts/ChatbotWidgetLayout";
 import { NextPageWithLayout } from "@/types/next";
+import { trpc } from "@/utils/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { User } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -23,8 +27,9 @@ const AccountPage: NextPageWithLayout = () => {
 
   return (
     <>
-      <header className="flex h-14 items-center gap-3 border-b px-4">
-        <h1 className="text-lg font-semibold">Account</h1>
+      <header className="flex items-center gap-3 border-b p-2 pl-4">
+        <h1 className="flex-1 text-lg font-semibold">Account</h1>
+        <CloseChatboxButton />
       </header>
       <div className="flex-1 overflow-auto">
         {user ? <Profile /> : <LogInForm />}
@@ -41,7 +46,6 @@ export default AccountPage;
 
 const profileSchema = z.object({
   name: z.string().optional(),
-  email: z.string().optional(),
 });
 
 const Profile = () => {
@@ -50,9 +54,27 @@ const Profile = () => {
     resolver: zodResolver(profileSchema),
     defaultValues: {
       name: user?.name || "",
-      email: user?.email || "",
     },
   });
+  const { toast } = useToast();
+  const utils = trpc.useContext();
+  const updateUserMutation = trpc.chatbotUser.update.useMutation({
+    onSuccess: () => {
+      toast({ title: "Success", description: "User details updated" });
+      utils.chatbotUser.getUser.invalidate(user?.id);
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const onSubmit = (data: z.infer<typeof profileSchema>) =>
+    updateUserMutation.mutate({ userId: user?.id || "", data });
+
   if (!user) return null;
 
   return (
@@ -68,7 +90,7 @@ const Profile = () => {
         </Button>
       </div>
       <Form {...form}>
-        <form className="grid gap-6">
+        <form className="grid gap-6" onSubmit={form.handleSubmit(onSubmit)}>
           <FormField
             control={form.control}
             name="name"
@@ -82,20 +104,14 @@ const Profile = () => {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input placeholder="john@example.com" readOnly {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit">Update</Button>
+          <div>
+            <Label>Email</Label>
+            <Input readOnly defaultValue={user.email} />
+          </div>
+          <Button type="submit" disabled={updateUserMutation.isLoading}>
+            {updateUserMutation.isLoading && <ButtonLoader />}
+            Update
+          </Button>
         </form>
       </Form>
     </div>

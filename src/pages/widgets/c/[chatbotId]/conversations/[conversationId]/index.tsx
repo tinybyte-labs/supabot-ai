@@ -1,5 +1,6 @@
 import BotMessageBubble from "@/components/BotMessageBubble";
 import ChatboxInputBar from "@/components/ChatboxInputBar";
+import CloseChatboxButton from "@/components/CloseChatboxButton";
 import UserMessageBubble from "@/components/UserMessageBubble";
 import { Button } from "@/components/ui/button";
 import {
@@ -239,7 +240,7 @@ const ConversationPage: NextPageWithLayout = () => {
 
   return (
     <div className="flex h-full w-full flex-1 flex-col overflow-hidden">
-      <header className="flex items-center gap-3 border-b p-2">
+      <header className="flex h-16 items-center gap-1 border-b p-2">
         <Button size="icon" variant="ghost" asChild>
           <Link href={`/widgets/c/${chatbot.id}`}>
             <p className="sr-only">go to home</p>
@@ -247,46 +248,47 @@ const ConversationPage: NextPageWithLayout = () => {
           </Link>
         </Button>
 
-        <h1 className="text-lg font-semibold">
+        <h1 className="flex-1 text-lg font-semibold">
           {conversationQuery.data.title || chatbot.name}
         </h1>
 
-        <div className="flex flex-1 items-center justify-end gap-2">
-          <Button
-            size="icon"
-            variant="ghost"
-            onClick={() => {
-              conversationQuery.refetch();
-              messagesQuery.refetch();
-            }}
-            disabled={
-              conversationQuery.isRefetching || messagesQuery.isRefetching
-            }
-          >
-            <p className="sr-only">Refresh Conversation</p>
-            {conversationQuery.isRefetching || messagesQuery.isRefetching ? (
-              <Loader2 size={20} className="animate-spin" />
-            ) : (
-              <RefreshCw size={20} />
-            )}
-          </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button size="icon" variant="ghost">
-                <p className="sr-only">Menu</p>
-                <MoreVertical size={20} />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                disabled={conversationQuery.data.status === "CLOSED"}
-                onClick={handleCloseConversation}
-              >
-                Close Conversation
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        <Button
+          size="icon"
+          variant="ghost"
+          onClick={() => {
+            conversationQuery.refetch();
+            messagesQuery.refetch();
+          }}
+          disabled={
+            conversationQuery.isRefetching || messagesQuery.isRefetching
+          }
+        >
+          <p className="sr-only">Refresh Conversation</p>
+          {conversationQuery.isRefetching || messagesQuery.isRefetching ? (
+            <Loader2 size={20} className="animate-spin" />
+          ) : (
+            <RefreshCw size={20} />
+          )}
+        </Button>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button size="icon" variant="ghost">
+              <p className="sr-only">Menu</p>
+              <MoreVertical size={20} />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              disabled={conversationQuery.data.status === "CLOSED"}
+              onClick={handleCloseConversation}
+            >
+              Close Conversation
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <CloseChatboxButton />
       </header>
 
       <div className="relative flex-1 overflow-y-auto" ref={scrollElRef}>

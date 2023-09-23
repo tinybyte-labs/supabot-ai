@@ -37,6 +37,21 @@ export const chatbotUserRouter = router({
   getUser: publicProcedure.input(z.string()).query(({ ctx, input }) => {
     return ctx.db.chatbotUser.findUnique({ where: { id: input } });
   }),
+  update: publicProcedure
+    .input(
+      z.object({
+        userId: z.string(),
+        data: z.object({
+          name: z.string().max(100).optional(),
+        }),
+      }),
+    )
+    .mutation((opts) => {
+      return opts.ctx.db.chatbotUser.update({
+        where: { id: opts.input.userId },
+        data: opts.input.data,
+      });
+    }),
   list: protectedProcedure
     .input(
       z.object({
