@@ -8,7 +8,6 @@ import { ChatbotSettings } from "@/utils/validators";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import remarkGfm from "remark-gfm";
-import rehypeRaw from "rehype-raw";
 
 const BotMessageBubble = ({
   message,
@@ -42,6 +41,7 @@ const BotMessageBubble = ({
               "prose-invert": theme === "dark",
             })}
             remarkPlugins={[remarkGfm]}
+            linkTarget="_blank"
           >
             {message}
           </ReactMarkdown>
