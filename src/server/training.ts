@@ -1,22 +1,15 @@
 import { prisma } from "./prisma";
 import { addDocuments } from "@/server/vector-store";
-import { convert } from "html-to-text";
+import TurndownService from "turndown";
 import { splitDocumentIntoChunks } from "@/utils/splitDocumentIntoChunks";
+
+const turndownService = new TurndownService();
 
 const getDocumentsFromWeb = async (url: URL) => {
   const res = await fetch(url);
   const htmlText = await res.text();
-  const rawText = convert(htmlText, {
-    selectors: [
-      {
-        selector: "a",
-        options: {
-          baseUrl: url.origin,
-        },
-      },
-    ],
-  });
-  const chunks = splitDocumentIntoChunks(rawText, 500, 50);
+  const rawText = turndownService.turndown(htmlText);
+  const chunks = splitDocumentIntoChunks(rawText, 1000, 100);
   return chunks;
 };
 
@@ -29,7 +22,7 @@ export const trainLink = async (linkId: string) => {
 
   // if it's training do nothing;
   if (link.status === "TRAINING") {
-    throw new Error("Link is already in training!");
+    return;
   }
 
   try {
@@ -59,6 +52,7 @@ export const trainLink = async (linkId: string) => {
         error: error.message || "Something went wrong!",
       },
     });
+    console.log(error);
     throw error;
   }
 };

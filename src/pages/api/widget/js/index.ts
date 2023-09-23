@@ -231,7 +231,6 @@ export default async function handler(
       hovering = false;
     };
     window.addEventListener('message', function(event) {
-      console.log(event.data);
       if(event.data === "CLOSE_CHATBOX") {
         hideChatbox();
       }

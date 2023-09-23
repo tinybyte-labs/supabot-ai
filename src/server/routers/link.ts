@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import qstash from "../qstash";
 import { trainLink } from "../training";
-import { protectedProcedure, publicProcedure, router } from "../trpc";
+import { protectedProcedure, router } from "../trpc";
 import * as z from "zod";
 import { plans } from "@/data/plans";
 

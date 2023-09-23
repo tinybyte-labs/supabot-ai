@@ -1,6 +1,5 @@
 import { embedTextArray } from "./openai";
 import { prisma } from "./prisma";
-import { Document } from "@prisma/client";
 
 export async function addVectors(
   vectors: number[][],
@@ -50,7 +49,7 @@ export async function addDocuments(
 export async function getDocuments(
   chatbotId: string,
   embedding: number[],
-  threshold = 0.78,
+  threshold = 0.5,
   limit = 5,
 ) {
   const documents = await prisma.$queryRaw`

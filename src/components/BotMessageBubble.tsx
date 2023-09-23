@@ -7,6 +7,8 @@ import { formatDistanceToNow } from "date-fns";
 import { ChatbotSettings } from "@/utils/validators";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 
 const BotMessageBubble = ({
   message,
@@ -28,17 +30,18 @@ const BotMessageBubble = ({
   preview?: boolean;
 }) => {
   return (
-    <div className="flex justify-start pr-12">
-      <div className="flex flex-col items-start">
-        <p className="mb-1 text-sm font-medium uppercase text-muted-foreground">
-          {name}
-        </p>
+    <div className="flex flex-col items-start">
+      <p className="mb-1 text-sm font-medium uppercase text-muted-foreground">
+        {name}
+      </p>
 
-        <div className="relative rounded-xl rounded-tl-sm bg-secondary p-4 text-secondary-foreground">
+      <div className="flex max-w-full justify-start pr-12">
+        <div className="relative max-w-full rounded-xl rounded-tl-sm bg-secondary text-secondary-foreground">
           <ReactMarkdown
-            className={cn("prose max-w-none", {
+            className={cn("prose max-w-full overflow-auto p-4", {
               "prose-invert": theme === "dark",
             })}
+            remarkPlugins={[remarkGfm]}
           >
             {message}
           </ReactMarkdown>
@@ -108,31 +111,31 @@ const BotMessageBubble = ({
             )
           )}
         </div>
-
-        {date && (
-          <p className="mt-1 text-xs text-muted-foreground">
-            {formatDistanceToNow(date, { addSuffix: true })}
-          </p>
-        )}
-
-        {sources.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-2">
-            {sources.map((source, i) => (
-              <Button
-                key={i}
-                size="sm"
-                variant="secondary"
-                asChild
-                className="h-fit px-2 py-1"
-              >
-                <Link href={source} target="_blank">
-                  {source}
-                </Link>
-              </Button>
-            ))}
-          </div>
-        )}
       </div>
+
+      {date && (
+        <p className="mt-1 text-xs text-muted-foreground">
+          {formatDistanceToNow(date, { addSuffix: true })}
+        </p>
+      )}
+
+      {sources.length > 0 && (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {sources.map((source, i) => (
+            <Button
+              key={i}
+              size="sm"
+              variant="secondary"
+              asChild
+              className="h-fit px-2 py-1"
+            >
+              <Link href={source} target="_blank">
+                {source}
+              </Link>
+            </Button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
