@@ -1,4 +1,4 @@
-import CloseChatboxButton from "@/components/CloseChatboxButton";
+import ChatboxHeader from "@/components/ChatboxHeader";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,7 +13,7 @@ import ChatbotWidgetLayout, {
 import { NextPageWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
 import { formatDistanceToNow } from "date-fns";
-import { ArrowRight, Loader2, Plus, X } from "lucide-react";
+import { ArrowRight, Loader2, Plus } from "lucide-react";
 import Link from "next/link";
 
 const ConversationsPage: NextPageWithLayout = () => {
@@ -31,30 +31,31 @@ const ConversationsPage: NextPageWithLayout = () => {
 
   return (
     <>
-      <header className="flex items-center gap-2 border-b p-2 pl-4">
-        <h1 className="flex-1 text-lg font-semibold">
-          Conversations ({conversationsQuery.data?.length || 0})
-        </h1>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={startConversation}
-              disabled={startConversationLoading}
-            >
-              <div className="sr-only">New Conversation</div>
-              {startConversationLoading ? (
-                <Loader2 size={20} className="animate-spin" />
-              ) : (
-                <Plus size={20} />
-              )}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>New Conversation</TooltipContent>
-        </Tooltip>
-        <CloseChatboxButton />
-      </header>
+      <ChatboxHeader
+        title={`Conversations (${conversationsQuery.data?.length || 0})`}
+        trailing={
+          <>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={startConversation}
+                  disabled={startConversationLoading}
+                >
+                  <div className="sr-only">New Conversation</div>
+                  {startConversationLoading ? (
+                    <Loader2 size={22} className="animate-spin" />
+                  ) : (
+                    <Plus size={22} />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>New Conversation</TooltipContent>
+            </Tooltip>
+          </>
+        }
+      />
       {user ? (
         <div className="flex-1 overflow-auto">
           {conversationsQuery.isLoading ? (

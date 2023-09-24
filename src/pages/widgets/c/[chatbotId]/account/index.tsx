@@ -1,4 +1,4 @@
-import CloseChatboxButton from "@/components/CloseChatboxButton";
+import ChatboxHeader from "@/components/ChatboxHeader";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button, ButtonLoader } from "@/components/ui/button";
 import {
@@ -27,10 +27,7 @@ const AccountPage: NextPageWithLayout = () => {
 
   return (
     <>
-      <header className="flex items-center gap-3 border-b p-2 pl-4">
-        <h1 className="flex-1 text-lg font-semibold">Account</h1>
-        <CloseChatboxButton />
-      </header>
+      <ChatboxHeader title="Account" />
       <div className="flex-1 overflow-auto">
         {user ? <Profile /> : <LogInForm />}
       </div>

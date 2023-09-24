@@ -1,14 +1,13 @@
 import BotMessageBubble from "@/components/BotMessageBubble";
+import ChatboxHeader from "@/components/ChatboxHeader";
 import ChatboxInputBar from "@/components/ChatboxInputBar";
-import CloseChatboxButton from "@/components/CloseChatboxButton";
 import UserMessageBubble from "@/components/UserMessageBubble";
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
 import ChatbotWidgetLayout, {
   useChatbotWidget,
@@ -18,7 +17,7 @@ import { trpc } from "@/utils/trpc";
 import { ChatbotSettings } from "@/utils/validators";
 import { Message } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
-import { ArrowLeft, Loader2, MoreVertical, RefreshCw } from "lucide-react";
+import { ArrowLeft, Loader2, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {
@@ -230,7 +229,7 @@ const ConversationPage: NextPageWithLayout = () => {
   if (conversationQuery.isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 size={24} className="animate-spin" />
+        <Loader2 size={22} className="animate-spin" />
       </div>
     );
   }
@@ -240,56 +239,50 @@ const ConversationPage: NextPageWithLayout = () => {
 
   return (
     <div className="flex h-full w-full flex-1 flex-col overflow-hidden">
-      <header className="flex h-16 items-center gap-1 border-b p-2">
-        <Button size="icon" variant="ghost" asChild>
-          <Link href={`/widgets/c/${chatbot.id}`}>
-            <p className="sr-only">go to home</p>
-            <ArrowLeft size={20} />
-          </Link>
-        </Button>
-
-        <h1 className="flex-1 text-lg font-semibold">
-          {conversationQuery.data.title || chatbot.name}
-        </h1>
-
-        <Button
-          size="icon"
-          variant="ghost"
-          onClick={() => {
-            conversationQuery.refetch();
-            messagesQuery.refetch();
-          }}
-          disabled={
-            conversationQuery.isRefetching || messagesQuery.isRefetching
-          }
-        >
-          <p className="sr-only">Refresh Conversation</p>
-          {conversationQuery.isRefetching || messagesQuery.isRefetching ? (
-            <Loader2 size={20} className="animate-spin" />
-          ) : (
-            <RefreshCw size={20} />
-          )}
-        </Button>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button size="icon" variant="ghost">
-              <p className="sr-only">Menu</p>
-              <MoreVertical size={20} />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              disabled={conversationQuery.data.status === "CLOSED"}
-              onClick={handleCloseConversation}
-            >
-              Close Conversation
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <CloseChatboxButton />
-      </header>
+      <ChatboxHeader
+        title={conversationQuery.data.title || chatbot.name}
+        leading={
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button size="icon" variant="ghost" asChild>
+                <Link href={`/widgets/c/${chatbot.id}`}>
+                  <p className="sr-only">go to home</p>
+                  <ArrowLeft size={22} />
+                </Link>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Go to home</TooltipContent>
+          </Tooltip>
+        }
+        trailing={
+          <>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => {
+                    conversationQuery.refetch();
+                    messagesQuery.refetch();
+                  }}
+                  disabled={
+                    conversationQuery.isRefetching || messagesQuery.isRefetching
+                  }
+                >
+                  <p className="sr-only">Refresh Conversation</p>
+                  {conversationQuery.isRefetching ||
+                  messagesQuery.isRefetching ? (
+                    <Loader2 size={22} className="animate-spin" />
+                  ) : (
+                    <RefreshCw size={22} />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Refresh Conversation</TooltipContent>
+            </Tooltip>
+          </>
+        }
+      />
 
       <div className="relative flex-1 overflow-y-auto" ref={scrollElRef}>
         <div className="space-y-6 p-4">
@@ -331,9 +324,8 @@ const ConversationPage: NextPageWithLayout = () => {
             </>
           )}
         </div>
-
         {!sendMessage.isLoading && quickPromptsQuery.isSuccess && (
-          <div className="flex flex-wrap justify-end gap-4 p-4">
+          <div className="flex flex-wrap justify-end gap-2 p-4">
             {quickPromptsQuery.data
               .filter(
                 (p) =>

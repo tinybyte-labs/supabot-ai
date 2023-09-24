@@ -14,7 +14,7 @@ const CloseChatboxButton = () => {
           }}
         >
           <div className="sr-only">Minimize Chatbox</div>
-          <X size={20} />
+          <X size={22} />
         </Button>
       </TooltipTrigger>
       <TooltipContent>Minimize Chatbox</TooltipContent>

@@ -1,4 +1,3 @@
-import { Button } from "./ui/button";
 import { Loader2, SendHorizonal } from "lucide-react";
 import TextareaAutosize from "react-textarea-autosize";
 
@@ -42,13 +41,17 @@ const ChatboxInputBar = ({
           }}
         />
         <div className="flex items-center pr-2">
-          <Button disabled={isLoading} size="icon" variant="ghost">
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="p-2 text-primary transition-all hover:scale-105"
+          >
             {isLoading ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
+              <Loader2 size={24} className="animate-spin" />
             ) : (
-              <SendHorizonal className="h-5 w-5" />
+              <SendHorizonal size={24} />
             )}
-          </Button>
+          </button>
         </div>
       </form>
     </div>
