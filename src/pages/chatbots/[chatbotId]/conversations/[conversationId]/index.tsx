@@ -189,10 +189,11 @@ const ConversationPage: NextPageWithLayout = () => {
                         preview
                       />
                     ) : message.role === "USER" ? (
-                      <UserMessageBubble
-                        name="YOU"
+                      <BotMessageBubble
+                        name="CUSTOMER"
                         message={message.body}
                         date={message.createdAt}
+                        theme={resolvedTheme === "dark" ? "dark" : "light"}
                         preview
                       />
                     ) : null}
