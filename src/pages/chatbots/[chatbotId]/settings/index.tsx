@@ -76,7 +76,7 @@ const UpdateNameFrom = () => {
 
   const form = useForm<z.infer<typeof updateChatbotValidator>>({
     resolver: zodResolver(updateChatbotValidator),
-    defaultValues: {
+    values: {
       name: chatbot?.name || "",
       id: chatbot?.id || "",
     },

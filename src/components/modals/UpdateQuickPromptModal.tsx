@@ -39,7 +39,7 @@ const UpdateQuickPromptModal = ({
 }) => {
   const form = useForm<z.infer<typeof updateQuickPromptValidator>>({
     resolver: zodResolver(updateQuickPromptValidator),
-    defaultValues: {
+    values: {
       id: prompt.id,
       title: prompt.title,
       prompt: prompt.prompt,
@@ -72,9 +72,6 @@ const UpdateQuickPromptModal = ({
     <Dialog
       open={open}
       onOpenChange={(value) => {
-        if (!value) {
-          form.reset();
-        }
         onOpenChange(value);
       }}
     >

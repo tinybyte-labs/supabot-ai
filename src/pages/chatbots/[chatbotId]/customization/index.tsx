@@ -73,7 +73,7 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
   const settings = (chatbot.settings ?? {}) as ChatbotSettings;
   const form = useForm<z.infer<typeof updateChatbotValidator>>({
     resolver: zodResolver(updateChatbotValidator),
-    defaultValues: {
+    values: {
       id: chatbot.id,
       settings,
     },

@@ -31,6 +31,74 @@ import { formatDistanceToNow } from "date-fns";
 import { Loader2, MoreHorizontal, Plus, RotateCw, Trash2 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 
+const columns: ColumnDef<QuickPrompt>[] = [
+  {
+    id: "select",
+    enableSorting: false,
+    enableHiding: false,
+    header: ({ table }) => (
+      <Checkbox
+        checked={table.getIsAllPageRowsSelected()}
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+  },
+  {
+    accessorKey: "title",
+    header: () => <div className="whitespace-nowrap">TITLE</div>,
+    cell: ({ row }) => (
+      <p className="min-w-[160px] max-w-sm">{row.original.title}</p>
+    ),
+  },
+  {
+    accessorKey: "prompt",
+    header: () => <div className="whitespace-nowrap">PROMPT</div>,
+    cell: ({ row }) => <p className="min-w-[320px]">{row.original.prompt}</p>,
+  },
+  {
+    accessorKey: "status",
+    header: () => <div className="whitespace-nowrap">STATUS</div>,
+  },
+  {
+    accessorKey: "isFollowUpPrompt",
+    header: () => <div className="whitespace-nowrap">FOLLOW UP</div>,
+    cell: ({ row }) => (
+      <Checkbox checked={row.original.isFollowUpPrompt} aria-readonly />
+    ),
+  },
+  {
+    accessorKey: "updatedAt",
+    header: () => <div className="whitespace-nowrap">LAST UPDATED AT</div>,
+    cell: ({ row }) => {
+      return (
+        <p className="whitespace-nowrap">
+          {row.original.updatedAt
+            ? formatDistanceToNow(row.original.updatedAt, {
+                addSuffix: true,
+              })
+            : "-"}
+        </p>
+      );
+    },
+  },
+  {
+    id: "actions",
+    enableHiding: false,
+    enableSorting: false,
+    cell: ({ row }) => {
+      return <ActionButton quickPrompt={row.original} />;
+    },
+  },
+];
+
 const QuickPromptsPage: NextPageWithLayout = () => {
   const [Modal, { openModal }] = useModal(AddQuickPromptModal);
   const { isLoaded, chatbot } = useChatbot();
@@ -55,11 +123,6 @@ const QuickPromptsPage: NextPageWithLayout = () => {
     },
   });
 
-  const quickPrompts = useMemo(
-    () => quickPromptsQuery.data || [],
-    [quickPromptsQuery.data],
-  );
-
   const isBusey = useMemo(
     () =>
       deleteMany.isLoading ||
@@ -72,83 +135,8 @@ const QuickPromptsPage: NextPageWithLayout = () => {
     ],
   );
 
-  const columns: ColumnDef<QuickPrompt>[] = useMemo(
-    () => [
-      {
-        id: "select",
-        enableSorting: false,
-        enableHiding: false,
-        header: ({ table }) => (
-          <Checkbox
-            checked={table.getIsAllPageRowsSelected()}
-            onCheckedChange={(value) =>
-              table.toggleAllPageRowsSelected(!!value)
-            }
-            aria-label="Select all"
-          />
-        ),
-        cell: ({ row }) => (
-          <Checkbox
-            checked={row.getIsSelected()}
-            onCheckedChange={(value) => row.toggleSelected(!!value)}
-            aria-label="Select row"
-          />
-        ),
-      },
-      {
-        accessorKey: "title",
-        header: () => <div className="whitespace-nowrap">TITLE</div>,
-        cell: ({ row }) => (
-          <p className="min-w-[160px] max-w-sm">{row.original.title}</p>
-        ),
-      },
-      {
-        accessorKey: "prompt",
-        header: () => <div className="whitespace-nowrap">PROMPT</div>,
-        cell: ({ row }) => (
-          <p className="min-w-[320px]">{row.original.prompt}</p>
-        ),
-      },
-      {
-        accessorKey: "status",
-        header: () => <div className="whitespace-nowrap">STATUS</div>,
-      },
-      {
-        accessorKey: "isFollowUpPrompt",
-        header: () => <div className="whitespace-nowrap">FOLLOW UP</div>,
-        cell: ({ row }) => (
-          <Checkbox checked={row.original.isFollowUpPrompt} aria-readonly />
-        ),
-      },
-      {
-        accessorKey: "updatedAt",
-        header: () => <div className="whitespace-nowrap">LAST UPDATED AT</div>,
-        cell: ({ row }) => {
-          return (
-            <p className="whitespace-nowrap">
-              {row.original.updatedAt
-                ? formatDistanceToNow(row.original.updatedAt, {
-                    addSuffix: true,
-                  })
-                : "-"}
-            </p>
-          );
-        },
-      },
-      {
-        id: "actions",
-        enableHiding: false,
-        enableSorting: false,
-        cell: ({ row }) => {
-          return <ActionButton quickPrompt={row.original} />;
-        },
-      },
-    ],
-    [],
-  );
-
   const table = useReactTable({
-    data: quickPrompts,
+    data: quickPromptsQuery.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -256,7 +244,7 @@ const ActionButton = ({ quickPrompt }: { quickPrompt: QuickPrompt }) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuLabel>Actions {quickPrompt.id}</DropdownMenuLabel>
           <DropdownMenuItem onClick={() => setModalOpen(true)}>
             Edit
           </DropdownMenuItem>

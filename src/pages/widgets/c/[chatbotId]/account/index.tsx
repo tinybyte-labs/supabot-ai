@@ -52,7 +52,7 @@ const Profile = () => {
   const { user, signOut } = useChatbotWidget();
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
-    defaultValues: {
+    values: {
       name: user?.name || "",
     },
   });
