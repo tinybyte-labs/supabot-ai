@@ -3,6 +3,7 @@ import ChatboxHeader from "@/components/ChatboxHeader";
 import ChatboxInputBar from "@/components/ChatboxInputBar";
 import UserMessageBubble from "@/components/UserMessageBubble";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
   TooltipContent,
@@ -93,57 +94,7 @@ const ConversationPage: NextPageWithLayout = () => {
       },
     },
   );
-  const handleMessageReact = async (
-    message: Message,
-    reaction: Message["reaction"],
-  ) => {
-    if (!conversationQuery.isSuccess) return;
-    if (conversationQuery.data.status === "CLOSED") return;
-    if (message.reaction === reaction) {
-      reaction = null;
-    }
-
-    utils.message.list.setData(
-      { conversationId: conversationQuery.data.id },
-      (data) =>
-        data?.map((msg) =>
-          msg.id === message.id ? { ...msg, reaction } : msg,
-        ),
-    );
-    try {
-      await reactOnMessageMutation.mutateAsync({ id: message.id, reaction });
-    } catch (error) {
-      if (error instanceof TRPCError) {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
-      }
-      utils.message.list.setData(
-        { conversationId: conversationQuery.data.id },
-        (data) =>
-          data?.map((msg) =>
-            msg.id === message.id
-              ? { ...msg, reaction: message.reaction }
-              : msg,
-          ),
-      );
-    }
-  };
-
-  const handleScrollToBottom = useCallback(
-    (behavior: ScrollBehavior = "smooth") => {
-      scrollElRef.current?.scrollTo({
-        top: scrollElRef.current.scrollHeight,
-        behavior,
-      });
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [scrollElRef.current],
-  );
-
-  const sendMessage = trpc.message.send.useMutation({
+  const sendMessageMutation = trpc.message.send.useMutation({
     onSuccess: ({ botMessage, userMessage }) => {
       utils.message.list.setData(
         { conversationId: userMessage.conversationId },
@@ -163,7 +114,61 @@ const ConversationPage: NextPageWithLayout = () => {
         variant: "destructive",
       }),
   });
+  const handleMessageReact = useCallback(
+    async (message: Message, reaction: Message["reaction"]) => {
+      if (!conversationQuery.isSuccess) return;
+      if (conversationQuery.data.status === "CLOSED") return;
+      if (message.reaction === reaction) {
+        reaction = null;
+      }
 
+      utils.message.list.setData(
+        { conversationId: conversationQuery.data.id },
+        (data) =>
+          data?.map((msg) =>
+            msg.id === message.id ? { ...msg, reaction } : msg,
+          ),
+      );
+      try {
+        await reactOnMessageMutation.mutateAsync({ id: message.id, reaction });
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          toast({
+            title: "Error",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
+        utils.message.list.setData(
+          { conversationId: conversationQuery.data.id },
+          (data) =>
+            data?.map((msg) =>
+              msg.id === message.id
+                ? { ...msg, reaction: message.reaction }
+                : msg,
+            ),
+        );
+      }
+    },
+    [
+      conversationQuery.data?.id,
+      conversationQuery.data?.status,
+      conversationQuery.isSuccess,
+      reactOnMessageMutation,
+      toast,
+      utils.message.list,
+    ],
+  );
+  const handleScrollToBottom = useCallback(
+    (behavior: ScrollBehavior = "smooth") => {
+      scrollElRef.current?.scrollTo({
+        top: scrollElRef.current.scrollHeight,
+        behavior,
+      });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [scrollElRef.current],
+  );
   const handleSubmit = useCallback(
     async (message: string) => {
       if (!conversationQuery.isSuccess) {
@@ -190,7 +195,7 @@ const ConversationPage: NextPageWithLayout = () => {
         (data) => [...(data || []), m],
       );
 
-      sendMessage.mutateAsync({
+      sendMessageMutation.mutateAsync({
         conversationId: conversationQuery.data.id,
         message,
         userId: user?.id,
@@ -203,7 +208,7 @@ const ConversationPage: NextPageWithLayout = () => {
       conversationQuery.data?.status,
       conversationQuery.isSuccess,
       handleScrollToBottom,
-      sendMessage,
+      sendMessageMutation,
       toast,
       user?.id,
       utils.message.list,
@@ -321,10 +326,20 @@ const ConversationPage: NextPageWithLayout = () => {
                   ) : null}
                 </Fragment>
               ))}
+              {sendMessageMutation.isLoading && (
+                <div className="flex items-start">
+                  <div className="flex items-center gap-1 rounded-xl rounded-tl-sm bg-secondary p-4 text-secondary-foreground">
+                    <Skeleton className="h-2 w-2 rounded-full bg-foreground/20"></Skeleton>
+                    <Skeleton className="h-2 w-2 rounded-full bg-foreground/20 delay-300"></Skeleton>
+                    <Skeleton className="h-2 w-2 rounded-full bg-foreground/20 delay-700"></Skeleton>
+                  </div>
+                </div>
+              )}
             </>
           )}
         </div>
-        {!sendMessage.isLoading && quickPromptsQuery.isSuccess && (
+
+        {!sendMessageMutation.isLoading && quickPromptsQuery.isSuccess && (
           <div className="flex flex-wrap justify-end gap-2 p-4">
             {quickPromptsQuery.data
               .filter(
@@ -350,7 +365,7 @@ const ConversationPage: NextPageWithLayout = () => {
           value={message}
           onChange={setMessage}
           onSubmit={handleSubmit}
-          isLoading={sendMessage.isLoading}
+          isLoading={sendMessageMutation.isLoading}
           placeholderText={chatbotSettings.placeholderText}
           autoFocus
         />

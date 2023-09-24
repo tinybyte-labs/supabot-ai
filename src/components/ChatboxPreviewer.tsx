@@ -9,6 +9,7 @@ import ChatboxWatermark from "./ChatboxWatermark";
 import { ChatbotSettings } from "@/utils/validators";
 import { cn } from "@/lib/utils";
 import { getTwHSL } from "@/utils/getTwHSL";
+import ChatboxHeader from "./ChatboxHeader";
 
 export type ChatboxPreviewerProps = {
   title: string;
@@ -34,25 +35,21 @@ const ChatboxPreviewer = ({ title, settings }: ChatboxPreviewerProps) => {
           colorScheme: settings?.theme || "light",
         }}
       >
-        <header className="flex items-center gap-3 border-b p-2">
-          <Button size="icon" variant="ghost">
-            <p className="sr-only">go to home</p>
-            <ArrowLeft size={20} />
-          </Button>
-
-          <h1 className="text-lg font-semibold">{title}</h1>
-
-          <div className="flex flex-1 items-center justify-end gap-2">
+        <ChatboxHeader
+          title={title}
+          leading={
             <Button size="icon" variant="ghost">
-              <p className="sr-only">Refresh Conversation</p>
-              <RefreshCw size={20} />
+              <p className="sr-only">go to home</p>
+              <ArrowLeft size={22} />
             </Button>
+          }
+          trailing={
             <Button size="icon" variant="ghost">
               <p className="sr-only">Menu</p>
-              <MoreVertical size={20} />
+              <MoreVertical size={22} />
             </Button>
-          </div>
-        </header>
+          }
+        />
         <div className="flex-1 overflow-y-auto">
           <div className="space-y-6 p-4">
             {typeof settings?.welcomeMessage === "string" &&
