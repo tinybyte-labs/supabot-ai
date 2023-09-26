@@ -1,6 +1,6 @@
 import ChatboxHeader from "@/components/ChatboxHeader";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonLoader } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
@@ -13,7 +13,7 @@ import ChatbotWidgetLayout, {
 import { NextPageWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
 import { formatDistanceToNow } from "date-fns";
-import { ArrowRight, Loader2, Plus } from "lucide-react";
+import { ArrowRight, Loader2, Plus, RefreshCw } from "lucide-react";
 import Link from "next/link";
 
 const ConversationsPage: NextPageWithLayout = () => {
@@ -57,9 +57,9 @@ const ConversationsPage: NextPageWithLayout = () => {
         }
       />
       {user ? (
-        <div className="flex-1 overflow-auto">
-          {conversationsQuery.isLoading ? (
-            new Array(5).fill(1).map((_, i) => (
+        conversationsQuery.isLoading ? (
+          <div className="flex-1 overflow-auto">
+            {new Array(5).fill(1).map((_, i) => (
               <div className="flex flex-col border-b p-4" key={i}>
                 <Skeleton className="h-6 w-2/3" />
                 <div className="mt-1 flex flex-wrap items-center gap-2">
@@ -67,11 +67,46 @@ const ConversationsPage: NextPageWithLayout = () => {
                   <Skeleton className="h-5 w-24" />
                 </div>
               </div>
-            ))
-          ) : conversationsQuery.isError ? (
-            <p>{conversationsQuery.error.message}</p>
-          ) : (
-            conversationsQuery.data.map((conversation) => {
+            ))}
+          </div>
+        ) : conversationsQuery.isError ? (
+          <div className="flex flex-1 flex-col items-center justify-center gap-6 p-6">
+            <p className="text-center text-muted-foreground">
+              Error: {conversationsQuery.error.message}
+            </p>
+            <Button
+              onClick={() => conversationsQuery.refetch()}
+              disabled={conversationsQuery.isRefetching}
+              variant="outline"
+            >
+              {conversationsQuery.isRefetching ? (
+                <Loader2 size={20} className="-ml-1 mr-2 animate-spin" />
+              ) : (
+                <RefreshCw size={20} className="-ml-1 mr-2" />
+              )}
+              Retry
+            </Button>
+          </div>
+        ) : conversationsQuery.data.length === 0 ? (
+          <div className="flex flex-1 flex-col items-center justify-center gap-6 p-6">
+            <p className="text-center text-muted-foreground">
+              Oops! It looks like there are no conversations here at the moment.
+            </p>
+            <Button
+              onClick={startConversation}
+              disabled={startConversationLoading}
+            >
+              Start a conversation
+              {startConversationLoading ? (
+                <Loader2 size={20} className="-mr-1 ml-2 animate-spin" />
+              ) : (
+                <ArrowRight size={20} className="-mr-1 ml-2" />
+              )}
+            </Button>
+          </div>
+        ) : (
+          <div className="flex-1 overflow-auto">
+            {conversationsQuery.data.map((conversation) => {
               const lastMessage = conversation.messages[0];
               return (
                 <Link
@@ -99,18 +134,16 @@ const ConversationsPage: NextPageWithLayout = () => {
                   </div>
                 </Link>
               );
-            })
-          )}
-        </div>
+            })}
+          </div>
+        )
       ) : (
-        <div className="flex flex-1 flex-col items-center justify-center">
-          <h2 className="text-center text-2xl font-semibold">
-            No Conversations
-          </h2>
-          <p className="mt-1 text-center text-muted-foreground">
-            Please log in to preserve and see all your conversations here.
+        <div className="flex flex-1 flex-col items-center justify-center gap-6 p-6">
+          <p className="text-center text-muted-foreground">
+            To access and view your conversations, please log in or create an
+            account to preserve your chat history.
           </p>
-          <Button asChild className="mt-8">
+          <Button asChild>
             <Link href={`/widgets/c/${chatbot.id}/account`}>
               Let&apos;s Log In
               <ArrowRight size={20} className="-mr-1 ml-2" />
