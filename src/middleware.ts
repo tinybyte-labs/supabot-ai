@@ -19,24 +19,20 @@ export default authMiddleware({
     }
   },
   afterAuth: (auth, req) => {
-    if (!auth.userId && !auth.isPublicRoute) {
-      return redirectToSignIn({ returnBackUrl: req.url });
-    }
+    const path = req.nextUrl.pathname.split("?")[0];
 
-    if (auth.userId && req.nextUrl.pathname === "/") {
+    if (auth.userId && path === "/") {
       const dashboard = new URL("/chatbots", req.url);
       return NextResponse.redirect(dashboard);
     }
 
-    if (
-      auth.userId &&
-      !auth.orgId &&
-      !["/create-org", "/signin", "/register", "/settings/account"].find(
-        (item) => req.nextUrl.pathname.startsWith(item),
-      )
-    ) {
-      const orgSelection = new URL("/create-org", req.url);
-      return NextResponse.redirect(orgSelection);
+    if (!auth.isPublicRoute && !auth.userId) {
+      return redirectToSignIn({ returnBackUrl: req.url });
+    }
+
+    if (!auth.isPublicRoute && !auth.orgId && path !== "/create-org") {
+      const url = new URL("/create-org", req.url);
+      return NextResponse.redirect(url);
     }
   },
 });
