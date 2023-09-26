@@ -1,6 +1,6 @@
 import ChatboxHeader from "@/components/ChatboxHeader";
 import { Badge } from "@/components/ui/badge";
-import { Button, ButtonLoader } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
@@ -70,14 +70,16 @@ const ConversationsPage: NextPageWithLayout = () => {
             ))}
           </div>
         ) : conversationsQuery.isError ? (
-          <div className="flex flex-1 flex-col items-center justify-center gap-6 p-6">
-            <p className="text-center text-muted-foreground">
-              Error: {conversationsQuery.error.message}
+          <div className="mx-auto flex max-w-screen-sm flex-1 flex-col items-center justify-center p-6 text-center">
+            <p className="mt-6 text-lg font-semibold">Error</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {conversationsQuery.error.message}
             </p>
             <Button
               onClick={() => conversationsQuery.refetch()}
               disabled={conversationsQuery.isRefetching}
               variant="outline"
+              className="mt-6"
             >
               {conversationsQuery.isRefetching ? (
                 <Loader2 size={20} className="-ml-1 mr-2 animate-spin" />
@@ -88,15 +90,19 @@ const ConversationsPage: NextPageWithLayout = () => {
             </Button>
           </div>
         ) : conversationsQuery.data.length === 0 ? (
-          <div className="flex flex-1 flex-col items-center justify-center gap-6 p-6">
-            <p className="text-center text-muted-foreground">
+          <div className="mx-auto flex max-w-screen-sm flex-1 flex-col items-center justify-center p-6 text-center">
+            <p className="mt-6 text-lg font-semibold">
+              Your Conversations List is Empty
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">
               Oops! It looks like there are no conversations here at the moment.
             </p>
             <Button
               onClick={startConversation}
               disabled={startConversationLoading}
+              className="mt-6"
             >
-              Start a conversation
+              Start a New Conversation
               {startConversationLoading ? (
                 <Loader2 size={20} className="-mr-1 ml-2 animate-spin" />
               ) : (
@@ -138,12 +144,13 @@ const ConversationsPage: NextPageWithLayout = () => {
           </div>
         )
       ) : (
-        <div className="flex flex-1 flex-col items-center justify-center gap-6 p-6">
-          <p className="text-center text-muted-foreground">
+        <div className="mx-auto flex max-w-screen-sm flex-1 flex-col items-center justify-center p-6 text-center">
+          <p className="mt-6 text-lg font-semibold">Log In</p>
+          <p className="mt-1 text-sm text-muted-foreground">
             To access and view your conversations, please log in or create an
             account to preserve your chat history.
           </p>
-          <Button asChild>
+          <Button asChild className="mt-6">
             <Link href={`/widgets/c/${chatbot.id}/account`}>
               Let&apos;s Log In
               <ArrowRight size={20} className="-mr-1 ml-2" />

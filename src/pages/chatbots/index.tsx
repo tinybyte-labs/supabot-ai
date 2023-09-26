@@ -15,12 +15,12 @@ import { Chatbot } from "@prisma/client";
 const ChatbotsGrid = ({ chatbots }: { chatbots: Chatbot[] }) => {
   if (!chatbots.length) {
     return (
-      <div className="text-center">
-        <p className="mt-6 text-lg font-semibold">
-          You do not have any Chatbots
-        </p>
+      <div className="mx-auto max-w-screen-sm text-center">
+        <p className="mt-6 text-lg font-semibold">Your Chatbot List is Empty</p>
         <p className="mt-1 text-sm text-muted-foreground">
-          Let&apos;s create a new chatbot by clicking on the button below.
+          It looks like you&apos;re starting with a clean slate. Ready to craft
+          your very first chatbot? Click the button below to embark on your
+          chatbot creation journey! 🚀
         </p>
         <Button asChild className="mt-6">
           <Link href="/chatbots/new">
