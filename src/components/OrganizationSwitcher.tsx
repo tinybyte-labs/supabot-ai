@@ -15,31 +15,26 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useOrganization } from "@/hooks/useOrganization";
 import { cn } from "@/lib/utils";
-import { trpc } from "@/utils/trpc";
-import {
-  useAuth,
-  useOrganization,
-  useSession,
-  useSessionList,
-} from "@clerk/nextjs";
+import { useAuth, useSession, useSessionList } from "@clerk/nextjs";
 import {
   ArrowRight,
   Check,
   ChevronsUpDown,
   LogOut,
   Plus,
-  Settings,
   UserPlus,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import PlanBadge from "./PlanBadge";
 
 const OrganizationSwitcher = ({ className }: { className?: string }) => {
   const { isLoaded: sessionLoaded, session: activeSession } = useSession();
   const { isLoaded: sessionsLoaded, sessions, setActive } = useSessionList();
-  const { isLoaded: orgLoaded, organization: activeOrg } = useOrganization();
+  const { isLoading, organizaton, plan } = useOrganization();
   const { isLoaded: authLoaded, signOut } = useAuth();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -60,11 +55,11 @@ const OrganizationSwitcher = ({ className }: { className?: string }) => {
     router.reload();
   };
 
-  if (!(authLoaded && orgLoaded && sessionLoaded && sessionsLoaded)) {
+  if (!(authLoaded && !isLoading && sessionLoaded && sessionsLoaded)) {
     return <Skeleton className={cn("h-10 min-w-[180px]", className)} />;
   }
 
-  if (!activeOrg) {
+  if (!organizaton) {
     return (
       <Button asChild className="w-full text-left" variant="outline">
         <Link href={`/create-org`}>
@@ -84,13 +79,14 @@ const OrganizationSwitcher = ({ className }: { className?: string }) => {
           className={cn("justify-start text-left", className)}
         >
           <Avatar className="-ml-1 mr-2 h-6 w-6">
-            {activeOrg.imageUrl && <AvatarImage src={activeOrg.imageUrl} />}
+            {organizaton.imageUrl && <AvatarImage src={organizaton.imageUrl} />}
             <AvatarFallback className="uppercase">
-              {activeOrg.name[0]}
+              {organizaton.name?.[0]}
             </AvatarFallback>
           </Avatar>
-          <div className="flex-1 truncate">{activeOrg.name}</div>
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <div className="flex-1 truncate">{organizaton.name}</div>
+          <PlanBadge plan={plan} />
+          <ChevronsUpDown size={18} className="-mr-1 ml-2 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-56 p-0">
@@ -126,7 +122,7 @@ const OrganizationSwitcher = ({ className }: { className?: string }) => {
                     className={cn(
                       "ml-2 h-4 w-4",
                       session.user?.id === activeSession?.user.id &&
-                        org.organization.id === activeOrg.id
+                        org.organization.id === organizaton.id
                         ? "opacity-100"
                         : "opacity-0",
                     )}

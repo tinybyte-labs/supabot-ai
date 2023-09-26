@@ -1,5 +1,31 @@
 import { Plan } from "@/types/plan";
 
+export const freePlan: Plan = {
+  id: "free",
+  name: "Free",
+  limits: {
+    chatbots: 0,
+    links: 0,
+    documents: 0,
+    messagesPerMonth: 0,
+    teamMembers: 1,
+    apiAccess: false,
+    removeWatermark: false,
+    advancedCustomization: false,
+    prioritySupport: false,
+  },
+  price: {
+    monthly: {
+      amount: 0,
+      priceId: "free_monthly",
+    },
+    yearly: {
+      amount: 0,
+      priceId: "free_yearly",
+    },
+  },
+};
+
 export const plans: Plan[] = [
   {
     id: "starter",

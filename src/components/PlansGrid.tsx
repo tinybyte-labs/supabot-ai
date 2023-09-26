@@ -147,10 +147,12 @@ const PlansGrid = ({
       <div className="grid grid-cols-1 gap-8 pt-4 lg:grid-cols-2 xl:grid-cols-4 xl:gap-4">
         {pricingItems.map((item) => {
           const popular = item.id === "business";
-          const plan = plans.find((plan) => plan.id === item.id)!;
-          const price = plan?.price[interval].amount;
-          const priceId = plan?.price[interval].priceId;
-          const isCurrentPlan = priceId === currentPriceId;
+          const plan = plans.find((plan) => plan.id === item.id);
+          if (!plan) {
+            return null;
+          }
+          const price = plan.price[interval];
+          const isCurrentPlan = price.priceId === currentPriceId;
           return (
             <div key={item.id} className="relative">
               {popular && (
@@ -176,7 +178,7 @@ const PlansGrid = ({
                     {item.description}
                   </p>
                   <p className="text-6xl font-semibold">
-                    {(interval === "monthly" ? price : price / 12)
+                    {(interval === "monthly" ? price.amount : price.amount / 12)
                       .toFixed(1)
                       .replace(rx, "$1")}
                   </p>
@@ -215,7 +217,7 @@ const PlansGrid = ({
                     className="flex w-full rounded-full"
                     size="lg"
                     disabled={isCurrentPlan || loading}
-                    onClick={() => onPlanClick?.(plan.price[interval].priceId)}
+                    onClick={() => onPlanClick?.(price.priceId)}
                   >
                     {loading ? (
                       <Loader2 size={20} className="animate-spin" />

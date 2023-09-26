@@ -23,10 +23,10 @@ const Usage = () => {
           value={
             <>
               {usage.data.teamMembers.toLocaleString()} /{" "}
-              {plan?.limits.teamMembers === "unlimited" ? (
+              {plan.limits.teamMembers === "unlimited" ? (
                 <Infinity className="inline" size={32} />
               ) : (
-                <>{plan?.limits.teamMembers.toLocaleString() || 0}</>
+                <>{plan.limits.teamMembers.toLocaleString()}</>
               )}
             </>
           }
@@ -37,10 +37,10 @@ const Usage = () => {
           value={
             <>
               {usage.data.chatbots.toLocaleString()} /{" "}
-              {plan?.limits.chatbots === "unlimited" ? (
+              {plan.limits.chatbots === "unlimited" ? (
                 <Infinity className="inline" size={32} />
               ) : (
-                <>{plan?.limits.chatbots.toLocaleString() || 0}</>
+                <>{plan.limits.chatbots.toLocaleString()}</>
               )}
             </>
           }
@@ -51,10 +51,10 @@ const Usage = () => {
           value={
             <>
               {usage.data.messagesPerMonth.toLocaleString()} /{" "}
-              {plan?.limits.messagesPerMonth === "unlimited" ? (
+              {plan.limits.messagesPerMonth === "unlimited" ? (
                 <Infinity className="inline" size={32} />
               ) : (
-                <>{plan?.limits.messagesPerMonth.toLocaleString() || 0}</>
+                <>{plan.limits.messagesPerMonth.toLocaleString()}</>
               )}
             </>
           }
@@ -65,10 +65,10 @@ const Usage = () => {
           value={
             <>
               {usage.data.links.toLocaleString()} /{" "}
-              {plan?.limits.links === "unlimited" ? (
+              {plan.limits.links === "unlimited" ? (
                 <Infinity className="inline" size={32} />
               ) : (
-                <>{plan?.limits.links.toLocaleString() || 0}</>
+                <>{plan.limits.links.toLocaleString()}</>
               )}
             </>
           }
@@ -79,10 +79,10 @@ const Usage = () => {
           value={
             <>
               {usage.data.documents.toLocaleString()} /{" "}
-              {plan?.limits.documents === "unlimited" ? (
+              {plan.limits.documents === "unlimited" ? (
                 <Infinity className="inline" size={32} />
               ) : (
-                <>{plan?.limits.documents.toLocaleString() || 0}</>
+                <>{plan.limits.documents.toLocaleString()}</>
               )}
             </>
           }

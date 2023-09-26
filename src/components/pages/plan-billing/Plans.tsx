@@ -7,7 +7,7 @@ import { useStripe } from "@stripe/react-stripe-js";
 import { useState } from "react";
 
 const Plans = () => {
-  const { plan: currentPlan, organizaton } = useOrganization();
+  const { plan, organizaton } = useOrganization();
   const [loading, setLoading] = useState(false);
   const stripe = useStripe();
   const { toast } = useToast();
@@ -39,9 +39,7 @@ const Plans = () => {
     <section className="space-y-8" id="plans">
       <SecondaryPageHeader
         title="Plans"
-        subtitle={`You are currently on the ${
-          currentPlan?.name || "Free"
-        } plan.`}
+        subtitle={`You are currently on the ${plan.name} plan.`}
       />
       <PlansGrid
         buttonLabel={() => `Change Plan`}

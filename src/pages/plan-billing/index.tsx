@@ -1,15 +1,12 @@
 import DashboardPageHeader from "@/components/DashboardPageHeader";
+import PlanBadge from "@/components/PlanBadge";
 import CurrentPlan from "@/components/pages/plan-billing/CurrentPlan";
 import Plans from "@/components/pages/plan-billing/Plans";
 import Usage from "@/components/pages/plan-billing/Usage";
-import { Badge } from "@/components/ui/badge";
 import { useOrganization } from "@/hooks/useOrganization";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import { NextPageWithLayout } from "@/types/next";
-import { APP_NAME } from "@/utils/constants";
-import { trpc } from "@/utils/trpc";
 import { Loader2 } from "lucide-react";
-import Head from "next/head";
 
 const Page: NextPageWithLayout = () => {
   const { isLoading, error, plan } = useOrganization();
@@ -29,7 +26,7 @@ const Page: NextPageWithLayout = () => {
   return (
     <>
       <DashboardPageHeader title="Plan & Billing">
-        <Badge>{plan?.name || "Free"}</Badge>
+        <PlanBadge plan={plan} />
       </DashboardPageHeader>
 
       <div className="container space-y-16">

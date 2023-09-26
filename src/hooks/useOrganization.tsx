@@ -1,4 +1,4 @@
-import { plans } from "@/data/plans";
+import { freePlan, plans } from "@/data/plans";
 import { trpc } from "@/utils/trpc";
 import { useAuth } from "@clerk/nextjs";
 import { useMemo } from "react";
@@ -10,7 +10,7 @@ export const useOrganization = () => {
     { enabled: isLoaded && !!orgSlug },
   );
   const plan = useMemo(
-    () => plans.find((plan) => plan.id === orgQuery.data?.plan),
+    () => plans.find((plan) => plan.id === orgQuery.data?.plan) || freePlan,
     [orgQuery.data?.plan],
   );
   return {
