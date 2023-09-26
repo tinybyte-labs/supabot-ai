@@ -1,5 +1,13 @@
 import { Button } from "@/components/ui/button";
-import { Check, LogOut, UserPlus, User, Plus, Settings } from "lucide-react";
+import {
+  Check,
+  LogOut,
+  UserPlus,
+  User,
+  Plus,
+  Settings,
+  HelpCircleIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import {
@@ -159,6 +167,14 @@ const LoggedInUser = () => {
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem asChild>
+          <Link href="/help">
+            <HelpCircleIcon size={18} className="mr-2" />
+            Help
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() => signOut({ sessionId: activeSession?.id })}

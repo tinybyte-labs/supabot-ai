@@ -6,8 +6,8 @@ export default authMiddleware({
     "/",
     "/home",
     "/pricing",
+    "/contact",
     "/changelog(.*)",
-    "/help(.*)",
     "/blog(.*)",
     "/widgets(.*)",
     "/api(.*)",
@@ -30,7 +30,11 @@ export default authMiddleware({
       return redirectToSignIn({ returnBackUrl: req.url });
     }
 
-    if (!auth.isPublicRoute && !auth.orgId && path !== "/create-org") {
+    if (
+      !auth.isPublicRoute &&
+      !auth.orgId &&
+      !["/create-org", "/help"].includes(path)
+    ) {
       const url = new URL("/create-org", req.url);
       return NextResponse.redirect(url);
     }
