@@ -24,6 +24,7 @@ import {
   useSessionList,
 } from "@clerk/nextjs";
 import {
+  ArrowRight,
   Check,
   ChevronsUpDown,
   LogOut,
@@ -31,6 +32,7 @@ import {
   Settings,
   UserPlus,
 } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
@@ -58,10 +60,19 @@ const OrganizationSwitcher = ({ className }: { className?: string }) => {
     router.reload();
   };
 
-  if (
-    !(activeOrg && authLoaded && orgLoaded && sessionLoaded && sessionsLoaded)
-  ) {
+  if (!(authLoaded && orgLoaded && sessionLoaded && sessionsLoaded)) {
     return <Skeleton className={cn("h-10 min-w-[180px]", className)} />;
+  }
+
+  if (!activeOrg) {
+    return (
+      <Button asChild className="w-full text-left" variant="outline">
+        <Link href={`/create-org`}>
+          <div className="flex-1">Select Org</div>
+          <ArrowRight size={20} />
+        </Link>
+      </Button>
+    );
   }
 
   return (

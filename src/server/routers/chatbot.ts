@@ -10,6 +10,12 @@ import { defaultChatbotSettings } from "@/data/defaultChatbotSettings";
 
 export const chatbotRouter = router({
   list: protectedProcedure.query(async ({ ctx }) => {
+    if (!ctx.auth.orgId) {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: "No org found!. Please select a organization",
+      });
+    }
     return ctx.db.chatbot.findMany({
       where: { organizationId: ctx.auth.orgId },
       orderBy: { updatedAt: "desc" },

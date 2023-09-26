@@ -28,7 +28,13 @@ export default authMiddleware({
       return NextResponse.redirect(dashboard);
     }
 
-    if (auth.userId && !auth.orgId && req.nextUrl.pathname !== "/create-org") {
+    if (
+      auth.userId &&
+      !auth.orgId &&
+      !["/create-org", "/signin", "/register", "/settings/account"].find(
+        (item) => req.nextUrl.pathname.startsWith(item),
+      )
+    ) {
       const orgSelection = new URL("/create-org", req.url);
       return NextResponse.redirect(orgSelection);
     }
