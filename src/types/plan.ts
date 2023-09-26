@@ -1,4 +1,4 @@
-import { PlanInterval } from "./plan-interval";
+export type PlanInterval = "monthly" | "yearly";
 
 export type Plan = {
   id: string;

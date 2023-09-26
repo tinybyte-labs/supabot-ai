@@ -8,8 +8,7 @@ import { cn } from "@/lib/utils";
 import { Check, HelpCircle, Loader2 } from "lucide-react";
 import { Switch } from "./ui/switch";
 import { useState } from "react";
-import { PlanInterval } from "@/types/plan-interval";
-import { Plan } from "@/types/plan";
+import { Plan, PlanInterval } from "@/types/plan";
 import { plans } from "@/data/plans";
 
 const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
