@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-html-link-for-pages */
 import { useAuth, useSession } from "@clerk/nextjs";
 import { Skeleton } from "./ui/skeleton";
 import {
@@ -11,7 +10,17 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
-import { ChevronsUpDown, Computer, ExternalLink, User } from "lucide-react";
+import {
+  ChevronsUpDown,
+  Computer,
+  ExternalLink,
+  HelpCircle,
+  Home,
+  LayoutDashboard,
+  LogOut,
+  Settings,
+  User,
+} from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Link from "next/link";
 import { useTheme } from "next-themes";
@@ -77,7 +86,10 @@ const FullUserDropdownButton = () => {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
-            <Link href="/settings/account">Account Settings</Link>
+            <Link href="/settings/account">
+              <Settings size={18} className="mr-2" />
+              Account Settings
+            </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
@@ -110,16 +122,29 @@ const FullUserDropdownButton = () => {
           <DropdownMenuLabel>Links</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
-            <a href="/chatbots">Dashboard</a>
+            <Link href="/chatbots">
+              <LayoutDashboard size={18} className="mr-2" />
+              Dashboard
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <a href="/home">Homepage</a>
+            <Link href="/home">
+              <Home size={18} className="mr-2" />
+              Homepage
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/help">
+              <HelpCircle size={18} className="mr-2" />
+              Help
+            </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
 
         <DropdownMenuItem onClick={() => signOut({ sessionId: session?.id })}>
+          <LogOut size={18} className="mr-2" />
           Log Out
         </DropdownMenuItem>
       </DropdownMenuContent>
