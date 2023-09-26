@@ -6,11 +6,12 @@ import AuthLayout from "@/layouts/AuthLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { APP_NAME } from "@/utils/constants";
 import { useAtomValue } from "jotai";
+import { useTheme } from "next-themes";
 import Head from "next/head";
 
 const NewChatbotPage: NextPageWithLayout = () => {
   const name = useAtomValue(chatbotNameAtom);
-
+  const { resolvedTheme } = useTheme();
   return (
     <>
       <Head>
@@ -32,6 +33,7 @@ const NewChatbotPage: NextPageWithLayout = () => {
             title={name}
             settings={{
               ...defaultChatbotSettings,
+              theme: resolvedTheme === "dark" ? "dark" : "light",
               welcomeMessage: "Hello! How can I help you today?",
             }}
           />
