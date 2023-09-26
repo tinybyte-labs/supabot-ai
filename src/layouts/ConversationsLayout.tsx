@@ -1,7 +1,7 @@
 import { trpc } from "@/utils/trpc";
 import { ReactNode, useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { Filter, MessagesSquare } from "lucide-react";
+import { Filter, Loader2, MessagesSquare, RefreshCw } from "lucide-react";
 import SideBarNav from "@/components/SideBarNav";
 import { formatDistanceToNow } from "date-fns";
 import ChatbotLayout from "./ChatbotLayout";
@@ -16,6 +16,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const ConversationsLayout = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
@@ -59,35 +64,58 @@ const ConversationsLayout = ({ children }: { children: ReactNode }) => {
       <div className="flex h-[calc(100vh-57px)] flex-col overflow-hidden">
         <div className="flex flex-1 overflow-hidden">
           <div className="flex w-80 flex-col gap-1 overflow-y-auto border-r">
-            <div className="sticky flex h-14 items-center border-b px-4">
-              <h1 className="flex-1 text-xl font-bold tracking-tight">
+            <div className="sticky top-0 z-10 flex h-14 flex-shrink-0 items-center border-b bg-card px-4">
+              <h1 className="flex-1 truncate text-xl font-bold tracking-tight">
                 Conversations
               </h1>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button size="icon" variant="ghost">
-                    <Filter size={20} />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuLabel>Status</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuRadioGroup
-                    value={statusFilter}
-                    onValueChange={setStatusFilter}
+              <Tooltip>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <TooltipTrigger asChild>
+                      <Button size="icon" variant="ghost">
+                        <Filter size={20} />
+                      </Button>
+                    </TooltipTrigger>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuLabel>Status</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuRadioGroup
+                      value={statusFilter}
+                      onValueChange={setStatusFilter}
+                    >
+                      <DropdownMenuRadioItem value="ALL">
+                        ALL
+                      </DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value="OPEN">
+                        OPEN
+                      </DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem value="CLOSED">
+                        CLOSED
+                      </DropdownMenuRadioItem>
+                    </DropdownMenuRadioGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <TooltipContent side="bottom">Filter</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    disabled={conversationsQuery.isRefetching}
+                    onClick={() => conversationsQuery.refetch()}
                   >
-                    <DropdownMenuRadioItem value="ALL">
-                      ALL
-                    </DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="OPEN">
-                      OPEN
-                    </DropdownMenuRadioItem>
-                    <DropdownMenuRadioItem value="CLOSED">
-                      CLOSED
-                    </DropdownMenuRadioItem>
-                  </DropdownMenuRadioGroup>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    <p className="sr-only">Refresh</p>
+                    {conversationsQuery.isRefetching ? (
+                      <Loader2 size={20} className="animate-spin" />
+                    ) : (
+                      <RefreshCw size={20} />
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">Refresh</TooltipContent>
+              </Tooltip>
             </div>
             <div className="p-2">
               {conversationsQuery.isLoading ? (
