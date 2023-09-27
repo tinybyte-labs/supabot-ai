@@ -3,13 +3,9 @@
   "another": "Another Page",
   "advanced": "Advanced (A Folder)",
   "about": {
-    "title": "About",
-    "type": "page"
-  },
-  "contact": {
-    "title": "Contact ↗",
+    "title": "Website ↗",
     "type": "page",
-    "href": "https://twitter.com/shuding_",
+    "href": "https://supabotai.com",
     "newWindow": true
   }
 }

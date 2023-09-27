@@ -1,18 +1,26 @@
-import React from 'react'
-import { DocsThemeConfig } from 'nextra-theme-docs'
+import React from "react";
+import { DocsThemeConfig } from "nextra-theme-docs";
+import FullLogo from "./components/FullLogo";
 
 const config: DocsThemeConfig = {
-  logo: <span>My Project</span>,
+  logo: <FullLogo />,
   project: {
-    link: 'https://github.com/shuding/nextra-docs-template',
+    link: "https://github.com/iam-rohid/supabot-ai",
   },
   chat: {
-    link: 'https://discord.com',
+    link: "https://discord.com/invite/muz5fkkS",
   },
-  docsRepositoryBase: 'https://github.com/shuding/nextra-docs-template',
+  docsRepositoryBase:
+    "https://github.com/iam-rohid/supabot-ai/tree/main/apps/docs",
   footer: {
-    text: 'Nextra Docs Template',
+    text: "SupaBot AI Documentation",
   },
-}
+  useNextSeoProps: () => {
+    return {
+      title: "SupaBot AI Documentation",
+      titleTemplate: "%s | SupaBot AI Documentation",
+    };
+  },
+};
 
-export default config
+export default config;
