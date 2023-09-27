@@ -6,10 +6,9 @@ import {
   userSchmea,
 } from "@/server/clerkEvent";
 import { publicProcedure, router } from "@/server/trpc";
-import { WelcomeEmail } from "@/lib/emails";
 import { APP_NAME } from "@/utils/constants";
 import { nanoid } from "@/lib/utils";
-import { resend } from "@/lib/resend";
+import { resend, WelcomeEmail } from "@acme/emails";
 
 export const clerkWebhookRouter = router({
   userCreated: publicProcedure
