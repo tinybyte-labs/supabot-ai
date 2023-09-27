@@ -1,5 +1,6 @@
 import { authMiddleware, redirectToSignIn } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
+import { REDIRECTS } from "./utils/constants";
 
 export default authMiddleware({
   publicRoutes: [
@@ -12,11 +13,18 @@ export default authMiddleware({
     "/blog(.*)",
     "/widgets(.*)",
     "/api(.*)",
+    ...REDIRECTS.map((item) => item.pathname),
   ],
   ignoredRoutes: ["/api/widget(.*)"],
   beforeAuth: (req) => {
     if (req.nextUrl.pathname === "/home") {
       return NextResponse.rewrite(new URL("/", req.url));
+    }
+    const redirectUrl = REDIRECTS.find(
+      (item) => item.pathname === req.nextUrl.pathname,
+    );
+    if (redirectUrl) {
+      return NextResponse.redirect(new URL(redirectUrl.redirectTo, req.url));
     }
   },
   afterAuth: (auth, req) => {
