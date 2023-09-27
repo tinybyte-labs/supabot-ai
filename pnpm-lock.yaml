@@ -314,6 +314,27 @@ importers:
         specifier: 5.2.2
         version: 5.2.2
 
+  packages/emails:
+    dependencies:
+      '@react-email/components':
+        specifier: ^0.0.7
+        version: 0.0.7
+      react-email:
+        specifier: 1.9.4
+        version: 1.9.4
+      resend:
+        specifier: ^1.1.0
+        version: 1.1.0
+    devDependencies:
+      '@acme/tsconfig':
+        specifier: workspace:*
+        version: link:../tsconfig
+      '@types/react':
+        specifier: 18.2.21
+        version: 18.2.21
+
+  packages/tsconfig: {}
+
 packages:
 
   /@aashutoshrathi/word-wrap@1.2.6:
