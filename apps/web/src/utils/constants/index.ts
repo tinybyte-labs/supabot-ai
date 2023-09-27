@@ -12,6 +12,11 @@ export const BASE_DOMAIN =
     ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
     : "http://localhost:3000";
 
+export const DOCS_URL =
+  process.env.NODE_ENV === "production"
+    ? `https://docs.${DOMAIN}`
+    : "http://localhost:3001";
+
 export const REDIRECTS: {
   pathname: string;
   redirectTo: string;
