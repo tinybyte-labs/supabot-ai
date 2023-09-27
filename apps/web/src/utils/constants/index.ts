@@ -11,3 +11,25 @@ export const BASE_DOMAIN =
     : process.env.NEXT_PUBLIC_VERCEL_ENV === "preview"
     ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
     : "http://localhost:3000";
+
+export const REDIRECTS: {
+  pathname: string;
+  redirectTo: string;
+}[] = [
+  {
+    pathname: "/discord",
+    redirectTo: "https://discord.gg/muz5fkkS",
+  },
+  {
+    pathname: "/twitter",
+    redirectTo: "https://twitter.com/SupaBotAI",
+  },
+  {
+    pathname: "/github",
+    redirectTo: "https://github.com/iam-rohid/supabot-ai",
+  },
+  {
+    pathname: "/issues",
+    redirectTo: "https://github.com/iam-rohid/supabot-ai/issues",
+  },
+];
