@@ -1,5 +1,5 @@
 {
   "extends": "@acme/tsconfig/react-library.json",
   "include": [".", "env.ts"],
-  "exclude": ["dist", "build", "node_modules"]
+  "exclude": ["dist", "build", "node_modules", ".react-email"]
 }
