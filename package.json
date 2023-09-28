@@ -12,9 +12,12 @@
   "devDependencies": {
     "@acme/tsconfig": "workspace:*",
     "eslint": "8.47.0",
+    "husky": "^8.0.0",
     "prettier": "^3.0.3",
     "prettier-plugin-tailwindcss": "^0.5.3",
-    "turbo": "^1.10.14",
-    "husky": "^8.0.0"
+    "turbo": "^1.10.14"
+  },
+  "dependencies": {
+    "@commitlint/config-conventional": "^17.7.0"
   }
 }
