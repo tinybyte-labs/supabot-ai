@@ -1,0 +1,273 @@
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  directUrl  = env("DIRECT_URL")
+  extensions = [vector]
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+model User {
+  id              String    @id
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  lastSignInAt    DateTime? @map("last_sign_in_at")
+  firstName       String?   @map("first_name")
+  lastName        String?   @map("last_name")
+  email           String?   @unique
+  imageUrl        String?   @map("image_url")
+  profileImageUrl String?   @map("profile_image_url")
+  publicMetadata  Json?     @map("public_metadata")
+
+  organizations        OrganizationMembership[]
+  chatbots             Chatbot[]
+  feedbacks            Feedback[]
+  resolvedHelpRequests HelpRequest[]
+
+  @@map("users")
+}
+
+model Organization {
+  id                   String   @id
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+  name                 String?
+  slug                 String   @unique
+  imageUrl             String?  @map("image_url")
+  logoUrl              String?  @map("logo_url")
+  publicMetadata       Json?    @map("public_metadata")
+  createdBy            String?  @map("created_by")
+  plan                 String   @default("free")
+  customerId           String?  @unique @map("customer_id")
+  subscriptionId       String?  @unique @map("subscription_id")
+  priceId              String?  @map("price_id")
+  billingCycleStartDay Int      @default(1) @map("billing_cycle_start_day")
+
+  members  OrganizationMembership[]
+  chatbots Chatbot[]
+
+  @@map("organizations")
+}
+
+model OrganizationMembership {
+  id             String @id
+  userId         String
+  organizationId String
+  role           String
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, organizationId])
+  @@map("organization_memberships")
+}
+
+model Chatbot {
+  id             String   @id @default(cuid())
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+  createdBy      String?  @map("created_by")
+  name           String   @db.VarChar(32)
+  image          String?
+  metadata       Json?
+  organizationId String   @map("organization_id")
+  settings       Json?
+
+  links         Link[]
+  documents     Document[]
+  quickPrompts  QuickPrompt[]
+  conversations Conversation[]
+  users         ChatbotUser[]
+
+  creator      User?        @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([updatedAt])
+  @@map("chatbots")
+}
+
+enum LinkStatus {
+  QUEUED   @map("queued")
+  TRAINING @map("training")
+  TRAINED  @map("trained")
+  ERROR    @map("error")
+  CANCELED @map("canceled")
+
+  @@map("link_status")
+}
+
+model Link {
+  id            String     @id @default(cuid())
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+  lastTrainedAt DateTime?  @map("last_trained_at")
+  canceledAt    DateTime?  @map("canceled_at")
+  url           String
+  chatbotId     String     @map("chatbot_id")
+  status        LinkStatus @default(QUEUED)
+  error         String?
+  metadata      Json?
+
+  chatbot   Chatbot    @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
+  documents Document[]
+
+  @@unique([chatbotId, url])
+  @@index([lastTrainedAt])
+  @@map("links")
+}
+
+model Document {
+  id        String                       @id @default(cuid())
+  createdAt DateTime                     @default(now()) @map("created_at")
+  updatedAt DateTime                     @updatedAt @map("updated_at")
+  content   String
+  metadata  Json?
+  embedding Unsupported("vector(1536)")?
+  linkId    String?                      @map("link_id")
+  chatbotId String                       @map("chatbot_id")
+
+  link    Link?   @relation(fields: [linkId], references: [id], onDelete: Cascade)
+  chatbot Chatbot @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
+
+  @@map("documents")
+}
+
+enum QuickPromptStatus {
+  PUBLISHED   @map("published")
+  UNPUBLISHED @map("unpublished")
+
+  @@map("quick_prompt_status")
+}
+
+model QuickPrompt {
+  id                 String            @id @default(cuid())
+  createdAt          DateTime          @default(now()) @map("created_at")
+  updatedAt          DateTime          @updatedAt @map("updated_at")
+  title              String            @db.VarChar(80)
+  prompt             String            @db.VarChar(500)
+  chatbotId          String            @map("chatbot_id")
+  metadata           Json?
+  status             QuickPromptStatus @default(PUBLISHED)
+  isFollowUpPrompt   Boolean           @default(false) @map("is_follow_up_prompt")
+  isEscalationPrompt Boolean           @default(false) @map("is_escalation_prompt")
+
+  chatbot Chatbot @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
+
+  @@index([updatedAt])
+  @@map("quick_prompts")
+}
+
+model ChatbotUser {
+  id              String    @id @default(cuid())
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  email           String
+  name            String?
+  emailVerifiedAt DateTime? @map("email_verified_at")
+  chatbotId       String    @map("chatbot_id")
+  blocked         Boolean   @default(false)
+
+  chatbot       Chatbot        @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
+  conversations Conversation[]
+  messages      Message[]
+
+  @@unique([chatbotId, email])
+  @@map("chatbot_users")
+}
+
+enum ConversationStatus {
+  OPEN   @map("open")
+  CLOSED @map("closed")
+
+  @@map("conversation_status")
+}
+
+model Conversation {
+  id        String             @id @default(cuid())
+  createdAt DateTime           @default(now()) @map("created_at")
+  updatedAt DateTime           @updatedAt @map("updated_at")
+  closedAt  DateTime?          @map("closed_at")
+  title     String?
+  status    ConversationStatus @default(OPEN)
+  chatbotId String             @map("chatbot_id")
+  userId    String?            @map("user_id")
+  url       String?
+  // fileds from ipinfo.io
+  ipAddress String?            @map("ip_address")
+  ipInfo    Json?              @map("ip_info")
+
+  chatbot  Chatbot      @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
+  user     ChatbotUser? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages Message[]
+
+  @@map("conversations")
+}
+
+enum MessageRole {
+  BOT  @map("bot")
+  USER @map("user")
+
+  @@map("message_role")
+}
+
+enum Reaction {
+  LIKE    @map("like")
+  DISLIKE @map("dislike")
+
+  @@map("reaction")
+}
+
+model Message {
+  id             String      @id @default(cuid())
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+  body           String
+  role           MessageRole
+  reaction       Reaction?
+  conversationId String      @map("conversation_id")
+  userId         String?     @map("user_id")
+  metadata       Json?
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         ChatbotUser? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
+model Feedback {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  userId    String?  @map("user_id")
+  url       String?
+  message   String?
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("feedbacks")
+}
+
+enum HelpRequestPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model HelpRequest {
+  id         String              @id @default(cuid())
+  createdAt  DateTime            @default(now()) @map("created_at")
+  updatedAt  DateTime            @updatedAt @map("updated_at")
+  email      String?
+  subject    String?
+  message    String?
+  priority   HelpRequestPriority @default(MEDIUM)
+  resolved   Boolean             @default(false)
+  resolvedBy String?
+
+  resolver User? @relation(fields: [resolvedBy], references: [id], onDelete: SetNull)
+
+  @@map("help_requests")
+}
