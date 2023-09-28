@@ -8,6 +8,9 @@ importers:
 
   .:
     devDependencies:
+      '@acme/tsconfig':
+        specifier: workspace:*
+        version: link:packages/tsconfig
       eslint:
         specifier: 8.47.0
         version: 8.47.0
@@ -265,6 +268,9 @@ importers:
         specifier: ^3.22.2
         version: 3.22.2
     devDependencies:
+      '@acme/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/tsconfig
       '@tailwindcss/typography':
         specifier: ^0.5.9
         version: 0.5.10(tailwindcss@3.3.3)
@@ -316,9 +322,6 @@ importers:
       '@react-email/components':
         specifier: 0.0.6
         version: 0.0.6
-      react:
-        specifier: ^18.2.0
-        version: 18.2.0
       react-email:
         specifier: 1.9.3
         version: 1.9.3
@@ -335,6 +338,9 @@ importers:
       '@types/react':
         specifier: 18.2.21
         version: 18.2.21
+      react:
+        specifier: ^18.2.0
+        version: 18.2.0
       typescript:
         specifier: ^5.2.2
         version: 5.2.2
@@ -9516,7 +9522,6 @@ packages:
     engines: {node: '>=0.10.0'}
     dependencies:
       loose-envify: 1.4.0
-    dev: false
 
   /reactcss@1.2.3(react@18.2.0):
     resolution: {integrity: sha512-KiwVUcFu1RErkI97ywr8nvx8dNOpT03rbnma0SSalTYjkrPYaEajR4a/MRt6DZ46K6arDRbWMNHF+xH7G7n/8A==}

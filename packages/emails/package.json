@@ -1,21 +1,22 @@
 {
   "name": "@acme/emails",
   "version": "1.0.0",
-  "private": true,
-  "main": "index.tsx",
+  "license": "MIT",
+  "main": "index.ts",
+  "types": "index.ts",
   "scripts": {
     "dev": "email dev --port 9999"
   },
   "dependencies": {
     "@react-email/components": "0.0.6",
     "react-email": "1.9.3",
-    "react": "^18.2.0",
     "resend": "^1.1.0"
   },
   "devDependencies": {
     "@acme/tsconfig": "workspace:*",
     "@types/node": "^20.7.0",
     "@types/react": "18.2.21",
+    "react": "^18.2.0",
     "typescript": "^5.2.2"
   }
 }
