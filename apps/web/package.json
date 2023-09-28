@@ -5,13 +5,13 @@
   "scripts": {
     "stripe:dev": "stripe listen --forward-to localhost:3000/api/webhook/stripe",
     "ngrok:dev": "ngrok http --domain=willing-monitor-locally.ngrok-free.app 3000",
-    "email:dev": "email dev --port 3002",
-    "dev": "concurrently \"pnpm ngrok:dev\" \"pnpm stripe:dev\" \"pnpm email:dev\" \"prisma studio\" \"next dev\"",
+    "dev": "concurrently \"pnpm ngrok:dev\" \"pnpm stripe:dev\" \"prisma studio\" \"next dev\"",
     "build": "prisma generate && prisma migrate deploy && contentlayer build && next build",
     "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
+    "@acme/emails": "workspace:*",
     "@clerk/nextjs": "^4.23.2",
     "@clerk/themes": "^1.7.5",
     "@hookform/resolvers": "^3.3.0",
@@ -72,14 +72,12 @@
     "react": "18.2.0",
     "react-color": "^2.19.3",
     "react-dom": "18.2.0",
-    "react-email": "1.9.4",
     "react-hook-form": "^7.45.4",
     "react-markdown": "^8.0.7",
     "react-textarea-autosize": "^8.5.3",
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^3.0.1",
     "request-ip": "^3.3.0",
-    "resend": "^1.1.0",
     "stripe": "^13.5.0",
     "superjson": "^1.13.1",
     "tailwind-merge": "^1.14.0",
@@ -87,6 +85,7 @@
     "zod": "^3.22.2"
   },
   "devDependencies": {
+    "@acme/tsconfig": "workspace:*",
     "@tailwindcss/typography": "^0.5.9",
     "@types/gtag.js": "^0.0.13",
     "@types/html-to-text": "^9.0.1",

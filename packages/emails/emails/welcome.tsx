@@ -1,10 +1,4 @@
 import {
-  APP_NAME,
-  BASE_DOMAIN,
-  GITHUB_REPO,
-  TWITTER_URL,
-} from "../src/utils/constants";
-import {
   Html,
   Head,
   Preview,
@@ -18,6 +12,9 @@ import {
   Img,
 } from "@react-email/components";
 
+const APP_NAME = "SupaBot AI";
+const BASE_URL = "https://supabotai.com";
+
 const WelcomeEmail = ({ email = "jhon@example.com" }: { email: string }) => {
   return (
     <Html>
@@ -30,7 +27,7 @@ const WelcomeEmail = ({ email = "jhon@example.com" }: { email: string }) => {
           <Container className="mx-auto my-16 w-[512px] rounded-lg border border-solid border-zinc-200 p-8">
             <Section>
               <Img
-                src={`${BASE_DOMAIN}/brand-icon.png`}
+                src={`${BASE_URL}/brand-icon.png`}
                 alt={`${APP_NAME} icon`}
                 width={64}
                 className="mx-auto mb-4"
@@ -51,17 +48,18 @@ const WelcomeEmail = ({ email = "jhon@example.com" }: { email: string }) => {
               <Text>Here are a few things you can do:</Text>
               <Text className="my-2 pl-2">
                 🤖 Create a{" "}
-                <Link href={`${BASE_DOMAIN}/chatbots/new`}>new chatbot</Link>{" "}
-                and start adding links
+                <Link href={`${BASE_URL}/chatbots/new`}>new chatbot</Link> and
+                start adding links
               </Text>
               <Text className="my-2 pl-2">
-                🐣 Follow us on <Link href={TWITTER_URL}>Twitter</Link>
+                🐣 Follow us on{" "}
+                <Link href={`${BASE_URL}/twitter`}>Twitter</Link>
               </Text>
               <Text className="my-2 pl-2">
-                ⭐ Star us on <Link href={GITHUB_REPO}>GitHub</Link>
+                ⭐ Star us on <Link href={`${BASE_URL}/github`}>GitHub</Link>
               </Text>
               <Text className="my-2 pl-2">
-                🚀 Visit our website <Link href={BASE_DOMAIN}>{APP_NAME}</Link>
+                🚀 Visit our website <Link href={BASE_URL}>{APP_NAME}</Link>
               </Text>
             </Section>
             <Text>

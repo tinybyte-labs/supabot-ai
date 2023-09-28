@@ -37,5 +37,3 @@ next-env.d.ts
 .env
 
 .contentlayer
-
-.react-email
