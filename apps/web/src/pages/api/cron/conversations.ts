@@ -1,9 +1,9 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { verifySignature } from "@upstash/qstash/nextjs";
-import { prisma } from "@/server/prisma";
+import { prisma } from "@acme/db";
 import { isBefore, subHours } from "date-fns";
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const conversations = await prisma.conversation.findMany({
       where: {
@@ -46,7 +46,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   } catch (error: any) {
     return res.json({ error: error.message });
   }
-}
+};
 
 export const config = {
   api: {

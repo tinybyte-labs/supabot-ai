@@ -58,6 +58,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@acme/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@acme/emails':
         specifier: workspace:*
         version: link:../../packages/emails

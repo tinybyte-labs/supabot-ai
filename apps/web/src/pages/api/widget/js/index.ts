@@ -1,5 +1,5 @@
 import { defaultChatbotSettings } from "@/data/defaultChatbotSettings";
-import { prisma } from "@/server/prisma";
+import { prisma } from "@acme/db";
 import { BASE_DOMAIN } from "@/utils/constants";
 import { ChatbotSettings } from "@/utils/validators";
 import { NextApiRequest, NextApiResponse } from "next";
