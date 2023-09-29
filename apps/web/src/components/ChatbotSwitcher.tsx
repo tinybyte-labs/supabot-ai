@@ -6,7 +6,6 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
-  CommandLabel,
   CommandSeparator,
 } from "@/components/ui/command";
 import {

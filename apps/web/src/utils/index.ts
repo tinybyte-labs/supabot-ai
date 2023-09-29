@@ -1,15 +1,14 @@
 import { defaultChatbotSettings } from "@/data/defaultChatbotSettings";
-import { getTwHSL } from "./getTwHSL";
-import { ChatbotSettings } from "./validators";
+import { type ChatbotSettings, getHSLFromColor } from "@acme/core";
 
 export const getChatbotStyle = (
   className: string,
   settings?: ChatbotSettings | null,
 ) => {
-  const primaryColor = getTwHSL(
+  const primaryColor = getHSLFromColor(
     settings?.primaryColor || defaultChatbotSettings.primaryColor || "",
   );
-  const primaryForegroundColor = getTwHSL(
+  const primaryForegroundColor = getHSLFromColor(
     settings?.primaryForegroundColor ||
       defaultChatbotSettings.primaryForegroundColor ||
       "",

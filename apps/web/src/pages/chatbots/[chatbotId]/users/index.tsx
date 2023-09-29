@@ -13,7 +13,7 @@ import ChatbotLayout from "@/layouts/ChatbotLayout";
 import { useChatbot } from "@/providers/ChatbotProvider";
 import { NextPageWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
-import { ChatbotUser } from "@prisma/client";
+import { ChatbotUser } from "@acme/db";
 import {
   ColumnDef,
   getCoreRowModel,

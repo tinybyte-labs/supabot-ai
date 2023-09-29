@@ -21,14 +21,14 @@ import { useToast } from "@/components/ui/use-toast";
 import ChatbotSettingsLayout from "@/layouts/ChatbotSettingsLayout";
 import { useChatbot } from "@/providers/ChatbotProvider";
 import { NextPageWithLayout } from "@/types/next";
-import { trpc } from "@/utils/trpc";
-import { updateChatbotValidator } from "@/utils/validators";
+import { updateChatbotValidator } from "@acme/core";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { APP_NAME, DOMAIN } from "@/utils/constants";
+import { APP_NAME } from "@/utils/constants";
+import { trpc } from "@/utils/trpc";
 
 const ChatbotSettingsPage: NextPageWithLayout = () => {
   return (

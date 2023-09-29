@@ -1,5 +1,5 @@
 import { trpc } from "@/utils/trpc";
-import { Chatbot } from "@prisma/client";
+import { Chatbot } from "@acme/db";
 import { useRouter } from "next/router";
 import { ReactNode, createContext, useContext } from "react";
 

@@ -2,7 +2,6 @@ import DashboardPageHeader from "@/components/DashboardPageHeader";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import { NextPageWithLayout } from "@/types/next";
-import { trpc } from "@/utils/trpc";
 import Image from "next/image";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
@@ -10,14 +9,15 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import ErrorBox from "@/components/ErrorBox";
-import { Chatbot } from "@prisma/client";
+import { Chatbot } from "@acme/db";
+import { trpc } from "@/utils/trpc";
 
 const ChatbotsGrid = ({ chatbots }: { chatbots: Chatbot[] }) => {
   if (!chatbots.length) {
     return (
       <div className="mx-auto max-w-screen-sm text-center">
         <p className="mt-6 text-lg font-semibold">Your Chatbot List is Empty</p>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="text-muted-foreground mt-1 text-sm">
           It looks like you&apos;re starting with a clean slate. Ready to craft
           your very first chatbot? Click the button below to embark on your
           chatbot creation journey! 🚀
@@ -38,7 +38,7 @@ const ChatbotsGrid = ({ chatbots }: { chatbots: Chatbot[] }) => {
         <Link
           key={chatbot.id}
           href={`/chatbots/${chatbot.id}`}
-          className="flex flex-col gap-4 rounded-lg border bg-card p-4 text-card-foreground shadow-sm transition-all hover:border-foreground/20 hover:shadow-lg"
+          className="bg-card text-card-foreground hover:border-foreground/20 flex flex-col gap-4 rounded-lg border p-4 shadow-sm transition-all hover:shadow-lg"
         >
           <div className="flex items-center gap-4">
             <Avatar className="h-10 w-10">
@@ -57,7 +57,7 @@ const ChatbotsGrid = ({ chatbots }: { chatbots: Chatbot[] }) => {
               <h3 className="font-medium">{chatbot.name}</h3>
             </div>
           </div>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             Last updated{" "}
             {formatDistanceToNow(new Date(chatbot.updatedAt), {
               addSuffix: true,

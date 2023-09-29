@@ -22,9 +22,9 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { DialogFooter } from "@/components/ui/dialog";
-import { trpc } from "@/utils/trpc";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/router";
+import { trpc } from "@/utils/trpc";
 
 const ChatbotAdvancedSettingsPage: NextPageWithLayout = () => {
   return (

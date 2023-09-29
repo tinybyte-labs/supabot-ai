@@ -1,7 +1,6 @@
 import { Toaster } from "@/components/ui/toaster";
 import "@/styles/globals.css";
 import { AppPropsWithLayout } from "@/types/next";
-import { trpc } from "@/utils/trpc";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
@@ -16,6 +15,7 @@ import * as gtag from "@/utils/gtag";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Elements } from "@stripe/react-stripe-js";
 import { stripePromise } from "@/lib/stripe";
+import { trpc } from "@/utils/trpc";
 
 const inter = Inter({ subsets: ["latin"] });
 

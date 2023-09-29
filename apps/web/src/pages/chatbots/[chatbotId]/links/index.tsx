@@ -18,7 +18,7 @@ import ChatbotLayout from "@/layouts/ChatbotLayout";
 import { useChatbot } from "@/providers/ChatbotProvider";
 import { NextPageWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
-import { Link as LinkTable } from "@prisma/client";
+import { Link as LinkTable } from "@acme/db";
 import {
   ColumnDef,
   getCoreRowModel,
@@ -122,7 +122,7 @@ const LinksPage: NextPageWithLayout = () => {
           </>
         ) : table.getSelectedRowModel().rows.length > 0 ? (
           <>
-            <p className="mr-2 text-sm text-muted-foreground">
+            <p className="text-muted-foreground mr-2 text-sm">
               {table.getSelectedRowModel().rows.length} row(s) selected
             </p>
             <Button

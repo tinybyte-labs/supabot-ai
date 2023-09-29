@@ -1,4 +1,3 @@
-import { trpc } from "@/utils/trpc";
 import { ReactNode, useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { Filter, Loader2, MessagesSquare, RefreshCw } from "lucide-react";
@@ -21,6 +20,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { trpc } from "@/utils/trpc";
 
 const ConversationsLayout = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
@@ -64,7 +64,7 @@ const ConversationsLayout = ({ children }: { children: ReactNode }) => {
       <div className="flex h-[calc(100vh-57px)] flex-col overflow-hidden">
         <div className="flex flex-1 overflow-hidden">
           <div className="flex w-80 flex-col gap-1 overflow-y-auto border-r">
-            <div className="sticky top-0 z-10 flex h-14 flex-shrink-0 items-center border-b bg-card px-4">
+            <div className="bg-card sticky top-0 z-10 flex h-14 flex-shrink-0 items-center border-b px-4">
               <h1 className="flex-1 truncate text-xl font-bold tracking-tight">
                 Conversations
               </h1>
@@ -130,7 +130,7 @@ const ConversationsLayout = ({ children }: { children: ReactNode }) => {
                 <p>{conversationsQuery.error.message}</p>
               ) : conversationsQuery.data.length === 0 ? (
                 <div className="flex flex-1 flex-col items-center justify-center gap-4">
-                  <p className="text-center text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-center text-sm">
                     No results.
                   </p>
                   <Button

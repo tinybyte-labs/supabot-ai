@@ -23,7 +23,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../ui/input";
-import { trpc } from "@/utils/trpc";
 import { Loader2 } from "lucide-react";
 import { useToast } from "../ui/use-toast";
 import {
@@ -35,6 +34,7 @@ import {
 } from "@tanstack/react-table";
 import Link from "next/link";
 import { DataTable } from "../tables/DataTable";
+import { trpc } from "@/utils/trpc";
 
 const AddLinksModal: ModalFn = ({ onOpenChange, open }) => {
   const { isLoaded, chatbot } = useChatbot();

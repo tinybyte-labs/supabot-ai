@@ -1,6 +1,6 @@
+import type { AppRouter } from "@acme/trpc";
 import { httpBatchLink } from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
-import type { AppRouter } from "../server/routers";
 import superjson from "superjson";
 
 function getBaseUrl() {

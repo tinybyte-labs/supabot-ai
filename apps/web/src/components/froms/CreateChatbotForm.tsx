@@ -15,7 +15,7 @@ import { Button, ButtonLoader } from "@/components/ui/button";
 import Link from "next/link";
 import { useSetAtom } from "jotai";
 import { useEffect } from "react";
-import { createChatbotValidator } from "@/utils/validators";
+import { createChatbotValidator } from "@acme/core";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/router";
 import { chatbotNameAtom } from "@/atoms/chatbotNameAtom";

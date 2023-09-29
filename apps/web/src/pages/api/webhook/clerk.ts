@@ -1,14 +1,21 @@
-import { clerkEvent } from "@/server/clerkEvent";
-import { createContext } from "@/server/context";
-import { appRouter } from "@/server/routers";
+import { createContext, appRouter } from "@acme/trpc";
 import { NextApiRequest, NextApiResponse } from "next";
+import { clerkEventSchema } from "@acme/core";
+import Cors from "micro-cors";
 
-export default async function handlers(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+const cors = Cors({
+  allowMethods: ["POST", "HEAD"],
+});
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === "POST") {
-    const event = clerkEvent.safeParse(req.body);
+    const event = clerkEventSchema.safeParse(req.body);
     if (!event.success) {
       return res.status(500).json({ error: "Internal Server Error" });
     }
@@ -71,4 +78,6 @@ export default async function handlers(
       return res.status(500);
     }
   }
-}
+};
+
+export default cors(handler as any);

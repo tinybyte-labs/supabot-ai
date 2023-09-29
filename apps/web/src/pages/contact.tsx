@@ -14,8 +14,8 @@ import { useToast } from "@/components/ui/use-toast";
 import MarketingLayout from "@/layouts/MarketingLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { APP_NAME, SUPPORT_EMAIL } from "@/utils/constants";
+import { contactSchema } from "@acme/core";
 import { trpc } from "@/utils/trpc";
-import { contactSchema } from "@/utils/validators";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, Copy } from "lucide-react";
 import Head from "next/head";
@@ -107,7 +107,7 @@ const ContactPage: NextPageWithLayout = () => {
 
         <div className="w-80">
           <div>
-            <p className="text-sm text-muted-foreground">Get help</p>
+            <p className="text-muted-foreground text-sm">Get help</p>
             <div className="flex items-center gap-1">
               <Link
                 href={`mailto:${SUPPORT_EMAIL}`}

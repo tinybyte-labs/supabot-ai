@@ -1,10 +1,10 @@
 import ReactMarkdown from "react-markdown";
 import { Button } from "./ui/button";
-import { Message } from "@prisma/client";
+import { Message } from "@acme/db";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
-import { ChatbotSettings } from "@/utils/validators";
+import type { ChatbotSettings } from "@acme/core";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import remarkGfm from "remark-gfm";
@@ -30,12 +30,12 @@ const BotMessageBubble = ({
 }) => {
   return (
     <div className="flex flex-col items-start">
-      <p className="mb-1 text-sm font-medium uppercase text-muted-foreground">
+      <p className="text-muted-foreground mb-1 text-sm font-medium uppercase">
         {name}
       </p>
 
       <div className="flex max-w-full justify-start pr-12">
-        <div className="relative max-w-full rounded-xl rounded-tl-sm bg-secondary text-secondary-foreground">
+        <div className="bg-secondary text-secondary-foreground relative max-w-full rounded-xl rounded-tl-sm">
           <ReactMarkdown
             className={cn("prose max-w-full overflow-auto p-4", {
               "prose-invert": theme === "dark",
@@ -114,7 +114,7 @@ const BotMessageBubble = ({
       </div>
 
       {date && (
-        <p className="mt-1 text-xs text-muted-foreground">
+        <p className="text-muted-foreground mt-1 text-xs">
           {formatDistanceToNow(date, { addSuffix: true })}
         </p>
       )}
