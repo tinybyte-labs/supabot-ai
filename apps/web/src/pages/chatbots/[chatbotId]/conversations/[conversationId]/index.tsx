@@ -1,6 +1,5 @@
 import BotMessageBubble from "@/components/BotMessageBubble";
 import ErrorBox from "@/components/ErrorBox";
-import UserMessageBubble from "@/components/UserMessageBubble";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,7 +11,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { COUNTRIES } from "@/data/countries";
 import ConversationsLayout from "@/layouts/ConversationsLayout";
 import { useChatbot } from "@/providers/ChatbotProvider";
-import { IpInfo } from "@/server/ipinfo";
+import { IpInfo } from "@acme/trpc";
 import { NextPageWithLayout } from "@/types/next";
 import { getChatbotStyle } from "@/utils";
 import { trpc } from "@/utils/trpc";
@@ -122,7 +121,7 @@ const ConversationPage: NextPageWithLayout = () => {
       <style>{getChatbotStyle("chatbox", chatbotSettings)}</style>
       <div className="chatbox flex flex-1 overflow-hidden">
         <div className="flex flex-1 flex-col overflow-hidden">
-          <div className="sticky top-0 z-20 flex h-14 items-center border-b bg-card pl-4 pr-2 text-card-foreground">
+          <div className="bg-card text-card-foreground sticky top-0 z-20 flex h-14 items-center border-b pl-4 pr-2">
             <h2 className="flex-1 text-xl font-bold tracking-tight">
               {conversationQuery.data?.title || conversationQuery.data?.id}
             </h2>
@@ -249,7 +248,7 @@ const ConversationPage: NextPageWithLayout = () => {
                   <div className="w-1/3 flex-shrink-0 font-medium">
                     {item.label}:
                   </div>
-                  <div className="flex-1 break-all text-muted-foreground">
+                  <div className="text-muted-foreground flex-1 break-all">
                     {item.value}
                   </div>
                 </div>
@@ -277,7 +276,7 @@ const ConversationPage: NextPageWithLayout = () => {
                   <div className="w-1/3 flex-shrink-0 font-medium">
                     {item.label}:
                   </div>
-                  <div className="flex-1 break-all text-muted-foreground">
+                  <div className="text-muted-foreground flex-1 break-all">
                     {item.value}
                   </div>
                 </div>
@@ -325,7 +324,7 @@ const ConversationPage: NextPageWithLayout = () => {
                   <div className="w-1/3 flex-shrink-0 font-medium">
                     {item.label}:
                   </div>
-                  <div className="flex-1 break-all text-muted-foreground">
+                  <div className="text-muted-foreground flex-1 break-all">
                     {item.value}
                   </div>
                 </div>
