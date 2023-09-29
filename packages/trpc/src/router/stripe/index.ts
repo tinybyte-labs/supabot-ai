@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { stripeWebhookRouter } from "./webhook";
 import { stripe } from "../../stripe";
 import { z } from "zod";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@acme/db";
 import { protectedProcedure, router } from "../../trpc";
 import { BASE_URL } from "../../constants";
 import "@clerk/nextjs/api";

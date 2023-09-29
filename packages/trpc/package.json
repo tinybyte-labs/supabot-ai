@@ -14,7 +14,6 @@
     "@acme/plans": "workspace:*",
     "@acme/upstash": "workspace:*",
     "@clerk/nextjs": "^4.23.2",
-    "@prisma/client": "^5.3.1",
     "@trpc/server": "^10.38.0",
     "date-fns": "^2.30.0",
     "gpt3-tokenizer": "^1.1.5",

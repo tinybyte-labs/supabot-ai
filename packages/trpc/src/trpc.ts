@@ -7,8 +7,10 @@ import type {
 import { getAuth } from "@clerk/nextjs/server";
 import { inferAsyncReturnType } from "@trpc/server";
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
-import { prisma } from "@acme/db";
 import requestIp from "request-ip";
+import { PrismaClient } from "@acme/db";
+
+const prisma = new PrismaClient();
 
 interface AuthContext {
   auth: SignedInAuthObject | SignedOutAuthObject;

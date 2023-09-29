@@ -1,7 +1,7 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { verifySignature } from "@upstash/qstash/nextjs";
-import { prisma } from "@acme/db";
 import { isBefore, subHours } from "date-fns";
+import { prisma } from "@/lib/prisma";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
