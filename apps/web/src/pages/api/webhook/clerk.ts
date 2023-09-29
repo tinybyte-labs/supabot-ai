@@ -1,6 +1,4 @@
-import { clerkEvent } from "@/server/clerkEvent";
-import { createContext } from "@/server/context";
-import { appRouter } from "@/server/routers";
+import { clerkEvent, createContext, appRouter } from "@acme/trpc";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handlers(
