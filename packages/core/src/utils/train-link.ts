@@ -1,6 +1,6 @@
 import TurndownService from "turndown";
-import { prisma } from "@acme/db";
 import { addDocuments } from "./vector-store";
+import { PrismaClient } from "@acme/db";
 
 const turndownService = new TurndownService();
 
@@ -41,9 +41,9 @@ export const getDocumentsFromWeb = async (url: URL) => {
   return chunks;
 };
 
-export const trainLink = async (linkId: string) => {
+export const trainLink = async (linkId: string, db: PrismaClient) => {
   // Get the link object and see if it available;
-  const link = await prisma.link.findUnique({ where: { id: linkId } });
+  const link = await db.link.findUnique({ where: { id: linkId } });
   if (!link) {
     throw new Error("Link not found!");
   }
@@ -55,25 +55,30 @@ export const trainLink = async (linkId: string) => {
 
   try {
     // change status to training
-    await prisma.link.update({
+    await db.link.update({
       where: { id: link.id },
       data: { status: "TRAINING" },
     });
 
     // Delete all embeding for this link
-    await prisma.document.deleteMany({ where: { linkId: link.id } });
+    await db.document.deleteMany({ where: { linkId: link.id } });
 
     // fetch the website
     const docs = await getDocumentsFromWeb(new URL(link.url));
-    await addDocuments(docs, link.chatbotId, linkId);
+    await addDocuments({
+      docs,
+      chatbotId: link.chatbotId,
+      linkId,
+      db,
+    });
 
     // update the link status to success.
-    await prisma.link.update({
+    await db.link.update({
       where: { id: linkId },
       data: { status: "TRAINED", lastTrainedAt: new Date() },
     });
   } catch (error: any) {
-    await prisma.link.update({
+    await db.link.update({
       where: { id: linkId },
       data: {
         status: "ERROR",

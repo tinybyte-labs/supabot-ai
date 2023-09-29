@@ -1,12 +1,19 @@
-import { prisma } from "@acme/db";
 import { embedTextArray } from "./openai";
+import { PrismaClient } from "@acme/db";
 
-export async function addVectors(
-  vectors: number[][],
-  docs: string[],
-  chatbotId: string,
-  linkId?: string,
-) {
+export async function addVectors({
+  chatbotId,
+  db,
+  docs,
+  vectors,
+  linkId,
+}: {
+  vectors: number[][];
+  docs: string[];
+  chatbotId: string;
+  db: PrismaClient;
+  linkId?: string;
+}) {
   const rows = vectors.map((embedding, idx) => ({
     embedding,
     content: docs[idx],
@@ -20,11 +27,11 @@ export async function addVectors(
     try {
       await Promise.allSettled(
         chunk.map(async ({ embedding, ...data }) => {
-          const doc = await prisma.document.create({
+          const doc = await db.document.create({
             data,
             select: { id: true },
           });
-          await prisma.$executeRaw`
+          await db.$executeRaw`
             UPDATE documents 
             SET embedding = ${embedding}::vector 
             WHERE id = ${doc.id}
@@ -37,22 +44,35 @@ export async function addVectors(
   }
 }
 
-export async function addDocuments(
-  docs: string[],
-  chatbotId: string,
-  linkId?: string,
-) {
+export async function addDocuments({
+  chatbotId,
+  db,
+  docs,
+  linkId,
+}: {
+  docs: string[];
+  chatbotId: string;
+  db: PrismaClient;
+  linkId?: string;
+}) {
   const vectors = await embedTextArray(docs);
-  return addVectors(vectors, docs, chatbotId, linkId);
+  return addVectors({ vectors, docs, chatbotId, linkId, db });
 }
 
-export async function getDocuments(
-  chatbotId: string,
-  embedding: number[],
-  threshold = 0.5,
+export async function getDocuments({
+  chatbotId,
+  embedding,
+  db,
   limit = 5,
-) {
-  const documents = await prisma.$queryRaw`
+  threshold = 0.5,
+}: {
+  chatbotId: string;
+  embedding: number[];
+  db: PrismaClient;
+  threshold?: number;
+  limit?: number;
+}) {
+  const documents = await db.$queryRaw`
     SELECT 
       documents.id,
       documents.content,

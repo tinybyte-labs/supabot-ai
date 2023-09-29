@@ -4,11 +4,12 @@ import { protectedProcedure, router } from "../trpc";
 import * as z from "zod";
 import { plans } from "@acme/plans";
 import { trainLink } from "@acme/core";
+import { PrismaClient } from "@acme/db";
 import "@clerk/nextjs/api";
 
-const trainLinks = async (linkIds: string[]) => {
+const trainLinks = async (linkIds: string[], db: PrismaClient) => {
   if (process.env.NODE_ENV === "development") {
-    await Promise.allSettled(linkIds.map((linkId) => trainLink(linkId)));
+    await Promise.allSettled(linkIds.map((linkId) => trainLink(linkId, db)));
   } else {
     await Promise.allSettled(
       linkIds.map((linkId) =>
@@ -104,7 +105,7 @@ export const linkRouter = router({
         data: { url: url, chatbotId },
         select: { id: true },
       });
-      await trainLinks([link.id]);
+      await trainLinks([link.id], ctx.db);
       return link;
     }),
   createMany: protectedProcedure
@@ -182,7 +183,7 @@ export const linkRouter = router({
           linkIds.push(link.value.id);
         }
       }
-      await trainLinks(linkIds);
+      await trainLinks(linkIds, ctx.db);
       return linkIds;
     }),
   retrain: protectedProcedure
@@ -192,7 +193,7 @@ export const linkRouter = router({
         where: { id: input, chatbot: { organizationId: ctx.auth.orgId } },
         select: { id: true },
       });
-      await trainLinks([link.id]);
+      await trainLinks([link.id], ctx.db);
       return link;
     }),
   retrainMany: protectedProcedure
@@ -205,7 +206,10 @@ export const linkRouter = router({
         },
         select: { id: true },
       });
-      await trainLinks(links.map((link) => link.id));
+      await trainLinks(
+        links.map((link) => link.id),
+        ctx.db,
+      );
       return links;
     }),
   delete: protectedProcedure

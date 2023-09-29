@@ -16,6 +16,7 @@ import GPT3Tokenizer from "gpt3-tokenizer";
 import { TRPCError } from "@trpc/server";
 import { plans } from "@acme/plans";
 import "@clerk/nextjs/api";
+import { PrismaClient } from "@acme/db";
 
 const tokenizer = new GPT3Tokenizer({ type: "gpt3" });
 
@@ -127,6 +128,7 @@ export const messageRouter = router({
         ],
         chatbotId: conversation.chatbot.id,
         chatbotName: conversation.chatbot.name,
+        db: ctx.db,
       });
       const userMessage = await ctx.db.message.create({
         data: {
@@ -198,14 +200,20 @@ async function generateAiResponse({
   messages,
   chatbotId,
   chatbotName,
+  db,
 }: {
   chatbotId: string;
   chatbotName: string;
   messages: ChatCompletionRequestMessage[];
+  db: PrismaClient;
 }) {
   const lastMessage = messages[messages.length - 1];
   const embedding = await embedText(lastMessage.content || "");
-  const docs = await getDocuments(chatbotId, embedding);
+  const docs = await getDocuments({
+    chatbotId,
+    embedding,
+    db,
+  });
   const { contextText, sources } = getContextTextFromChunks(
     docs.map((doc) => ({ content: doc.content, source: doc.source })),
   );
