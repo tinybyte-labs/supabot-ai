@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
-import { contactSchema } from "../validators";
-import { fetchUrlsFromSitemap, fetchUrlsFromWebsite } from "../utils";
+import { contactSchema } from "@acme/core";
+import { fetchUrlsFromSitemap, fetchUrlsFromWebsite } from "@acme/core";
 import "@clerk/nextjs/api";
 
 export const utilsRouter = router({

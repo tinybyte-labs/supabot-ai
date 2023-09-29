@@ -6,9 +6,8 @@ import { APP_NAME, DOMAIN } from "@/utils/constants";
 import ChatboxInputBar from "./ChatboxInputBar";
 import { useState } from "react";
 import ChatboxWatermark from "./ChatboxWatermark";
-import { ChatbotSettings } from "@/utils/validators";
+import { type ChatbotSettings, getHSLFromColor } from "@acme/core";
 import { cn } from "@/lib/utils";
-import { getTwHSL } from "@/utils/getTwHSL";
 import ChatboxHeader from "./ChatboxHeader";
 
 export type ChatboxPreviewerProps = {
@@ -21,15 +20,15 @@ const ChatboxPreviewer = ({ title, settings }: ChatboxPreviewerProps) => {
     <div className={cn(settings?.theme || "light")}>
       <style>
         {`.chatbox-previewer {
-            --primary: ${getTwHSL(settings?.primaryColor || "")};
-            --primary-foreground: ${getTwHSL(
+            --primary: ${getHSLFromColor(settings?.primaryColor || "")};
+            --primary-foreground: ${getHSLFromColor(
               settings?.primaryForegroundColor || "",
             )};
           }`}
       </style>
       <div
         className={cn(
-          "chatbox-previewer flex h-[640px] w-[400px] flex-col overflow-hidden rounded-xl border bg-background text-foreground shadow-2xl",
+          "chatbox-previewer bg-background text-foreground flex h-[640px] w-[400px] flex-col overflow-hidden rounded-xl border shadow-2xl",
         )}
         style={{
           colorScheme: settings?.theme || "light",

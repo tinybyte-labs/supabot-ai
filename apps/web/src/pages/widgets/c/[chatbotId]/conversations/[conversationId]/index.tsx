@@ -15,9 +15,8 @@ import ChatbotWidgetLayout, {
 } from "@/layouts/ChatbotWidgetLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
-import { ChatbotSettings } from "@/utils/validators";
-import { Message } from "@prisma/client";
-import { TRPCError } from "@trpc/server";
+import type { ChatbotSettings } from "@acme/core";
+import { Message } from "@acme/db";
 import { ArrowLeft, Loader2, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -131,14 +130,12 @@ const ConversationPage: NextPageWithLayout = () => {
       );
       try {
         await reactOnMessageMutation.mutateAsync({ id: message.id, reaction });
-      } catch (error) {
-        if (error instanceof TRPCError) {
-          toast({
-            title: "Error",
-            description: error.message,
-            variant: "destructive",
-          });
-        }
+      } catch (error: any) {
+        toast({
+          title: "Error",
+          description: error.message || "Something went wrong!",
+          variant: "destructive",
+        });
         utils.message.list.setData(
           { conversationId: conversationQuery.data.id },
           (data) =>
@@ -328,10 +325,10 @@ const ConversationPage: NextPageWithLayout = () => {
               ))}
               {sendMessageMutation.isLoading && (
                 <div className="flex items-start">
-                  <div className="flex items-center gap-1 rounded-xl rounded-tl-sm bg-secondary p-4 text-secondary-foreground">
-                    <Skeleton className="h-2 w-2 rounded-full bg-foreground/20"></Skeleton>
-                    <Skeleton className="h-2 w-2 rounded-full bg-foreground/20 delay-300"></Skeleton>
-                    <Skeleton className="h-2 w-2 rounded-full bg-foreground/20 delay-700"></Skeleton>
+                  <div className="bg-secondary text-secondary-foreground flex items-center gap-1 rounded-xl rounded-tl-sm p-4">
+                    <Skeleton className="bg-foreground/20 h-2 w-2 rounded-full"></Skeleton>
+                    <Skeleton className="bg-foreground/20 h-2 w-2 rounded-full delay-300"></Skeleton>
+                    <Skeleton className="bg-foreground/20 h-2 w-2 rounded-full delay-700"></Skeleton>
                   </div>
                 </div>
               )}
@@ -371,7 +368,7 @@ const ConversationPage: NextPageWithLayout = () => {
         />
       ) : (
         <div className="flex h-14 items-center border-t px-4">
-          <p className="flex-1 text-center text-muted-foreground">
+          <p className="text-muted-foreground flex-1 text-center">
             This conversation has been closed
           </p>
         </div>

@@ -17,10 +17,9 @@ import { useToast } from "@/components/ui/use-toast";
 import ChatbotLayout from "@/layouts/ChatbotLayout";
 import { useChatbot } from "@/providers/ChatbotProvider";
 import { NextPageWithLayout } from "@/types/next";
-import { trpc } from "@/utils/trpc";
-import { ChatbotSettings, updateChatbotValidator } from "@/utils/validators";
+import { type ChatbotSettings, updateChatbotValidator } from "@acme/core";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Chatbot } from "@prisma/client";
+import { Chatbot } from "@acme/db";
 import { ExternalLink, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
@@ -33,6 +32,7 @@ import {
 } from "@radix-ui/react-popover";
 import ColorPicker from "@/components/ColorPicker";
 import { defaultChatbotSettings } from "@/data/defaultChatbotSettings";
+import { trpc } from "@/utils/trpc";
 
 const ChatbotCustomizationPage: NextPageWithLayout = () => {
   const { chatbot, isLoaded } = useChatbot();
@@ -283,7 +283,7 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
         </div>
 
         <div
-          className="flex flex-col rounded-2xl bg-secondary p-10 max-xl:hidden xl:flex-1"
+          className="bg-secondary flex flex-col rounded-2xl p-10 max-xl:hidden xl:flex-1"
           style={{
             alignItems:
               form.watch().settings?.position === "left"

@@ -2,16 +2,15 @@ import ChatboxWatermark from "@/components/ChatboxWatermark";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
-import { getTwHSL } from "@/utils/getTwHSL";
+import { type ChatbotSettings, getHSLFromColor } from "@acme/core";
 import { trpc } from "@/utils/trpc";
-import { ChatbotSettings } from "@/utils/validators";
-import { Chatbot, ChatbotUser } from "@prisma/client";
+import { Chatbot, ChatbotUser } from "@acme/db";
 import { Home, Loader2, MessagesSquare, User } from "lucide-react";
 import { ThemeProvider } from "next-themes";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import {
-  ReactNode,
+  type ReactNode,
   createContext,
   useContext,
   useEffect,
@@ -119,7 +118,7 @@ const ChatbotWidgetLayout = ({
         </div>
       ) : userQuery.data?.blocked ? (
         <div className="flex min-h-screen flex-col items-center justify-center text-center">
-          <p className="mb-8 text-muted-foreground">You have been blocked</p>
+          <p className="text-muted-foreground mb-8">You have been blocked</p>
           <Button onClick={signOut} disabled={isLoading} variant="outline">
             Log Out
           </Button>
@@ -139,11 +138,11 @@ const ChatbotWidgetLayout = ({
         >
           <style>
             {`.chatbox {
-            --primary: ${getTwHSL(
+            --primary: ${getHSLFromColor(
               (chatbotQuery.data?.settings as ChatbotSettings)?.primaryColor ||
                 "",
             )};
-            --primary-foreground: ${getTwHSL(
+            --primary-foreground: ${getHSLFromColor(
               (chatbotQuery.data?.settings as ChatbotSettings)
                 ?.primaryForegroundColor || "",
             )};

@@ -1,19 +1,19 @@
 import { z } from "zod";
 import {
-  organizationMembershipSchema,
-  organizationSchema,
-  sessionSchema,
-  userSchmea,
-} from "../../clerkEvent";
+  clerkOrganizationMembershipSchema,
+  clerkOrganizationSchema,
+  clerkSessionSchema,
+  clerkUserSchmea,
+} from "@acme/core";
 import { publicProcedure, router } from "../../trpc";
-import { nanoid } from "../../utils";
+import { nanoid } from "@acme/core";
 import { resend, WelcomeEmail } from "@acme/emails";
 import "@clerk/nextjs/api";
 import { APP_NAME } from "../../constants";
 
 export const clerkWebhookRouter = router({
   userCreated: publicProcedure
-    .input(userSchmea)
+    .input(clerkUserSchmea)
     .mutation(async ({ ctx, input }) => {
       const alreadyExists = await ctx.db.user.findUnique({
         where: { id: input.id },
@@ -51,29 +51,31 @@ export const clerkWebhookRouter = router({
         ],
       });
     }),
-  userUpdated: publicProcedure.input(userSchmea).mutation(({ ctx, input }) =>
-    ctx.db.user.update({
-      where: { id: input.id },
-      data: {
-        email: input.email_addresses[0].email_address,
-        firstName: input.first_name,
-        lastName: input.last_name,
-        lastSignInAt: input.last_sign_in_at
-          ? new Date(input.last_sign_in_at)
-          : null,
-        imageUrl: input.image_url,
-        profileImageUrl: input.profile_image_url,
-        publicMetadata: input.public_metadata,
-      },
-    }),
-  ),
+  userUpdated: publicProcedure
+    .input(clerkUserSchmea)
+    .mutation(({ ctx, input }) =>
+      ctx.db.user.update({
+        where: { id: input.id },
+        data: {
+          email: input.email_addresses[0].email_address,
+          firstName: input.first_name,
+          lastName: input.last_name,
+          lastSignInAt: input.last_sign_in_at
+            ? new Date(input.last_sign_in_at)
+            : null,
+          imageUrl: input.image_url,
+          profileImageUrl: input.profile_image_url,
+          publicMetadata: input.public_metadata,
+        },
+      }),
+    ),
   userDeleted: publicProcedure
     .input(z.object({ id: z.string() }))
     .mutation(({ ctx, input }) =>
       ctx.db.user.delete({ where: { id: input.id } }),
     ),
   organizationCreated: publicProcedure
-    .input(organizationSchema)
+    .input(clerkOrganizationSchema)
     .mutation(({ ctx, input }) =>
       ctx.db.organization.create({
         data: {
@@ -89,7 +91,7 @@ export const clerkWebhookRouter = router({
       }),
     ),
   organizationUpdated: publicProcedure
-    .input(organizationSchema)
+    .input(clerkOrganizationSchema)
     .mutation(({ ctx, input }) =>
       ctx.db.organization.update({
         where: { id: input.id },
@@ -109,7 +111,7 @@ export const clerkWebhookRouter = router({
       ctx.db.organization.delete({ where: { id: input.id } }),
     ),
   organizationMembershipCreated: publicProcedure
-    .input(organizationMembershipSchema)
+    .input(clerkOrganizationMembershipSchema)
     .mutation(({ ctx, input }) =>
       ctx.db.organizationMembership.create({
         data: {
@@ -121,7 +123,7 @@ export const clerkWebhookRouter = router({
       }),
     ),
   organizationMembershipUpdated: publicProcedure
-    .input(organizationMembershipSchema)
+    .input(clerkOrganizationMembershipSchema)
     .mutation(({ ctx, input }) =>
       ctx.db.organizationMembership.update({
         where: { id: input.id },
@@ -136,15 +138,15 @@ export const clerkWebhookRouter = router({
       ctx.db.organizationMembership.delete({ where: { id: input.id } }),
     ),
   sessionCreated: publicProcedure
-    .input(sessionSchema)
+    .input(clerkSessionSchema)
     .mutation(({ ctx, input }) => {}),
   sessionRevoked: publicProcedure
-    .input(sessionSchema)
+    .input(clerkSessionSchema)
     .mutation(({ ctx, input }) => {}),
   sessionRemoved: publicProcedure
-    .input(sessionSchema)
+    .input(clerkSessionSchema)
     .mutation(({ ctx, input }) => {}),
   sessionEnded: publicProcedure
-    .input(sessionSchema)
+    .input(clerkSessionSchema)
     .mutation(({ ctx, input }) => {}),
 });

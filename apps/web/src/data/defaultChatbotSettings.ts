@@ -1,4 +1,4 @@
-import { ChatbotSettings } from "@/utils/validators";
+import type { ChatbotSettings } from "@acme/core";
 
 export const defaultChatbotSettings: ChatbotSettings = {
   welcomeMessage: "Hello! How can I assist you today?",

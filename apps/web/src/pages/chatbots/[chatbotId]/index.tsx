@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ChatbotLayout from "@/layouts/ChatbotLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
+
 import {
   ArrowRight,
   ExternalLink,
@@ -57,7 +58,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Links</CardTitle>
-              <LinkIcon className="h-4 w-4 text-muted-foreground" />
+              <LinkIcon className="text-muted-foreground h-4 w-4" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
@@ -65,7 +66,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
               </div>
               <Link
                 href={`/chatbots/${chatbotId}/links`}
-                className="mt-2 inline-flex items-center text-sm text-muted-foreground underline-offset-4 hover:text-accent-foreground hover:underline"
+                className="text-muted-foreground hover:text-accent-foreground mt-2 inline-flex items-center text-sm underline-offset-4 hover:underline"
               >
                 All Links
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -78,7 +79,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
               <CardTitle className="text-sm font-medium">
                 Total Quick Prompts
               </CardTitle>
-              <FileText className="h-4 w-4 text-muted-foreground" />
+              <FileText className="text-muted-foreground h-4 w-4" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
@@ -86,7 +87,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
               </div>
               <Link
                 href={`/chatbots/${chatbotId}/quick-prompts`}
-                className="mt-2 inline-flex items-center text-sm text-muted-foreground underline-offset-4 hover:text-accent-foreground hover:underline"
+                className="text-muted-foreground hover:text-accent-foreground mt-2 inline-flex items-center text-sm underline-offset-4 hover:underline"
               >
                 All Quick Prompts
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -97,7 +98,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+              <Users className="text-muted-foreground h-4 w-4" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
@@ -105,7 +106,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
               </div>
               <Link
                 href={`/chatbots/${chatbotId}/users`}
-                className="mt-2 inline-flex items-center text-sm text-muted-foreground underline-offset-4 hover:text-accent-foreground hover:underline"
+                className="text-muted-foreground hover:text-accent-foreground mt-2 inline-flex items-center text-sm underline-offset-4 hover:underline"
               >
                 All Users
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -118,7 +119,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
               <CardTitle className="text-sm font-medium">
                 Total Conversations
               </CardTitle>
-              <MessagesSquare className="h-4 w-4 text-muted-foreground" />
+              <MessagesSquare className="text-muted-foreground h-4 w-4" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
@@ -126,7 +127,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
               </div>
               <Link
                 href={`/chatbots/${chatbotId}/conversations`}
-                className="mt-2 inline-flex items-center text-sm text-muted-foreground underline-offset-4 hover:text-accent-foreground hover:underline"
+                className="text-muted-foreground hover:text-accent-foreground mt-2 inline-flex items-center text-sm underline-offset-4 hover:underline"
               >
                 All Conversations
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -137,7 +138,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Likes</CardTitle>
-              <ThumbsUp className="h-4 w-4 text-muted-foreground" />
+              <ThumbsUp className="text-muted-foreground h-4 w-4" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
@@ -151,7 +152,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
               <CardTitle className="text-sm font-medium">
                 Total Dislikes
               </CardTitle>
-              <ThumbsDown className="h-4 w-4 text-muted-foreground" />
+              <ThumbsDown className="text-muted-foreground h-4 w-4" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">

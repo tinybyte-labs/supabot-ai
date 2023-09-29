@@ -1,9 +1,9 @@
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import * as z from "zod";
-import { defaultChatbotSettings } from "../utils";
+import { defaultChatbotSettings } from "@acme/core";
 import { plans } from "@acme/plans";
-import { createChatbotValidator, updateChatbotValidator } from "../validators";
+import { createChatbotValidator, updateChatbotValidator } from "@acme/core";
 import "@clerk/nextjs/api";
 
 export const chatbotRouter = router({

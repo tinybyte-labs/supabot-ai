@@ -1,5 +1,6 @@
-import { clerkEvent, createContext, appRouter } from "@acme/trpc";
+import { createContext, appRouter } from "@acme/trpc";
 import { NextApiRequest, NextApiResponse } from "next";
+import { clerkEventSchema } from "@acme/core";
 import Cors from "micro-cors";
 
 const cors = Cors({
@@ -14,7 +15,7 @@ export const config = {
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === "POST") {
-    const event = clerkEvent.safeParse(req.body);
+    const event = clerkEventSchema.safeParse(req.body);
     if (!event.success) {
       return res.status(500).json({ error: "Internal Server Error" });
     }

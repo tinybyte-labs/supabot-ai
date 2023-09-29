@@ -1,6 +1,6 @@
 import { trpc } from "@/utils/trpc";
 import { useAuth } from "@clerk/nextjs";
-import { Organization } from "@prisma/client";
+import { Organization } from "@acme/db";
 import { ReactNode, createContext } from "react";
 
 export type OrganizationContextType = {

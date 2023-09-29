@@ -4,7 +4,7 @@ import { TRPCError } from "@trpc/server";
 import {
   createQuickPromptValidator,
   updateQuickPromptValidator,
-} from "../validators";
+} from "@acme/core";
 import "@clerk/nextjs/api";
 
 export const quickPromptRouter = router({

@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { protectedProcedure, router } from "../trpc";
-import { getFirstAndLastDay } from "../utils";
+import { getFirstAndLastDay } from "@acme/core";
 import "@clerk/nextjs/api";
 
 export const subscriptionRouter = router({

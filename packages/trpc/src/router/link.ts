@@ -3,7 +3,7 @@ import { qstash } from "@acme/upstash";
 import { protectedProcedure, router } from "../trpc";
 import * as z from "zod";
 import { plans } from "@acme/plans";
-import { trainLink } from "../utils";
+import { trainLink } from "@acme/core";
 import "@clerk/nextjs/api";
 
 const trainLinks = async (linkIds: string[]) => {

@@ -1,4 +1,4 @@
-import { type AppRouter } from "@acme/trpc";
+import type { AppRouter } from "@acme/trpc";
 import { httpBatchLink } from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
 import superjson from "superjson";

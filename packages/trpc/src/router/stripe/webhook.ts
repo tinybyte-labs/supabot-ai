@@ -1,6 +1,6 @@
 import { stripe } from "../../stripe";
 import { publicProcedure, router } from "../../trpc";
-import { planFromPriceId } from "../../utils";
+import { planFromPriceId } from "@acme/core";
 import { TRPCError } from "@trpc/server";
 import Stripe from "stripe";
 import { z } from "zod";

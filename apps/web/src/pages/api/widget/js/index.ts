@@ -1,7 +1,7 @@
 import { defaultChatbotSettings } from "@/data/defaultChatbotSettings";
 import { prisma } from "@acme/db";
 import { BASE_DOMAIN } from "@/utils/constants";
-import { ChatbotSettings } from "@/utils/validators";
+import type { ChatbotSettings } from "@acme/core";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(

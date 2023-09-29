@@ -19,7 +19,7 @@ import ChatbotLayout from "@/layouts/ChatbotLayout";
 import { useChatbot } from "@/providers/ChatbotProvider";
 import { NextPageWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
-import { QuickPrompt } from "@prisma/client";
+import { QuickPrompt } from "@acme/db";
 import {
   ColumnDef,
   getCoreRowModel,
@@ -159,7 +159,7 @@ const QuickPromptsPage: NextPageWithLayout = () => {
           </>
         ) : table.getSelectedRowModel().rows.length > 0 ? (
           <>
-            <p className="mr-2 text-sm text-muted-foreground">
+            <p className="text-muted-foreground mr-2 text-sm">
               {table.getSelectedRowModel().rows.length} row(s) selected
             </p>
             <Button

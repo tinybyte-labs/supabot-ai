@@ -72,7 +72,7 @@ const ConversationsPage: NextPageWithLayout = () => {
         ) : conversationsQuery.isError ? (
           <div className="mx-auto flex max-w-screen-sm flex-1 flex-col items-center justify-center p-6 text-center">
             <p className="mt-6 text-lg font-semibold">Error</p>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="text-muted-foreground mt-1 text-sm">
               {conversationsQuery.error.message}
             </p>
             <Button
@@ -94,7 +94,7 @@ const ConversationsPage: NextPageWithLayout = () => {
             <p className="mt-6 text-lg font-semibold">
               Your Conversations List is Empty
             </p>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="text-muted-foreground mt-1 text-sm">
               Oops! It looks like there are no conversations here at the moment.
             </p>
             <Button
@@ -118,7 +118,7 @@ const ConversationsPage: NextPageWithLayout = () => {
                 <Link
                   href={`/widgets/c/${chatbot.id}/conversations/${conversation.id}`}
                   key={conversation.id}
-                  className="flex flex-col border-b p-4 hover:bg-secondary"
+                  className="hover:bg-secondary flex flex-col border-b p-4"
                 >
                   <p className="truncate font-medium">
                     {conversation.title ||
@@ -129,7 +129,7 @@ const ConversationsPage: NextPageWithLayout = () => {
                   </p>
                   <div className="mt-1 flex flex-wrap items-center gap-2">
                     <Badge variant="secondary">{conversation.status}</Badge>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                       {formatDistanceToNow(
                         new Date(conversation.messages[0].updatedAt),
                         {
@@ -146,7 +146,7 @@ const ConversationsPage: NextPageWithLayout = () => {
       ) : (
         <div className="mx-auto flex max-w-screen-sm flex-1 flex-col items-center justify-center p-6 text-center">
           <p className="mt-6 text-lg font-semibold">Log In</p>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="text-muted-foreground mt-1 text-sm">
             To access and view your conversations, please log in or create an
             account to preserve your chat history.
           </p>
