@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { stripeWebhookRouter } from "./webhook";
-import { stripe } from "./stripe";
+import { stripe } from "../../stripe";
 import { z } from "zod";
 import { PrismaClient } from "@prisma/client";
 import { protectedProcedure, router } from "../../trpc";

@@ -1,4 +1,4 @@
-import { stripe } from "./stripe";
+import { stripe } from "../../stripe";
 import { publicProcedure, router } from "../../trpc";
 import { planFromPriceId } from "../../utils";
 import { TRPCError } from "@trpc/server";

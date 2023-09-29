@@ -1,10 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import Cors from "micro-cors";
-import Stripe from "stripe";
-import { stripe } from "@/server/stripe";
+import type Stripe from "stripe";
 import { buffer } from "micro";
-import { createContext } from "@/server/context";
-import { appRouter } from "@/server/routers";
+import { createContext, appRouter, stripe } from "@acme/trpc";
 
 const cors = Cors({
   allowMethods: ["POST", "HEAD"],
@@ -16,7 +14,7 @@ export const config = {
   },
 };
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === "POST") {
     const buf = await buffer(req);
     const sig = req.headers["stripe-signature"]!;
@@ -56,6 +54,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         break;
     }
   }
-}
+};
 
 export default cors(handler as any);

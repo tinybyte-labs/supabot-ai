@@ -4,7 +4,7 @@ import {
   organizationSchema,
   sessionSchema,
   userSchmea,
-} from "./events";
+} from "../../clerkEvent";
 import { publicProcedure, router } from "../../trpc";
 import { nanoid } from "../../utils";
 import { resend, WelcomeEmail } from "@acme/emails";
