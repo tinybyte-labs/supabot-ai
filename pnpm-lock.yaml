@@ -61,6 +61,9 @@ importers:
       '@acme/emails':
         specifier: workspace:*
         version: link:../../packages/emails
+      '@acme/trpc':
+        specifier: workspace:*
+        version: link:../../packages/trpc
       '@clerk/nextjs':
         specifier: ^4.23.2
         version: 4.24.1(next@13.4.19)(react-dom@18.2.0)(react@18.2.0)
