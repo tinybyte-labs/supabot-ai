@@ -3,7 +3,7 @@
   "globalDependencies": ["**/.env.*local"],
   "pipeline": {
     "build": {
-      "dependsOn": ["^db:generate", "^build"],
+      "dependsOn": ["^db:generate", "^db:deploy", "^build"],
       "env": [
         "*",
         "NEXT_PUBLIC_CLERK_SIGN_IN_URL",
@@ -22,7 +22,7 @@
     "db:generate": {
       "cache": false
     },
-    "db:push": {
+    "db:deploy": {
       "cache": false
     }
   }

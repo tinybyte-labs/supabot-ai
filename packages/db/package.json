@@ -6,7 +6,7 @@
   "types": "index.ts",
   "scripts": {
     "db:generate": "prisma generate",
-    "db:push": "prisma db push --skip-generate"
+    "db:deploy": "prisma migrate deploy"
   },
   "keywords": [],
   "author": "",

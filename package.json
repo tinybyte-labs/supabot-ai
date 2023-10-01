@@ -6,6 +6,8 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
+    "db:generate": "turbo run db:generate",
+    "db:deploy": "turbo run db:deploy",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "prepare": "husky install"
   },
