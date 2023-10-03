@@ -1,5 +1,5 @@
-import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { authOptions } from "@acme/auth";
+import { db } from "@acme/db";
 import { GetServerSideProps } from "next";
 import { getServerSession } from "next-auth";
 
@@ -21,7 +21,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     };
   }
 
-  const org = await prisma.organizationMembership.findFirst({
+  const org = await db.organizationMembership.findFirst({
     where: { userId: session.user?.id },
     select: {
       organization: {

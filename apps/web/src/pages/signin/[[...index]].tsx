@@ -1,9 +1,8 @@
+import { Button } from "@/components/ui/button";
 import AuthLayout from "@/layouts/AuthLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { APP_NAME } from "@/utils/constants";
-import { SignIn } from "@clerk/nextjs";
-import { buildClerkProps } from "@clerk/nextjs/server";
-import { GetServerSideProps } from "next";
+import { signIn } from "next-auth/react";
 import Head from "next/head";
 
 const SignInPage: NextPageWithLayout = () => {
@@ -14,7 +13,12 @@ const SignInPage: NextPageWithLayout = () => {
       </Head>
 
       <div className="mx-auto w-fit py-16">
-        <SignIn />
+        <Button onClick={() => signIn("google", { callbackUrl: "/dashboard" })}>
+          Sign in with Google
+        </Button>
+        <Button onClick={() => signIn("github", { callbackUrl: "/dashboard" })}>
+          Sign in with Github
+        </Button>
       </div>
     </>
   );
@@ -23,7 +27,3 @@ const SignInPage: NextPageWithLayout = () => {
 SignInPage.getLayout = (page) => <AuthLayout>{page}</AuthLayout>;
 
 export default SignInPage;
-
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  return { props: { ...buildClerkProps(ctx.req) } };
-};

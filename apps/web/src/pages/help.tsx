@@ -15,30 +15,30 @@ import AuthLayout from "@/layouts/AuthLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { sendHelpRequestSchema } from "@acme/core";
 import { trpc } from "@/utils/trpc";
-import { useUser } from "@clerk/nextjs";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useSession } from "next-auth/react";
 
 const HelpPage: NextPageWithLayout = () => {
-  const { user, isSignedIn, isLoaded } = useUser();
+  const { status, data: session } = useSession();
+  const { toast } = useToast();
   const form = useForm<z.infer<typeof sendHelpRequestSchema>>({
     resolver: zodResolver(sendHelpRequestSchema),
     defaultValues: {
-      email: user?.primaryEmailAddress?.emailAddress ?? "",
+      email: "",
       subject: "",
       message: "",
     },
   });
 
   useEffect(() => {
-    if (user?.primaryEmailAddress) {
-      form.setValue("email", user.primaryEmailAddress.emailAddress);
+    if (session?.user.email) {
+      form.setValue("email", session.user.email);
     }
-  }, [form, user?.primaryEmailAddress]);
+  }, [form, session?.user.email]);
 
-  const { toast } = useToast();
   const sendMutation = trpc.help.sendRequest.useMutation({
     onSuccess: () => {
       toast({
@@ -78,7 +78,7 @@ const HelpPage: NextPageWithLayout = () => {
                     <Input
                       placeholder="Enter you email address"
                       {...field}
-                      readOnly={isSignedIn || !isLoaded}
+                      readOnly={status !== "unauthenticated"}
                     />
                   </FormControl>
                   <FormMessage />

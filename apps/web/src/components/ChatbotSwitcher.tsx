@@ -22,17 +22,16 @@ import { Check, ChevronsUpDown, Plus } from "lucide-react";
 import { trpc } from "@/utils/trpc";
 
 const ChatbotSwitcher = ({ className }: { className?: string }) => {
-  const {
-    isReady,
-    query: { chatbotId },
-  } = useRouter();
-  const { isSuccess: chatbotLoaded, data: currentChatbot } =
-    trpc.chatbot.findById.useQuery(chatbotId as string, {
-      enabled: isReady,
-    });
-  const [open, setOpen] = useState(false);
   const router = useRouter();
-  const chatbots = trpc.chatbot.list.useQuery();
+  const [open, setOpen] = useState(false);
+  const chatbotId = router.query.chatbotId as string;
+  const orgSlug = router.query.chatbotId as string;
+  const { isSuccess: chatbotLoaded, data: currentChatbot } =
+    trpc.chatbot.findById.useQuery({ chatbotId }, { enabled: router.isReady });
+  const chatbots = trpc.chatbot.list.useQuery(
+    { orgSlug },
+    { enabled: router.isReady },
+  );
 
   if (!(chatbotLoaded && currentChatbot)) {
     return <Skeleton className={cn("h-10 min-w-[180px]", className)} />;
@@ -73,7 +72,7 @@ const ChatbotSwitcher = ({ className }: { className?: string }) => {
               <CommandItem
                 key={chatbot.id}
                 onSelect={() => {
-                  router.push(`/chatbots/${chatbot.id}`);
+                  router.push(`/${orgSlug}/chatbots/${chatbot.id}`);
                   setOpen(false);
                 }}
               >
@@ -106,7 +105,9 @@ const ChatbotSwitcher = ({ className }: { className?: string }) => {
           </CommandGroup>
           <CommandSeparator />
           <CommandGroup>
-            <CommandItem onSelect={() => router.push("/chatbots/new")}>
+            <CommandItem
+              onSelect={() => router.push(`/${orgSlug}/chatbots/new`)}
+            >
               <Plus className="mr-2 h-4 w-4" />
               Create Chatbot
             </CommandItem>

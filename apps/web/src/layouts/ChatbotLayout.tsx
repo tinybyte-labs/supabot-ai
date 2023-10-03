@@ -38,7 +38,7 @@ const ChatbotLayout = ({
     <ThemeProvider enableSystem attribute="class">
       <ChatbotProvider>
         <DevWarningBar />
-        <div className="fixed bottom-0 left-0 top-0 w-64 border-r bg-card text-card-foreground max-lg:hidden">
+        <div className="bg-card text-card-foreground fixed bottom-0 left-0 top-0 w-64 border-r max-lg:hidden">
           <SideBar />
         </div>
         <main
@@ -68,25 +68,28 @@ const ChatbotLayout = ({
 export default ChatbotLayout;
 
 const SideBar = () => {
-  const {
-    query: { chatbotId },
-  } = useRouter();
+  const router = useRouter();
+  const { chatbotId, orgSlug } = router.query as {
+    chatbotId: string;
+    orgSlug: string;
+  };
+
   const list: SideBarNavProps["list"] = [
     {
       items: [
         {
-          href: `/chatbots/${chatbotId}`,
+          href: `/${orgSlug}/chatbots/${chatbotId}`,
           label: "Overview",
           icon: <LayoutGrid size={20} />,
           end: true,
         },
         {
-          href: `/chatbots/${chatbotId}/users`,
+          href: `/${orgSlug}/chatbots/${chatbotId}/users`,
           label: "Users",
           icon: <Users size={20} />,
         },
         {
-          href: `/chatbots/${chatbotId}/conversations`,
+          href: `/${orgSlug}/chatbots/${chatbotId}/conversations`,
           label: "Conversations",
           icon: <MessagesSquare size={20} />,
         },
@@ -96,12 +99,12 @@ const SideBar = () => {
       title: "CONTENT",
       items: [
         {
-          href: `/chatbots/${chatbotId}/links`,
+          href: `/${orgSlug}/chatbots/${chatbotId}/links`,
           label: "Links",
           icon: <LinkIcon size={20} />,
         },
         {
-          href: `/chatbots/${chatbotId}/quick-prompts`,
+          href: `/${orgSlug}/chatbots/${chatbotId}/quick-prompts`,
           label: "Quick Prompts",
           icon: <MessageSquareIcon size={20} />,
         },
@@ -111,12 +114,12 @@ const SideBar = () => {
       title: "CONFIGURE",
       items: [
         {
-          href: `/chatbots/${chatbotId}/customization`,
+          href: `/${orgSlug}/chatbots/${chatbotId}/customization`,
           label: "Customization",
           icon: <Palette size={20} />,
         },
         {
-          href: `/chatbots/${chatbotId}/settings`,
+          href: `/${orgSlug}/chatbots/${chatbotId}/settings`,
           label: "Settings",
           icon: <Settings size={20} />,
         },
@@ -127,12 +130,12 @@ const SideBar = () => {
   return (
     <aside className="flex h-full w-full flex-col">
       <header className="flex justify-start p-4">
-        <Link href="/chatbots">
+        <Link href={`/${orgSlug}`}>
           <Logo className="h-12 w-12" />
         </Link>
       </header>
       <div className="p-4">
-        <p className="pb-1 pl-4 text-xs uppercase text-muted-foreground">
+        <p className="text-muted-foreground pb-1 pl-4 text-xs uppercase">
           Chatbot
         </p>
         <ChatbotSwitcher className="w-full" />

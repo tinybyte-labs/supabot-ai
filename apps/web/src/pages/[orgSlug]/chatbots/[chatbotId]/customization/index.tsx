@@ -17,13 +17,16 @@ import { useToast } from "@/components/ui/use-toast";
 import ChatbotLayout from "@/layouts/ChatbotLayout";
 import { useChatbot } from "@/providers/ChatbotProvider";
 import { NextPageWithLayout } from "@/types/next";
-import { type ChatbotSettings, updateChatbotValidator } from "@acme/core";
+import {
+  type ChatbotSettings,
+  updateChatbotValidator,
+  UpdateChatbotDto,
+} from "@acme/core";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Chatbot } from "@acme/db";
 import { ExternalLink, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import {
   Popover,
   PopoverContent,
@@ -71,7 +74,7 @@ export default ChatbotCustomizationPage;
 
 const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
   const settings = (chatbot.settings ?? {}) as ChatbotSettings;
-  const form = useForm<z.infer<typeof updateChatbotValidator>>({
+  const form = useForm<UpdateChatbotDto>({
     resolver: zodResolver(updateChatbotValidator),
     values: {
       id: chatbot.id,
@@ -89,8 +92,7 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
         variant: "destructive",
       }),
   });
-  const handleSubmit = (data: z.infer<typeof updateChatbotValidator>) =>
-    updateChatbot.mutate(data);
+  const handleSubmit = (data: UpdateChatbotDto) => updateChatbot.mutate(data);
 
   return (
     <div className="container">

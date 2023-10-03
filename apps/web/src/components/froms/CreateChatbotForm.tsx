@@ -8,33 +8,34 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button, ButtonLoader } from "@/components/ui/button";
 import Link from "next/link";
 import { useSetAtom } from "jotai";
 import { useEffect } from "react";
-import { createChatbotValidator } from "@acme/core";
+import { CreateChatbotDto, createChatbotValidator } from "@acme/core";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/router";
 import { chatbotNameAtom } from "@/atoms/chatbotNameAtom";
 import { trpc } from "@/utils/trpc";
 
 export default function CreateChatbotForm() {
+  const { toast } = useToast();
+  const router = useRouter();
+  const orgSlug = router.query.orgSlug as string;
   const setName = useSetAtom(chatbotNameAtom);
-  const form = useForm<z.infer<typeof createChatbotValidator>>({
+  const form = useForm<CreateChatbotDto>({
     resolver: zodResolver(createChatbotValidator),
     defaultValues: {
       name: "",
+      orgSlug: "",
     },
   });
-  const { toast } = useToast();
-  const router = useRouter();
   const createChatbot = trpc.chatbot.create.useMutation({
     onSuccess: (data) => {
       toast({ title: "Chatbot created" });
-      router.push(`/chatbots/${data.id}`);
+      router.push(`/${orgSlug}/chatbots/${data.id}`);
     },
     onError: (error) => {
       toast({
@@ -44,10 +45,13 @@ export default function CreateChatbotForm() {
     },
   });
 
-  const onSubmit = async (body: z.infer<typeof createChatbotValidator>) =>
-    createChatbot.mutate(body);
+  const onSubmit = async (data: CreateChatbotDto) => createChatbot.mutate(data);
 
   const name = form.watch("name");
+
+  useEffect(() => {
+    form.setValue("orgSlug", orgSlug);
+  }, [form, orgSlug]);
 
   useEffect(() => {
     setName(name);
@@ -72,7 +76,7 @@ export default function CreateChatbotForm() {
         />
         <div className="flex justify-between">
           <Button asChild variant="secondary">
-            <Link href="/chatbots">Cancel</Link>
+            <Link href="/dashboard">Cancel</Link>
           </Button>
           <Button type="submit" disabled={createChatbot.isLoading}>
             {createChatbot.isLoading ? <ButtonLoader /> : null}

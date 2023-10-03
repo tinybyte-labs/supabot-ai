@@ -2,7 +2,6 @@ import { protectedProcedure, publicProcedure, router } from "../trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { chatbotUserLogInValidator } from "@acme/core";
-import "@clerk/nextjs/api";
 
 export const chatbotUserRouter = router({
   logIn: publicProcedure
@@ -35,13 +34,15 @@ export const chatbotUserRouter = router({
         },
       });
     }),
-  getUser: publicProcedure.input(z.string()).query(({ ctx, input }) => {
-    return ctx.db.chatbotUser.findUnique({ where: { id: input } });
-  }),
+  getUser: publicProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(({ ctx, input }) => {
+      return ctx.db.chatbotUser.findUnique({ where: { id: input.userId } });
+    }),
   update: publicProcedure
     .input(
       z.object({
-        userId: z.string(),
+        id: z.string(),
         data: z.object({
           name: z.string().max(100).optional(),
         }),
@@ -49,7 +50,7 @@ export const chatbotUserRouter = router({
     )
     .mutation((opts) => {
       return opts.ctx.db.chatbotUser.update({
-        where: { id: opts.input.userId },
+        where: { id: opts.input.id },
         data: opts.input.data,
       });
     }),
@@ -62,7 +63,12 @@ export const chatbotUserRouter = router({
     .query(({ ctx, input }) => {
       return ctx.db.chatbotUser.findMany({
         where: {
-          chatbot: { id: input.chatbotId, organizationId: ctx.auth.orgId },
+          chatbot: {
+            id: input.chatbotId,
+            organization: {
+              members: { some: { userId: ctx.session.user.id } },
+            },
+          },
         },
         include: { _count: { select: { conversations: true } } },
       });
@@ -75,16 +81,23 @@ export const chatbotUserRouter = router({
       }),
     )
     .mutation(async (opts) => {
-      if (!opts.ctx.auth.orgId) {
-        throw new TRPCError({ code: "FORBIDDEN", message: "No org selected" });
-      }
       const user = await opts.ctx.db.chatbotUser.findUnique({
         where: {
           id: opts.input.userId,
           chatbot: {
-            organizationId: opts.ctx.auth.orgId,
+            organization: {
+              members: {
+                some: {
+                  userId: opts.ctx.session.user.id,
+                  role: {
+                    in: ["OWNER", "ADMIN"],
+                  },
+                },
+              },
+            },
           },
         },
+        select: { id: true },
       });
       if (!user) {
         throw new TRPCError({ code: "NOT_FOUND", message: "User not found!" });

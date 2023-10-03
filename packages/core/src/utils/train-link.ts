@@ -85,7 +85,6 @@ export const trainLink = async (linkId: string, db: PrismaClient) => {
         error: error.message || "Something went wrong!",
       },
     });
-    console.log(error);
     throw error;
   }
 };

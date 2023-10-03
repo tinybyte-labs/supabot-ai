@@ -18,11 +18,10 @@ import {
   FormMessage,
 } from "../ui/form";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../ui/input";
 import { useToast } from "../ui/use-toast";
-import { createQuickPromptValidator } from "@acme/core";
+import { CreateQuickPromptDto, createQuickPromptValidator } from "@acme/core";
 import { Loader2 } from "lucide-react";
 import { Textarea } from "../ui/textarea";
 import { useEffect } from "react";
@@ -32,7 +31,7 @@ import { trpc } from "@/utils/trpc";
 
 const AddQuickPromptModal: ModalFn = ({ onOpenChange, open }) => {
   const { isLoaded, chatbot } = useChatbot();
-  const form = useForm<z.infer<typeof createQuickPromptValidator>>({
+  const form = useForm<CreateQuickPromptDto>({
     resolver: zodResolver(createQuickPromptValidator),
     defaultValues: {
       chatbotId: "",
@@ -60,7 +59,7 @@ const AddQuickPromptModal: ModalFn = ({ onOpenChange, open }) => {
     },
   });
 
-  const handleSubmit = (data: z.infer<typeof createQuickPromptValidator>) =>
+  const handleSubmit = (data: CreateQuickPromptDto) =>
     addQuickPrompt.mutate(data);
 
   useEffect(() => {

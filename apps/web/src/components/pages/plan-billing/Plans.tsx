@@ -4,6 +4,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useOrganization } from "@/hooks/useOrganization";
 import { trpc } from "@/utils/trpc";
 import { useStripe } from "@stripe/react-stripe-js";
+import { useRouter } from "next/router";
 import { useState } from "react";
 
 const Plans = () => {
@@ -11,6 +12,8 @@ const Plans = () => {
   const [loading, setLoading] = useState(false);
   const stripe = useStripe();
   const { toast } = useToast();
+  const router = useRouter();
+  const orgSlug = router.query.orgSlug as string;
 
   const getCustomerPortal = trpc.stripe.getCheckoutSession.useMutation({
     onMutate: () => {
@@ -33,7 +36,7 @@ const Plans = () => {
     },
   });
   const handleUpgrade = async (priceId: string) =>
-    getCustomerPortal.mutate({ priceId });
+    getCustomerPortal.mutate({ priceId, orgSlug });
 
   return (
     <section className="space-y-8" id="plans">

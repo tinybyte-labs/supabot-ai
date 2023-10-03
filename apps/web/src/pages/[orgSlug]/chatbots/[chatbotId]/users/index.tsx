@@ -22,6 +22,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { Loader2, MoreHorizontal, RefreshCw } from "lucide-react";
+import { useRouter } from "next/router";
 import { useMemo } from "react";
 
 type Data = ChatbotUser & { _count: { conversations: number } };
@@ -126,12 +127,13 @@ const ActionButton = ({ data }: { data: Data }) => {
 };
 
 const ChatbotUsersPage: NextPageWithLayout = () => {
-  const { isLoaded, chatbot } = useChatbot();
+  const router = useRouter();
+  const chatbotId = router.query.chatbotId as string;
   const chatbotUsersQuery = trpc.chatbotUser.list.useQuery(
     {
-      chatbotId: chatbot?.id || "",
+      chatbotId: chatbotId,
     },
-    { enabled: isLoaded },
+    { enabled: router.isReady },
   );
 
   const data = useMemo(

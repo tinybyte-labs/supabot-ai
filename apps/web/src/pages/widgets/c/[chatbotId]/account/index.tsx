@@ -58,7 +58,7 @@ const Profile = () => {
   const updateUserMutation = trpc.chatbotUser.update.useMutation({
     onSuccess: () => {
       toast({ title: "Success", description: "User details updated" });
-      utils.chatbotUser.getUser.invalidate(user?.id);
+      utils.chatbotUser.getUser.invalidate({ userId: user?.id });
     },
     onError: (error) => {
       toast({
@@ -70,7 +70,7 @@ const Profile = () => {
   });
 
   const onSubmit = (data: z.infer<typeof profileSchema>) =>
-    updateUserMutation.mutate({ userId: user?.id || "", data });
+    updateUserMutation.mutate({ id: user?.id || "", data });
 
   if (!user) return null;
 

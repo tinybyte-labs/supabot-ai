@@ -1,7 +1,7 @@
 import { defaultChatbotSettings } from "@/data/defaultChatbotSettings";
-import { prisma } from "@/lib/prisma";
 import { BASE_DOMAIN } from "@/utils/constants";
 import type { ChatbotSettings } from "@acme/core";
+import { db } from "@acme/db";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -26,7 +26,7 @@ export default async function handler(
   if (!chatbotId) {
     throw res.status(400).send("id query params is required");
   }
-  const chatbot = await prisma.chatbot.findUnique({ where: { id: chatbotId } });
+  const chatbot = await db.chatbot.findUnique({ where: { id: chatbotId } });
   if (!chatbot) {
     throw res.status(404).send("Chatbot not found!");
   }

@@ -5,7 +5,6 @@ import { z } from "zod";
 import { PrismaClient } from "@acme/db";
 import { protectedProcedure, router } from "../../trpc";
 import { BASE_URL } from "../../constants";
-import "@clerk/nextjs/api";
 
 const getCustomer = async (db: PrismaClient, orgId: string, userId: string) => {
   const org = await db.organization.findUnique({
@@ -41,44 +40,51 @@ const getCustomer = async (db: PrismaClient, orgId: string, userId: string) => {
 
 export const stripeRouter = router({
   webhooks: stripeWebhookRouter,
-  getCustomerPortal: protectedProcedure.mutation(async ({ ctx }) => {
-    if (!ctx.auth.orgId) {
-      throw new TRPCError({
-        code: "FORBIDDEN",
-        message: "No organization selected",
-      });
-    }
-    const customerId = await getCustomer(
-      ctx.db,
-      ctx.auth.orgId,
-      ctx.auth.userId,
-    );
-    const session = await stripe.billingPortal.sessions.create({
-      customer: customerId,
-      return_url: `${BASE_URL}/plan-billing`,
-    });
-    return session;
-  }),
-  getCheckoutSession: protectedProcedure
-    .input(z.object({ priceId: z.string() }))
+  getCustomerPortal: protectedProcedure
+    .input(z.object({ orgSlug: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.auth.orgId) {
+      const org = await ctx.db.organization.findUnique({
+        where: {
+          slug: input.orgSlug,
+          members: { some: { userId: ctx.session.user.id } },
+        },
+      });
+      if (!org) {
         throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "No organization selected",
+          code: "NOT_FOUND",
+          message: "Organization not found!",
         });
       }
-      const customerId = await getCustomer(
-        ctx.db,
-        ctx.auth.orgId,
-        ctx.auth.userId,
-      );
+      const customerId = await getCustomer(ctx.db, org.id, ctx.session.user.id);
+      const session = await stripe.billingPortal.sessions.create({
+        customer: customerId,
+        return_url: `${BASE_URL}/${input.orgSlug}/plan-billing`,
+      });
+      return session;
+    }),
+  getCheckoutSession: protectedProcedure
+    .input(z.object({ orgSlug: z.string() }))
+    .input(z.object({ priceId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const org = await ctx.db.organization.findUnique({
+        where: {
+          slug: input.orgSlug,
+          members: { some: { userId: ctx.session.user.id } },
+        },
+      });
+      if (!org) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Organization not found!",
+        });
+      }
+      const customerId = await getCustomer(ctx.db, org.id, ctx.session.user.id);
       const session = await stripe.checkout.sessions.create({
         mode: "subscription",
         customer: customerId,
         line_items: [{ price: input.priceId, quantity: 1 }],
-        success_url: `${BASE_URL}/plan-billing?success=true`,
-        cancel_url: `${BASE_URL}/plan-billing?canceled=true`,
+        success_url: `${BASE_URL}/${input.orgSlug}/plan-billing?success=true`,
+        cancel_url: `${BASE_URL}/${input.orgSlug}/plan-billing?canceled=true`,
       });
       return session;
     }),

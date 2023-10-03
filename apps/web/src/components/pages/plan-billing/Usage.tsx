@@ -3,13 +3,21 @@ import StatCard from "@/components/StatCard";
 import { useOrganization } from "@/hooks/useOrganization";
 import { trpc } from "@/utils/trpc";
 import { Users, Bot, Link2, Infinity, FileText } from "lucide-react";
+import { useRouter } from "next/router";
 
 const Usage = () => {
   const { plan } = useOrganization();
-  const usage = trpc.subscription.usage.useQuery();
+  const router = useRouter();
+  const orgSlug = router.query.orgSlug as string;
+  const usage = trpc.subscription.usage.useQuery(
+    { orgSlug },
+    { enabled: router.isReady },
+  );
+
   if (usage.isLoading) {
     return <p>Loading...</p>;
   }
+
   if (usage.isError) {
     return <p>{usage.error.message}</p>;
   }

@@ -13,6 +13,7 @@ const CurrentPlan = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
+  const orgSlug = router.query.orgSlug as string;
   const getCustomerPortal = trpc.stripe.getCustomerPortal.useMutation({
     onMutate: () => {
       setIsLoading(true);
@@ -33,7 +34,7 @@ const CurrentPlan = () => {
       setIsLoading(false);
     },
   });
-  const handleVisitCustomerPortal = () => getCustomerPortal.mutate();
+  const handleVisitCustomerPortal = () => getCustomerPortal.mutate({ orgSlug });
   return (
     <section className="space-y-6" id="current-plan">
       <SecondaryPageHeader

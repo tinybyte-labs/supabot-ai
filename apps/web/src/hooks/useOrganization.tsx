@@ -1,13 +1,14 @@
 import { freePlan, plans } from "@/data/plans";
 import { trpc } from "@/utils/trpc";
-import { useOrganization as useClerkOrg } from "@clerk/nextjs";
+import { useRouter } from "next/router";
 import { useMemo } from "react";
 
 export const useOrganization = () => {
-  const { isLoaded, organization } = useClerkOrg();
-  const orgQuery = trpc.organization.getOrg.useQuery(
-    { orgSlug: organization?.slug || "" },
-    { enabled: isLoaded && !!organization, retry: false },
+  const router = useRouter();
+  const orgSlug = router.query.orgSlug as string;
+  const orgQuery = trpc.organization.getBySlug.useQuery(
+    { slug: orgSlug },
+    { enabled: router.isReady },
   );
   const plan = useMemo(
     () => plans.find((plan) => plan.id === orgQuery.data?.plan) || freePlan,
@@ -16,7 +17,7 @@ export const useOrganization = () => {
   return {
     isLoading: orgQuery.isLoading,
     error: orgQuery.error,
-    organization,
+    organization: orgQuery.data,
     plan,
     priceId: orgQuery.data?.priceId,
   };

@@ -1,22 +1,6 @@
 import { Button } from "@/components/ui/button";
-import {
-  Check,
-  LogOut,
-  UserPlus,
-  User,
-  Plus,
-  Settings,
-  HelpCircleIcon,
-} from "lucide-react";
+import { LogOut, Plus, Settings, HelpCircleIcon } from "lucide-react";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
-import {
-  useAuth,
-  useOrganization,
-  useOrganizationList,
-  useSession,
-  useSessionList,
-} from "@clerk/nextjs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState } from "react";
 import {
@@ -28,33 +12,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { signOut, useSession } from "next-auth/react";
+import { trpc } from "@/utils/trpc";
+import { useRouter } from "next/router";
 
 const LoggedInUser = () => {
-  const { isLoaded: sessionLoaded, session: activeSession } = useSession();
-  const {
-    isLoaded: sessionsLoaded,
-    sessions,
-    setActive: setActiveSession,
-  } = useSessionList();
-  const { isLoaded: orgLoaded, organization: activeOrg } = useOrganization();
-  const {
-    isLoaded: orgsLoaded,
-    organizationList,
-    setActive: setActiveOrg,
-  } = useOrganizationList();
-  const { isLoaded: authLoaded, isSignedIn, signOut } = useAuth();
+  const { status, data: session } = useSession();
   const [open, setOpen] = useState(false);
+  const orgListQuery = trpc.organization.getAll.useQuery();
+  const router = useRouter();
 
-  if (
-    !(
-      authLoaded &&
-      isSignedIn &&
-      orgLoaded &&
-      sessionLoaded &&
-      sessionsLoaded &&
-      orgsLoaded
-    )
-  ) {
+  if (status !== "authenticated") {
     return null;
   }
 
@@ -65,40 +33,14 @@ const LoggedInUser = () => {
           className="h-fit flex-col items-start justify-start p-3 text-left"
           variant="ghost"
         >
-          <p className="text-sm font-normal text-muted-foreground">
+          <p className="text-muted-foreground text-sm font-normal">
             Logged in as:
           </p>
-          <p className="text-base font-medium">
-            {activeSession?.user?.primaryEmailAddress?.emailAddress}
-          </p>
+          <p className="text-base font-medium">{session.user.email}</p>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-64">
         <DropdownMenuGroup>
-          <DropdownMenuLabel>Accounts</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          {sessions.map((session) => (
-            <DropdownMenuItem
-              key={session.user?.id}
-              onClick={() => setActiveSession({ session: session.id })}
-            >
-              <Avatar className="mr-2 h-6 w-6">
-                <AvatarImage src={session.user?.imageUrl} />
-                <AvatarFallback>
-                  <User size={16} />
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 truncate">
-                {session.user?.primaryEmailAddress?.emailAddress}
-              </div>
-              <Check
-                size={18}
-                className={cn("ml-2 opacity-0", {
-                  "opacity-100": activeSession?.id === session.id,
-                })}
-              />
-            </DropdownMenuItem>
-          ))}
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
             <Link href="/settings/account">
@@ -106,60 +48,36 @@ const LoggedInUser = () => {
               Account Settings
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href="/signin">
-              <UserPlus size={18} className="mr-2" />
-              Add Account
-            </Link>
-          </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuLabel>Organizations</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          {organizationList.length === 0 ? (
-            <p className="p-4 text-sm text-muted-foreground">
+          {orgListQuery.isLoading ? (
+            <p>Loading...</p>
+          ) : orgListQuery.isError ? (
+            <p>Error: {orgListQuery.error.message}</p>
+          ) : orgListQuery.data.length === 0 ? (
+            <p className="text-muted-foreground p-4 text-sm">
               No organization found!
             </p>
           ) : (
-            organizationList.map((org) => (
+            orgListQuery.data.map((org) => (
               <DropdownMenuItem
-                key={org.organization.id}
-                onClick={() => setActiveOrg(org)}
+                key={org.id}
+                onClick={() => router.push(`/${org.slug}`)}
               >
                 <Avatar className="mr-2 h-6 w-6">
-                  <AvatarImage src={org.organization.imageUrl} />
-                  <AvatarFallback>
-                    <User size={16} />
+                  {org.image && <AvatarImage src={org.image} />}
+                  <AvatarFallback className="uppercase">
+                    {org.slug[0]}
                   </AvatarFallback>
                 </Avatar>
-                <div className="flex-1 truncate">{org.organization.name}</div>
-                <Check
-                  size={18}
-                  className={cn("ml-2 opacity-0", {
-                    "opacity-100": activeOrg?.id === org.organization.id,
-                  })}
-                />
+                <div className="flex-1 truncate">{org.name}</div>
               </DropdownMenuItem>
             ))
           )}
           <DropdownMenuSeparator />
-          {activeOrg && (
-            <>
-              <DropdownMenuItem asChild>
-                <Link href="/settings/organization">
-                  <Settings size={18} className="mr-2" />
-                  Organization Settings
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/settings/organization#/invite-members">
-                  <UserPlus size={18} className="mr-2" />
-                  Invite Members
-                </Link>
-              </DropdownMenuItem>
-            </>
-          )}
           <DropdownMenuItem asChild>
             <Link href="/create-org">
               <Plus size={18} className="mr-2" />
@@ -176,9 +94,7 @@ const LoggedInUser = () => {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={() => signOut({ sessionId: activeSession?.id })}
-        >
+        <DropdownMenuItem onClick={() => signOut()}>
           <LogOut size={18} className="mr-2" />
           Log Out
         </DropdownMenuItem>

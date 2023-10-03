@@ -103,13 +103,13 @@ const LinksPage: NextPageWithLayout = () => {
   const onRetrainMany = () => {
     if (!chatbot) return;
     const links = table.getSelectedRowModel().rows;
-    retrainMany.mutate(links.map((link) => link.original.id));
+    retrainMany.mutate({ ids: links.map((link) => link.original.id) });
   };
 
   const onDeleteMany = () => {
     if (!chatbot) return;
     const links = table.getSelectedRowModel().rows;
-    deleteMany.mutate(links.map((link) => link.original.id));
+    deleteMany.mutate({ ids: links.map((link) => link.original.id) });
   };
 
   return (
@@ -296,13 +296,13 @@ const ActionButton = ({ link }: { link: LinkTable }) => {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           disabled={deleteLink.isLoading || retrainLink.isLoading}
-          onClick={() => retrainLink.mutate(link.id)}
+          onClick={() => retrainLink.mutate({ id: link.id })}
         >
           Retrain
         </DropdownMenuItem>
         <DropdownMenuItem
           disabled={deleteLink.isLoading || retrainLink.isLoading}
-          onClick={() => deleteLink.mutate(link.id)}
+          onClick={() => deleteLink.mutate({ id: link.id })}
         >
           Delete
         </DropdownMenuItem>

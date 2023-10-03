@@ -45,10 +45,12 @@ const DeleteChatbotCard = () => {
 
   const { toast } = useToast();
   const router = useRouter();
+  const { orgSlug } = router.query as { chatbotId: string; orgSlug: string };
+
   const deleteChatbot = trpc.chatbot.delete.useMutation({
-    onSuccess: (data) => {
+    onSuccess: () => {
       toast({ title: "Chatbot deleted" });
-      router.push("/chatbots");
+      router.push(`/${orgSlug}`);
     },
     onError: (error) => {
       toast({
@@ -92,7 +94,7 @@ const DeleteChatbotCard = () => {
               <AlertDialogAction
                 variant="destructive"
                 disabled={deleteChatbot.isLoading}
-                onClick={() => deleteChatbot.mutate(chatbot.id)}
+                onClick={() => deleteChatbot.mutate({ chatbotId: chatbot.id })}
               >
                 {deleteChatbot.isLoading && <ButtonLoader />}
                 Delete Chatbot

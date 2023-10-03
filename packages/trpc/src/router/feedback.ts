@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "../trpc";
-import "@clerk/nextjs/api";
 
 export const feedbackRouter = router({
   send: protectedProcedure
@@ -14,7 +13,7 @@ export const feedbackRouter = router({
       return opts.ctx.db.feedback.create({
         data: {
           message: opts.input.message,
-          userId: opts.ctx.auth.userId,
+          userId: opts.ctx.session.user.id,
           ...(opts.input.url ? { url: opts.input.url } : {}),
         },
       });

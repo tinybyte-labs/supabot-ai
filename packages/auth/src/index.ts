@@ -1,11 +1,31 @@
-import { AuthOptions } from "next-auth";
+import { AuthOptions, getServerSession } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import GithubProvider from "next-auth/providers/github";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { prisma } from "./prisma";
+import { db } from "@acme/db";
+import { DefaultSession } from "next-auth";
+import "next-auth/jwt";
+export type { Session } from "next-auth";
+import type { NextApiRequest, NextApiResponse } from "next";
+
+type User = {
+  id: string;
+} & DefaultSession["user"];
+
+declare module "next-auth" {
+  interface Session {
+    user: User;
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    user?: User;
+  }
+}
 
 export const authOptions: AuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  adapter: PrismaAdapter(db),
   session: { strategy: "jwt" },
   providers: [
     GoogleProvider({
@@ -20,13 +40,17 @@ export const authOptions: AuthOptions = {
     }),
   ],
   callbacks: {
-    jwt: async ({ token, trigger }) => {
+    jwt: async ({ token, trigger, user }) => {
       if (!token.email || !token.sub) {
         return {};
       }
 
+      if (user) {
+        token.user = user;
+      }
+
       if (trigger === "update") {
-        const refreshedUser = await prisma.user.findUnique({
+        const refreshedUser = await db.user.findUnique({
           where: { id: token.sub },
           select: {
             id: true,
@@ -45,10 +69,13 @@ export const authOptions: AuthOptions = {
     },
     session: ({ session, token }) => {
       session.user = {
-        id: token.sub,
+        id: token.sub || "",
         ...(token || session).user,
       };
       return session;
     },
   },
 };
+
+export const getSession = (req: NextApiRequest, res: NextApiResponse) =>
+  getServerSession(req, res, authOptions);

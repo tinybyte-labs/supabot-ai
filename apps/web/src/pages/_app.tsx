@@ -1,7 +1,6 @@
 import { Toaster } from "@/components/ui/toaster";
 import "@/styles/globals.css";
 import { AppPropsWithLayout } from "@/types/next";
-import { ClerkProvider } from "@clerk/nextjs";
 import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { useCallback, useEffect } from "react";
@@ -56,18 +55,17 @@ function App({
   return (
     <Elements stripe={stripePromise}>
       <SessionProvider session={session}>
-        <ClerkProvider {...pageProps}>
-          <TooltipProvider>
-            <div className={cn(inter.className, "antialiased")}>
-              <Head>
-                <title>{APP_NAME}</title>
-              </Head>
-              <Script
-                strategy="lazyOnload"
-                src={`https://www.googletagmanager.com/gtag/js?id=${gtag.MEASUREMENT_ID}`}
-              />
-              <Script id="google-analytics" strategy="lazyOnload">
-                {`
+        <TooltipProvider>
+          <div className={cn(inter.className, "antialiased")}>
+            <Head>
+              <title>{APP_NAME}</title>
+            </Head>
+            <Script
+              strategy="lazyOnload"
+              src={`https://www.googletagmanager.com/gtag/js?id=${gtag.MEASUREMENT_ID}`}
+            />
+            <Script id="google-analytics" strategy="lazyOnload">
+              {`
                   window.dataLayer = window.dataLayer || [];
                   function gtag(){dataLayer.push(arguments);}
                   gtag('js', new Date());
@@ -75,12 +73,11 @@ function App({
                   page_path: window.location.pathname,
                   });
                 `}
-              </Script>
-              {getLayout(<Component {...pageProps} />)}
-            </div>
-          </TooltipProvider>
-          <Toaster />
-        </ClerkProvider>
+            </Script>
+            {getLayout(<Component {...pageProps} />)}
+          </div>
+        </TooltipProvider>
+        <Toaster />
       </SessionProvider>
     </Elements>
   );

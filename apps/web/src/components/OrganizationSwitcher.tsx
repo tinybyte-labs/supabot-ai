@@ -6,7 +6,6 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
-  CommandLabel,
   CommandSeparator,
 } from "@/components/ui/command";
 import {
@@ -17,49 +16,25 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useOrganization } from "@/hooks/useOrganization";
 import { cn } from "@/lib/utils";
-import { useAuth, useSession, useSessionList } from "@clerk/nextjs";
-import {
-  ArrowRight,
-  Check,
-  ChevronsUpDown,
-  LogOut,
-  Plus,
-  UserPlus,
-} from "lucide-react";
+import { ArrowRight, Check, ChevronsUpDown, LogOut, Plus } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import PlanBadge from "./PlanBadge";
+import { signOut } from "next-auth/react";
+import { trpc } from "@/utils/trpc";
 
 const OrganizationSwitcher = ({ className }: { className?: string }) => {
-  const { isLoaded: sessionLoaded, session: activeSession } = useSession();
-  const { isLoaded: sessionsLoaded, sessions, setActive } = useSessionList();
-  const { isLoading, organization, plan } = useOrganization();
-  const { isLoaded: authLoaded, signOut } = useAuth();
+  const { isLoading, organization: currentOrg, plan } = useOrganization();
+  const orgListQuery = trpc.organization.getAll.useQuery();
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
-  const handleOrgChange = async ({
-    sessionId,
-    orgId,
-  }: {
-    sessionId: string;
-    orgId: string;
-  }) => {
-    if (!sessionsLoaded) return;
-    await setActive({
-      session: sessionId,
-      organization: orgId,
-    });
-    setOpen(false);
-    router.reload();
-  };
-
-  if (!(authLoaded && !isLoading && sessionLoaded && sessionsLoaded)) {
+  if (isLoading) {
     return <Skeleton className={cn("h-10 min-w-[180px]", className)} />;
   }
 
-  if (!organization) {
+  if (!currentOrg) {
     return (
       <Button asChild className="w-full text-left" variant="outline">
         <Link href={`/create-org`}>
@@ -79,14 +54,12 @@ const OrganizationSwitcher = ({ className }: { className?: string }) => {
           className={cn("justify-start text-left", className)}
         >
           <Avatar className="-ml-1 mr-2 h-6 w-6">
-            {organization.imageUrl && (
-              <AvatarImage src={organization.imageUrl} />
-            )}
+            {currentOrg.image && <AvatarImage src={currentOrg.image} />}
             <AvatarFallback className="uppercase">
-              {organization.name?.[0]}
+              {currentOrg.slug[0]}
             </AvatarFallback>
           </Avatar>
-          <div className="flex-1 truncate">{organization.name}</div>
+          <div className="flex-1 truncate">{currentOrg.name}</div>
           <PlanBadge plan={plan} />
           <ChevronsUpDown size={18} className="-mr-1 ml-2 opacity-50" />
         </Button>
@@ -95,44 +68,40 @@ const OrganizationSwitcher = ({ className }: { className?: string }) => {
         <Command>
           <CommandInput placeholder="Search organization..." />
           <CommandEmpty>No organization found.</CommandEmpty>
-          {sessions.map((session) => (
-            <CommandGroup key={session.id}>
-              <CommandLabel>
-                {session.user?.primaryEmailAddress?.emailAddress}
-              </CommandLabel>
-              {session.user?.organizationMemberships.map((org) => (
+          <CommandGroup>
+            {orgListQuery.isLoading ? (
+              <p>Loading...</p>
+            ) : orgListQuery.isError ? (
+              <p>Error: {orgListQuery.error.message}</p>
+            ) : (
+              orgListQuery.data.map((org) => (
                 <CommandItem
-                  key={org.organization.id}
-                  value={`${session.user?.primaryEmailAddress?.emailAddress}-${org.organization.slug}`}
-                  onSelect={() =>
-                    handleOrgChange({
-                      sessionId: session.id,
-                      orgId: org.organization.id,
-                    })
-                  }
+                  key={org.id}
+                  value={org.slug}
+                  onSelect={() => {
+                    router.push(`/${org.slug}`);
+                    setOpen(false);
+                  }}
                 >
                   <Avatar className="mr-2 h-6 w-6">
-                    {org.organization?.imageUrl && (
-                      <AvatarImage src={org.organization.imageUrl} />
-                    )}
+                    {org.image && <AvatarImage src={org.image} />}
                     <AvatarFallback className="uppercase">
-                      {org.organization?.name[0]}
+                      {org.slug[0]}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="flex-1 truncate">{org.organization.name}</div>
+                  <div className="flex-1 truncate">{org.name}</div>
                   <Check
                     className={cn(
                       "ml-2 h-4 w-4",
-                      session.user?.id === activeSession?.user.id &&
-                        org.organization.id === organization.id
+                      org.slug === currentOrg.slug
                         ? "opacity-100"
                         : "opacity-0",
                     )}
                   />
                 </CommandItem>
-              ))}
-            </CommandGroup>
-          ))}
+              ))
+            )}
+          </CommandGroup>
           <CommandSeparator />
           <CommandGroup>
             <CommandItem
@@ -143,27 +112,6 @@ const OrganizationSwitcher = ({ className }: { className?: string }) => {
             >
               <Plus className="mr-2 h-4 w-4" />
               Create Organization
-            </CommandItem>
-            <CommandItem
-              onSelect={() => {
-                router.push("/signin");
-                setOpen(false);
-              }}
-            >
-              <UserPlus className="mr-2 h-4 w-4" />
-              Add Account
-            </CommandItem>
-          </CommandGroup>
-          <CommandSeparator />
-          <CommandGroup>
-            <CommandItem
-              onSelect={() => {
-                signOut({ sessionId: activeSession?.id });
-                setOpen(false);
-              }}
-            >
-              <LogOut className="mr-2 h-4 w-4" />
-              Log Out
             </CommandItem>
           </CommandGroup>
         </Command>

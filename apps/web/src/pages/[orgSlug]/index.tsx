@@ -7,12 +7,15 @@ import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
 import ErrorBox from "@/components/ErrorBox";
 import { Chatbot } from "@acme/db";
 import { trpc } from "@/utils/trpc";
+import { useRouter } from "next/router";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const ChatbotsGrid = ({ chatbots }: { chatbots: Chatbot[] }) => {
+  const router = useRouter();
+  const { orgSlug } = router.query as { orgSlug: string };
   if (!chatbots.length) {
     return (
       <div className="mx-auto max-w-screen-sm text-center">
@@ -23,7 +26,7 @@ const ChatbotsGrid = ({ chatbots }: { chatbots: Chatbot[] }) => {
           chatbot creation journey! 🚀
         </p>
         <Button asChild className="mt-6">
-          <Link href="/chatbots/new">
+          <Link href={`/${orgSlug}/chatbots/new`}>
             <Plus size={20} className="-ml-1 mr-2" />
             New Chatbot
           </Link>
@@ -37,7 +40,7 @@ const ChatbotsGrid = ({ chatbots }: { chatbots: Chatbot[] }) => {
       {chatbots.map((chatbot) => (
         <Link
           key={chatbot.id}
-          href={`/chatbots/${chatbot.id}`}
+          href={`/${orgSlug}/chatbots/${chatbot.id}`}
           className="bg-card text-card-foreground hover:border-foreground/20 flex flex-col gap-4 rounded-lg border p-4 shadow-sm transition-all hover:shadow-lg"
         >
           <div className="flex items-center gap-4">
@@ -76,14 +79,18 @@ const ChatbotsLoading = () => (
     ))}
   </div>
 );
-
 const ChatbotsPage: NextPageWithLayout = () => {
-  const chatbotsQuery = trpc.chatbot.list.useQuery();
+  const router = useRouter();
+  const orgSlug = router.query.orgSlug as string;
+  const chatbotsQuery = trpc.chatbot.list.useQuery(
+    { orgSlug },
+    { enabled: router.isReady },
+  );
   return (
     <>
       <DashboardPageHeader title="Chatbots">
         <Button asChild>
-          <Link href="/chatbots/new">
+          <Link href={`/${orgSlug}/chatbots/new`}>
             <Plus size={20} className="-ml-1 mr-2" />
             Create Chatbot
           </Link>

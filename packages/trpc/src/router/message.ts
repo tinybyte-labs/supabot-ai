@@ -15,7 +15,6 @@ import {
 import GPT3Tokenizer from "gpt3-tokenizer";
 import { TRPCError } from "@trpc/server";
 import { plans } from "@acme/plans";
-import "@clerk/nextjs/api";
 import { PrismaClient } from "@acme/db";
 
 const tokenizer = new GPT3Tokenizer({ type: "gpt3" });

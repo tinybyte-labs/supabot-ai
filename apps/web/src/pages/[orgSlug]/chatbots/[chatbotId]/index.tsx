@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ChatbotLayout from "@/layouts/ChatbotLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
-
 import {
   ArrowRight,
   ExternalLink,
@@ -22,10 +21,16 @@ import { useRouter } from "next/router";
 
 const ChatbotOverviewPage: NextPageWithLayout = () => {
   const router = useRouter();
-  const chatbotId = router.query.chatbotId as string;
-  const statusQuery = trpc.chatbot.stats.useQuery(chatbotId, {
-    enabled: router.isReady,
-  });
+  const { chatbotId, orgSlug } = router.query as {
+    chatbotId: string;
+    orgSlug: string;
+  };
+  const statusQuery = trpc.chatbot.stats.useQuery(
+    { chatbotId },
+    {
+      enabled: router.isReady,
+    },
+  );
 
   if (statusQuery.isLoading) {
     return (
@@ -65,7 +70,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
                 {statusQuery.data.linksCount.toLocaleString()}
               </div>
               <Link
-                href={`/chatbots/${chatbotId}/links`}
+                href={`/${orgSlug}/chatbots/${chatbotId}/links`}
                 className="text-muted-foreground hover:text-accent-foreground mt-2 inline-flex items-center text-sm underline-offset-4 hover:underline"
               >
                 All Links
@@ -86,7 +91,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
                 {statusQuery.data.quickPromptCount.toLocaleString()}
               </div>
               <Link
-                href={`/chatbots/${chatbotId}/quick-prompts`}
+                href={`/${orgSlug}/chatbots/${chatbotId}/quick-prompts`}
                 className="text-muted-foreground hover:text-accent-foreground mt-2 inline-flex items-center text-sm underline-offset-4 hover:underline"
               >
                 All Quick Prompts
@@ -105,7 +110,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
                 {statusQuery.data.userCount.toLocaleString()}
               </div>
               <Link
-                href={`/chatbots/${chatbotId}/users`}
+                href={`/${orgSlug}/chatbots/${chatbotId}/users`}
                 className="text-muted-foreground hover:text-accent-foreground mt-2 inline-flex items-center text-sm underline-offset-4 hover:underline"
               >
                 All Users
@@ -126,7 +131,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
                 {statusQuery.data.conversationCount.toLocaleString()}
               </div>
               <Link
-                href={`/chatbots/${chatbotId}/conversations`}
+                href={`/${orgSlug}/chatbots/${chatbotId}/conversations`}
                 className="text-muted-foreground hover:text-accent-foreground mt-2 inline-flex items-center text-sm underline-offset-4 hover:underline"
               >
                 All Conversations

@@ -146,7 +146,9 @@ const QuickPromptsPage: NextPageWithLayout = () => {
   const onDeleteMany = useCallback(() => {
     if (!chatbot) return;
     const selectedQuickPrompts = table.getSelectedRowModel().rows;
-    deleteMany.mutate(selectedQuickPrompts.map((prompt) => prompt.original.id));
+    deleteMany.mutate({
+      ids: selectedQuickPrompts.map((prompt) => prompt.original.id),
+    });
   }, [chatbot, deleteMany, table]);
 
   return (
@@ -250,7 +252,7 @@ const ActionButton = ({ quickPrompt }: { quickPrompt: QuickPrompt }) => {
           </DropdownMenuItem>
           <DropdownMenuItem
             disabled={deletePrompt.isLoading}
-            onClick={() => deletePrompt.mutate(quickPrompt.id)}
+            onClick={() => deletePrompt.mutate({ id: quickPrompt.id })}
           >
             Delete
           </DropdownMenuItem>

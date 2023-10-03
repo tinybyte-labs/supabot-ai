@@ -7,19 +7,20 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 const ChatbotSettingsLayout = ({ children }: { children: ReactNode }) => {
-  const {
-    query: { chatbotId },
-    asPath,
-  } = useRouter();
+  const router = useRouter();
+  const { chatbotId, orgSlug } = router.query as {
+    chatbotId: string;
+    orgSlug: string;
+  };
 
   const menu = [
     {
-      href: `/chatbots/${chatbotId}/settings`,
+      href: `/${orgSlug}/chatbots/${chatbotId}/settings`,
       label: "General",
       end: true,
     },
     {
-      href: `/chatbots/${chatbotId}/settings/advanced`,
+      href: `/${orgSlug}/chatbots/${chatbotId}/settings/advanced`,
       label: "Advanced",
     },
   ];
@@ -36,8 +37,8 @@ const ChatbotSettingsLayout = ({ children }: { children: ReactNode }) => {
                 asChild
                 className={cn("lg:justify-start lg:text-left", {
                   "bg-accent text-accent-foreground": item.end
-                    ? asPath === item.href
-                    : asPath.startsWith(item.href),
+                    ? router.asPath === item.href
+                    : router.asPath.startsWith(item.href),
                 })}
                 variant="ghost"
               >

@@ -24,7 +24,10 @@ import { trpc } from "@/utils/trpc";
 
 const ConversationsLayout = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
-  const chatbotId = router.query.chatbotId as string;
+  const { orgSlug, chatbotId } = router.query as {
+    chatbotId: string;
+    orgSlug: string;
+  };
   const conversationId = router.query.conversationId as string;
   const [statusFilter, setStatusFilter] = useState("ALL");
   const conversationsQuery = trpc.conversation.list.useQuery(
@@ -48,7 +51,7 @@ const ConversationsLayout = ({ children }: { children: ReactNode }) => {
       !conversationId
     ) {
       router.replace(
-        `/chatbots/${chatbotId}/conversations/${conversationsQuery.data[0].id}`,
+        `/${orgSlug}/chatbots/${chatbotId}/conversations/${conversationsQuery.data[0].id}`,
       );
     }
   }, [
@@ -57,6 +60,7 @@ const ConversationsLayout = ({ children }: { children: ReactNode }) => {
     conversationsQuery.data,
     conversationsQuery.isSuccess,
     router,
+    orgSlug,
   ]);
 
   return (
@@ -148,7 +152,7 @@ const ConversationsLayout = ({ children }: { children: ReactNode }) => {
                       items: conversationsQuery.data.map((conversation) => {
                         let lastMessage = conversation.messages[0];
                         return {
-                          href: `/chatbots/${chatbotId}/conversations/${conversation.id}`,
+                          href: `/${orgSlug}/chatbots/${chatbotId}/conversations/${conversation.id}`,
                           label:
                             conversation.title ||
                             (lastMessage

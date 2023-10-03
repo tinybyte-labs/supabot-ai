@@ -33,7 +33,7 @@ const ConversationPage: NextPageWithLayout = () => {
     [chatbot?.settings],
   );
   const conversationQuery = trpc.conversation.getById.useQuery(
-    { conversationId, chatbotId },
+    { conversationId },
     { enabled: router.isReady },
   );
   const messagesQuery = trpc.message.list.useQuery(
@@ -48,7 +48,7 @@ const ConversationPage: NextPageWithLayout = () => {
         description: "Conversation status changed to closed",
       });
       utils.conversation.list.invalidate({ chatbotId });
-      utils.conversation.getById.invalidate({ chatbotId, conversationId });
+      utils.conversation.getById.invalidate({ conversationId });
     },
     onError: (error) => {
       toast({
