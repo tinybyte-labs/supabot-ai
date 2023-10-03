@@ -19,4 +19,36 @@ export const authOptions: AuthOptions = {
       allowDangerousEmailAccountLinking: true,
     }),
   ],
+  callbacks: {
+    jwt: async ({ token, trigger }) => {
+      if (!token.email || !token.sub) {
+        return {};
+      }
+
+      if (trigger === "update") {
+        const refreshedUser = await prisma.user.findUnique({
+          where: { id: token.sub },
+          select: {
+            id: true,
+            name: true,
+            image: true,
+            email: true,
+          },
+        });
+        if (refreshedUser) {
+          token.user = refreshedUser;
+        } else {
+          return {};
+        }
+      }
+      return token;
+    },
+    session: ({ session, token }) => {
+      session.user = {
+        id: token.sub,
+        ...(token || session).user,
+      };
+      return session;
+    },
+  },
 };

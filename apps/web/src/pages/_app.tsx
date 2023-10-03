@@ -16,10 +16,14 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Elements } from "@stripe/react-stripe-js";
 import { stripePromise } from "@/lib/stripe";
 import { trpc } from "@/utils/trpc";
+import { SessionProvider } from "next-auth/react";
 
 const inter = Inter({ subsets: ["latin"] });
 
-function App({ Component, pageProps }: AppPropsWithLayout) {
+function App({
+  Component,
+  pageProps: { session, ...pageProps },
+}: AppPropsWithLayout) {
   const getLayout = Component.getLayout ?? ((page) => page);
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useAtom(sidebarOpenAtom);
@@ -51,18 +55,19 @@ function App({ Component, pageProps }: AppPropsWithLayout) {
 
   return (
     <Elements stripe={stripePromise}>
-      <ClerkProvider {...pageProps}>
-        <TooltipProvider>
-          <div className={cn(inter.className, "antialiased")}>
-            <Head>
-              <title>{APP_NAME}</title>
-            </Head>
-            <Script
-              strategy="lazyOnload"
-              src={`https://www.googletagmanager.com/gtag/js?id=${gtag.MEASUREMENT_ID}`}
-            />
-            <Script id="google-analytics" strategy="lazyOnload">
-              {`
+      <SessionProvider session={session}>
+        <ClerkProvider {...pageProps}>
+          <TooltipProvider>
+            <div className={cn(inter.className, "antialiased")}>
+              <Head>
+                <title>{APP_NAME}</title>
+              </Head>
+              <Script
+                strategy="lazyOnload"
+                src={`https://www.googletagmanager.com/gtag/js?id=${gtag.MEASUREMENT_ID}`}
+              />
+              <Script id="google-analytics" strategy="lazyOnload">
+                {`
                   window.dataLayer = window.dataLayer || [];
                   function gtag(){dataLayer.push(arguments);}
                   gtag('js', new Date());
@@ -70,12 +75,13 @@ function App({ Component, pageProps }: AppPropsWithLayout) {
                   page_path: window.location.pathname,
                   });
                 `}
-            </Script>
-            {getLayout(<Component {...pageProps} />)}
-          </div>
-        </TooltipProvider>
-        <Toaster />
-      </ClerkProvider>
+              </Script>
+              {getLayout(<Component {...pageProps} />)}
+            </div>
+          </TooltipProvider>
+          <Toaster />
+        </ClerkProvider>
+      </SessionProvider>
     </Elements>
   );
 }
