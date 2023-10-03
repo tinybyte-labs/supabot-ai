@@ -7,7 +7,7 @@ import { useStripe } from "@stripe/react-stripe-js";
 import { useState } from "react";
 
 const Plans = () => {
-  const { plan, organizaton } = useOrganization();
+  const { plan, priceId } = useOrganization();
   const [loading, setLoading] = useState(false);
   const stripe = useStripe();
   const { toast } = useToast();
@@ -45,7 +45,7 @@ const Plans = () => {
         buttonLabel={() => `Change Plan`}
         onPlanClick={handleUpgrade}
         loading={loading}
-        currentPriceId={organizaton?.priceId}
+        currentPriceId={priceId}
       />
     </section>
   );

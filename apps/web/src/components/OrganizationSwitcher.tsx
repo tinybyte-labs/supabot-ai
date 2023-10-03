@@ -34,7 +34,7 @@ import PlanBadge from "./PlanBadge";
 const OrganizationSwitcher = ({ className }: { className?: string }) => {
   const { isLoaded: sessionLoaded, session: activeSession } = useSession();
   const { isLoaded: sessionsLoaded, sessions, setActive } = useSessionList();
-  const { isLoading, organizaton, plan } = useOrganization();
+  const { isLoading, organization, plan } = useOrganization();
   const { isLoaded: authLoaded, signOut } = useAuth();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -59,7 +59,7 @@ const OrganizationSwitcher = ({ className }: { className?: string }) => {
     return <Skeleton className={cn("h-10 min-w-[180px]", className)} />;
   }
 
-  if (!organizaton) {
+  if (!organization) {
     return (
       <Button asChild className="w-full text-left" variant="outline">
         <Link href={`/create-org`}>
@@ -79,12 +79,14 @@ const OrganizationSwitcher = ({ className }: { className?: string }) => {
           className={cn("justify-start text-left", className)}
         >
           <Avatar className="-ml-1 mr-2 h-6 w-6">
-            {organizaton.imageUrl && <AvatarImage src={organizaton.imageUrl} />}
+            {organization.imageUrl && (
+              <AvatarImage src={organization.imageUrl} />
+            )}
             <AvatarFallback className="uppercase">
-              {organizaton.name?.[0]}
+              {organization.name?.[0]}
             </AvatarFallback>
           </Avatar>
-          <div className="flex-1 truncate">{organizaton.name}</div>
+          <div className="flex-1 truncate">{organization.name}</div>
           <PlanBadge plan={plan} />
           <ChevronsUpDown size={18} className="-mr-1 ml-2 opacity-50" />
         </Button>
@@ -122,7 +124,7 @@ const OrganizationSwitcher = ({ className }: { className?: string }) => {
                     className={cn(
                       "ml-2 h-4 w-4",
                       session.user?.id === activeSession?.user.id &&
-                        org.organization.id === organizaton.id
+                        org.organization.id === organization.id
                         ? "opacity-100"
                         : "opacity-0",
                     )}
