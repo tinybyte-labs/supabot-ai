@@ -24,6 +24,9 @@
     },
     "db:deploy": {
       "cache": false
+    },
+    "db:studio": {
+      "cache": false
     }
   }
 }

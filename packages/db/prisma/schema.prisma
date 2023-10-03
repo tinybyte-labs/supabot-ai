@@ -1,79 +1,106 @@
 datasource db {
   provider   = "postgresql"
   url        = env("DATABASE_URL")
-  directUrl  = env("DIRECT_URL")
   extensions = [vector]
 }
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["postgresqlExtensions"]
+  previewFeatures = ["postgresqlExtensions", "fullTextSearch", "fullTextIndex"]
 }
 
 model User {
-  id              String    @id
-  createdAt       DateTime  @default(now()) @map("created_at")
-  updatedAt       DateTime  @updatedAt @map("updated_at")
-  lastSignInAt    DateTime? @map("last_sign_in_at")
-  firstName       String?   @map("first_name")
-  lastName        String?   @map("last_name")
-  email           String?   @unique
-  imageUrl        String?   @map("image_url")
-  profileImageUrl String?   @map("profile_image_url")
-  publicMetadata  Json?     @map("public_metadata")
+  id            String    @id @default(cuid())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
 
+  accounts             Account[]
+  sessions             Session[]
   organizations        OrganizationMembership[]
-  chatbots             Chatbot[]
   feedbacks            Feedback[]
   resolvedHelpRequests HelpRequest[]
+}
 
-  @@map("users")
+model Account {
+  id                String   @id @default(cuid())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?  @db.Text
+  access_token      String?  @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?  @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Organization {
-  id                   String   @id
-  createdAt            DateTime @default(now()) @map("created_at")
-  updatedAt            DateTime @updatedAt @map("updated_at")
-  name                 String?
+  id                   String   @id @default(cuid())
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
   slug                 String   @unique
-  imageUrl             String?  @map("image_url")
-  logoUrl              String?  @map("logo_url")
-  publicMetadata       Json?    @map("public_metadata")
-  createdBy            String?  @map("created_by")
+  name                 String
+  image                String?
   plan                 String   @default("free")
-  customerId           String?  @unique @map("customer_id")
-  subscriptionId       String?  @unique @map("subscription_id")
-  priceId              String?  @map("price_id")
-  billingCycleStartDay Int      @default(1) @map("billing_cycle_start_day")
+  customerId           String?  @unique
+  subscriptionId       String?  @unique
+  priceId              String?
+  billingCycleStartDay Int      @default(1)
 
   members  OrganizationMembership[]
   chatbots Chatbot[]
+}
 
-  @@map("organizations")
+enum OrganizationMembershipRole {
+  OWNER
+  ADMIN
+  MEMBER
 }
 
 model OrganizationMembership {
-  id             String @id
   userId         String
   organizationId String
-  role           String
+  role           OrganizationMembershipRole @default(MEMBER)
 
   user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@unique([userId, organizationId])
-  @@map("organization_memberships")
 }
 
 model Chatbot {
   id             String   @id @default(cuid())
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
-  createdBy      String?  @map("created_by")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
   name           String   @db.VarChar(32)
   image          String?
   metadata       Json?
-  organizationId String   @map("organization_id")
+  organizationId String
   settings       Json?
 
   links         Link[]
@@ -82,31 +109,27 @@ model Chatbot {
   conversations Conversation[]
   users         ChatbotUser[]
 
-  creator      User?        @relation(fields: [createdBy], references: [id], onDelete: SetNull)
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@index([updatedAt])
-  @@map("chatbots")
 }
 
 enum LinkStatus {
-  QUEUED   @map("queued")
-  TRAINING @map("training")
-  TRAINED  @map("trained")
-  ERROR    @map("error")
-  CANCELED @map("canceled")
-
-  @@map("link_status")
+  QUEUED
+  TRAINING
+  TRAINED
+  ERROR
+  CANCELED
 }
 
 model Link {
   id            String     @id @default(cuid())
-  createdAt     DateTime   @default(now()) @map("created_at")
-  updatedAt     DateTime   @updatedAt @map("updated_at")
-  lastTrainedAt DateTime?  @map("last_trained_at")
-  canceledAt    DateTime?  @map("canceled_at")
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  lastTrainedAt DateTime?
+  canceledAt    DateTime?
   url           String
-  chatbotId     String     @map("chatbot_id")
+  chatbotId     String
   status        LinkStatus @default(QUEUED)
   error         String?
   metadata      Json?
@@ -116,138 +139,119 @@ model Link {
 
   @@unique([chatbotId, url])
   @@index([lastTrainedAt])
-  @@map("links")
 }
 
 model Document {
   id        String                       @id @default(cuid())
-  createdAt DateTime                     @default(now()) @map("created_at")
-  updatedAt DateTime                     @updatedAt @map("updated_at")
+  createdAt DateTime                     @default(now())
+  updatedAt DateTime                     @updatedAt
   content   String
   metadata  Json?
   embedding Unsupported("vector(1536)")?
-  linkId    String?                      @map("link_id")
-  chatbotId String                       @map("chatbot_id")
+  linkId    String?
+  chatbotId String
 
   link    Link?   @relation(fields: [linkId], references: [id], onDelete: Cascade)
   chatbot Chatbot @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
-
-  @@map("documents")
 }
 
 enum QuickPromptStatus {
-  PUBLISHED   @map("published")
-  UNPUBLISHED @map("unpublished")
-
-  @@map("quick_prompt_status")
+  PUBLISHED
+  UNPUBLISHED
 }
 
 model QuickPrompt {
   id                 String            @id @default(cuid())
-  createdAt          DateTime          @default(now()) @map("created_at")
-  updatedAt          DateTime          @updatedAt @map("updated_at")
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
   title              String            @db.VarChar(80)
   prompt             String            @db.VarChar(500)
-  chatbotId          String            @map("chatbot_id")
+  chatbotId          String
   metadata           Json?
   status             QuickPromptStatus @default(PUBLISHED)
-  isFollowUpPrompt   Boolean           @default(false) @map("is_follow_up_prompt")
-  isEscalationPrompt Boolean           @default(false) @map("is_escalation_prompt")
+  isFollowUpPrompt   Boolean           @default(false)
+  isEscalationPrompt Boolean           @default(false)
 
   chatbot Chatbot @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
 
   @@index([updatedAt])
-  @@map("quick_prompts")
 }
 
 model ChatbotUser {
-  id              String    @id @default(cuid())
-  createdAt       DateTime  @default(now()) @map("created_at")
-  updatedAt       DateTime  @updatedAt @map("updated_at")
-  email           String
-  name            String?
-  emailVerifiedAt DateTime? @map("email_verified_at")
-  chatbotId       String    @map("chatbot_id")
-  blocked         Boolean   @default(false)
+  id            String    @id @default(cuid())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  email         String
+  name          String?
+  emailVerified DateTime?
+  chatbotId     String
+  blocked       Boolean   @default(false)
 
   chatbot       Chatbot        @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
   conversations Conversation[]
   messages      Message[]
 
   @@unique([chatbotId, email])
-  @@map("chatbot_users")
 }
 
 enum ConversationStatus {
-  OPEN   @map("open")
-  CLOSED @map("closed")
-
-  @@map("conversation_status")
+  OPEN
+  CLOSED
 }
 
 model Conversation {
   id        String             @id @default(cuid())
-  createdAt DateTime           @default(now()) @map("created_at")
-  updatedAt DateTime           @updatedAt @map("updated_at")
-  closedAt  DateTime?          @map("closed_at")
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  closedAt  DateTime?
   title     String?
   status    ConversationStatus @default(OPEN)
-  chatbotId String             @map("chatbot_id")
-  userId    String?            @map("user_id")
+  chatbotId String
+  userId    String?
   url       String?
   // fileds from ipinfo.io
-  ipAddress String?            @map("ip_address")
-  ipInfo    Json?              @map("ip_info")
+  ipAddress String?
+  ipInfo    Json?
 
   chatbot  Chatbot      @relation(fields: [chatbotId], references: [id], onDelete: Cascade)
   user     ChatbotUser? @relation(fields: [userId], references: [id], onDelete: Cascade)
   messages Message[]
-
-  @@map("conversations")
 }
 
 enum MessageRole {
-  BOT  @map("bot")
-  USER @map("user")
-
-  @@map("message_role")
+  BOT
+  USER
 }
 
 enum Reaction {
-  LIKE    @map("like")
-  DISLIKE @map("dislike")
-
-  @@map("reaction")
+  LIKE
+  DISLIKE
 }
 
 model Message {
   id             String      @id @default(cuid())
-  createdAt      DateTime    @default(now()) @map("created_at")
-  updatedAt      DateTime    @updatedAt @map("updated_at")
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
   body           String
   role           MessageRole
   reaction       Reaction?
-  conversationId String      @map("conversation_id")
-  userId         String?     @map("user_id")
+  conversationId String
+  userId         String?
   metadata       Json?
 
   conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   user         ChatbotUser? @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("messages")
 }
 
 model Feedback {
   id        String   @id @default(cuid())
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  userId    String?  @map("user_id")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String?
   url       String?
   message   String?
 
   user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("feedbacks")
 }
 
 enum HelpRequestPriority {
@@ -258,8 +262,8 @@ enum HelpRequestPriority {
 
 model HelpRequest {
   id         String              @id @default(cuid())
-  createdAt  DateTime            @default(now()) @map("created_at")
-  updatedAt  DateTime            @updatedAt @map("updated_at")
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
   email      String?
   subject    String?
   message    String?
@@ -268,6 +272,4 @@ model HelpRequest {
   resolvedBy String?
 
   resolver User? @relation(fields: [resolvedBy], references: [id], onDelete: SetNull)
-
-  @@map("help_requests")
 }
