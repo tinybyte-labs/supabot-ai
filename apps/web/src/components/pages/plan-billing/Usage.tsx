@@ -1,12 +1,12 @@
 import SecondaryPageHeader from "@/components/SecondaryPageHeader";
 import StatCard from "@/components/StatCard";
-import { useOrganization } from "@/hooks/useOrganization";
+import { usePlan } from "@/hooks/usePlan";
 import { trpc } from "@/utils/trpc";
 import { Users, Bot, Link2, Infinity, FileText } from "lucide-react";
 import { useRouter } from "next/router";
 
 const Usage = () => {
-  const { plan } = useOrganization();
+  const plan = usePlan();
   const router = useRouter();
   const orgSlug = router.query.orgSlug as string;
   const usage = trpc.subscription.usage.useQuery(

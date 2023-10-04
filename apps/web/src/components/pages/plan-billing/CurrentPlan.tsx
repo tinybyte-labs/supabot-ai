@@ -1,7 +1,7 @@
 import SecondaryPageHeader from "@/components/SecondaryPageHeader";
 import { Button, ButtonLoader } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { useOrganization } from "@/hooks/useOrganization";
+import { usePlan } from "@/hooks/usePlan";
 import { trpc } from "@/utils/trpc";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 
 const CurrentPlan = () => {
-  const { plan } = useOrganization();
+  const plan = usePlan();
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const router = useRouter();

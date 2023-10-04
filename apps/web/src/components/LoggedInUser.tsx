@@ -41,7 +41,6 @@ const LoggedInUser = () => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-64">
         <DropdownMenuGroup>
-          <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
             <Link href="/settings/account">
               <Settings size={18} className="mr-2" />

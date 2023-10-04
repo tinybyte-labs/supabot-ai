@@ -79,6 +79,7 @@ const ChatbotsLoading = () => (
     ))}
   </div>
 );
+
 const ChatbotsPage: NextPageWithLayout = () => {
   const router = useRouter();
   const orgSlug = router.query.orgSlug as string;

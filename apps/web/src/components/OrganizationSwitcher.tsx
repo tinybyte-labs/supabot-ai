@@ -13,37 +13,23 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useOrganization } from "@/hooks/useOrganization";
 import { cn } from "@/lib/utils";
-import { ArrowRight, Check, ChevronsUpDown, LogOut, Plus } from "lucide-react";
-import Link from "next/link";
+import { Check, ChevronsUpDown, Plus } from "lucide-react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import PlanBadge from "./PlanBadge";
-import { signOut } from "next-auth/react";
 import { trpc } from "@/utils/trpc";
+import { usePlan } from "@/hooks/usePlan";
 
 const OrganizationSwitcher = ({ className }: { className?: string }) => {
-  const { isLoading, organization: currentOrg, plan } = useOrganization();
+  const { data: currentOrg } = useOrganization();
+  const plan = usePlan();
   const orgListQuery = trpc.organization.getAll.useQuery();
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
-  if (isLoading) {
-    return <Skeleton className={cn("h-10 min-w-[180px]", className)} />;
-  }
-
-  if (!currentOrg) {
-    return (
-      <Button asChild className="w-full text-left" variant="outline">
-        <Link href={`/create-org`}>
-          <div className="flex-1">Select Org</div>
-          <ArrowRight size={20} />
-        </Link>
-      </Button>
-    );
-  }
+  if (!currentOrg) return null;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

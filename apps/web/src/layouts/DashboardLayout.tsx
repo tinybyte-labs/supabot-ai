@@ -6,7 +6,7 @@ import OrganizationSwitcher from "@/components/OrganizationSwitcher";
 import SideBarNav, { SideBarNavProps } from "@/components/SideBarNav";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { useAtom } from "jotai";
-import { CreditCard, LayoutGrid, Settings } from "lucide-react";
+import { CreditCard, LayoutGrid, Loader2, Settings } from "lucide-react";
 import { ThemeProvider } from "next-themes";
 import Link from "next/link";
 import { ReactNode, useMemo } from "react";
@@ -14,9 +14,35 @@ import Script from "next/script";
 import { BASE_DOMAIN } from "@/utils/constants";
 import AppBar from "@/components/AppBar";
 import { useRouter } from "next/router";
+import { useOrganization } from "@/hooks/useOrganization";
 
 const DashboardLayout = ({ children }: { children: ReactNode }) => {
   const [sidebarOpen, setSidebarOpen] = useAtom(sidebarOpenAtom);
+  const { isLoading, isError, error, data: currentOrg } = useOrganization();
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center">
+        <Loader2 size={24} className="animate-spin" />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center">
+        <p>Error: {error.message}</p>
+      </div>
+    );
+  }
+
+  if (!currentOrg) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center">
+        <p>Organization not found!</p>
+      </div>
+    );
+  }
 
   return (
     <ThemeProvider enableSystem attribute="class">

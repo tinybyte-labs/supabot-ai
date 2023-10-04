@@ -11,7 +11,8 @@ export const createOrgValidator = z.object({
     .string({ required_error: "Slug is required" })
     .min(1, "Slug is required")
     .min(2, "Slug must be at least 2 characters.")
-    .max(32, "Slug must be at most 32 characters."),
+    .max(32, "Slug must be at most 32 characters.")
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/g, "Invalid slug"),
 });
 
 export type CreateOrgDto = z.infer<typeof createOrgValidator>;

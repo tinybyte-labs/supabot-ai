@@ -2,13 +2,15 @@ import PlansGrid from "@/components/PlansGrid";
 import SecondaryPageHeader from "@/components/SecondaryPageHeader";
 import { useToast } from "@/components/ui/use-toast";
 import { useOrganization } from "@/hooks/useOrganization";
+import { usePlan } from "@/hooks/usePlan";
 import { trpc } from "@/utils/trpc";
 import { useStripe } from "@stripe/react-stripe-js";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
 const Plans = () => {
-  const { plan, priceId } = useOrganization();
+  const { data: currentOrg } = useOrganization();
+  const plan = usePlan();
   const [loading, setLoading] = useState(false);
   const stripe = useStripe();
   const { toast } = useToast();
@@ -48,7 +50,7 @@ const Plans = () => {
         buttonLabel={() => `Change Plan`}
         onPlanClick={handleUpgrade}
         loading={loading}
-        currentPriceId={priceId}
+        currentPriceId={currentOrg?.priceId}
       />
     </section>
   );
