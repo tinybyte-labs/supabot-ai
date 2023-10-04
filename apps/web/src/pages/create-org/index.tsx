@@ -80,7 +80,7 @@ const CreateOrgPage: NextPageWithLayout = () => {
         <title>{`Create Org - ${APP_NAME}`}</title>
       </Head>
 
-      <div className="container max-w-screen-sm">
+      <div className="container my-16 max-w-screen-sm">
         <Card>
           <CardHeader>
             <CardTitle>Create Organization</CardTitle>
