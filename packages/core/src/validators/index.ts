@@ -1,13 +1,32 @@
 import * as z from "zod";
 export * from "./clerk-events";
 
+export const createOrgValidator = z.object({
+  name: z
+    .string({ required_error: "Name is required" })
+    .min(1, "Name is required")
+    .min(2, "Name must be at least 2 characters.")
+    .max(32, "Name must be at most 32 characters."),
+  slug: z
+    .string({ required_error: "Slug is required" })
+    .min(1, "Slug is required")
+    .min(2, "Slug must be at least 2 characters.")
+    .max(32, "Slug must be at most 32 characters.")
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/g, "Invalid slug"),
+});
+
+export type CreateOrgDto = z.infer<typeof createOrgValidator>;
+
 export const createChatbotValidator = z.object({
+  orgSlug: z.string(),
   name: z
     .string({ required_error: "Name is required" })
     .min(1, "Name is required")
     .min(2, "Name must be at least 2 characters.")
     .max(32, "Name must be at most 32 characters."),
 });
+
+export type CreateChatbotDto = z.infer<typeof createChatbotValidator>;
 
 export const chatbotSettingsSchema = z.object({
   greetingText: z.string().max(100).optional(),
@@ -32,6 +51,7 @@ export const updateChatbotValidator = z.object({
     .optional(),
   settings: chatbotSettingsSchema.optional(),
 });
+export type UpdateChatbotDto = z.infer<typeof updateChatbotValidator>;
 
 export const createQuickPromptValidator = z.object({
   chatbotId: z.string(),
@@ -40,12 +60,15 @@ export const createQuickPromptValidator = z.object({
   isFollowUpPrompt: z.boolean().optional(),
 });
 
+export type CreateQuickPromptDto = z.infer<typeof createQuickPromptValidator>;
+
 export const updateQuickPromptValidator = z.object({
   id: z.string(),
   title: z.string().optional(),
   prompt: z.string().optional(),
   isFollowUpPrompt: z.boolean().optional(),
 });
+export type UpdateQuickPromptDto = z.infer<typeof updateQuickPromptValidator>;
 
 export const chatbotUserLogInValidator = z.object({
   chatbotId: z.string(),

@@ -17,24 +17,31 @@ export const DOCS_URL =
     ? `https://docs.${DOMAIN}`
     : "http://localhost:3001";
 
-export const REDIRECTS: {
-  pathname: string;
-  redirectTo: string;
-}[] = [
-  {
-    pathname: "/discord",
-    redirectTo: "https://discord.gg/muz5fkkS",
-  },
-  {
-    pathname: "/twitter",
-    redirectTo: "https://twitter.com/SupaBotAI",
-  },
-  {
-    pathname: "/github",
-    redirectTo: "https://github.com/iam-rohid/supabot-ai",
-  },
-  {
-    pathname: "/issues",
-    redirectTo: "https://github.com/iam-rohid/supabot-ai/issues",
-  },
-];
+export const REDIRECTS: Record<string, string> = {
+  discord: "https://discord.gg/muz5fkkS",
+  twitter: "https://twitter.com/SupaBotAI",
+  github: "https://github.com/iam-rohid/supabot-ai",
+  issues: "https://github.com/iam-rohid/supabot-ai/issues",
+};
+
+export const PUBLIC_PATH_NAMES = new Set([
+  "home",
+  "widgets",
+  "api",
+  "blog",
+  "pricing",
+  "changelog",
+  "contact",
+  "help",
+  ...Object.keys(REDIRECTS),
+]);
+
+export const INVALID_ORG_SLUGS = new Set([
+  ...PUBLIC_PATH_NAMES,
+  "create-org",
+  "demo",
+  "register",
+  "signin",
+  "dashboard",
+  "settings",
+]);

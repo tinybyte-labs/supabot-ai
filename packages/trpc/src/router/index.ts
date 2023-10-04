@@ -1,7 +1,6 @@
 import { router } from "../trpc";
 import { chatbotRouter } from "./chatbot";
 import { chatbotUserRouter } from "./chatbotUser";
-import { clerkRouter } from "./clerk";
 import { conversationRouter } from "./conversation";
 import { feedbackRouter } from "./feedback";
 import { helpRouter } from "./help";
@@ -12,7 +11,6 @@ import { quickPromptRouter } from "./quickPrompt";
 import { stripeRouter } from "./stripe";
 import { subscriptionRouter } from "./subscription";
 import { utilsRouter } from "./utils";
-import "@clerk/nextjs/api";
 
 export const appRouter = router({
   organization: organizationRouter,
@@ -23,7 +21,6 @@ export const appRouter = router({
   conversation: conversationRouter,
   chatbotUser: chatbotUserRouter,
   message: messageRouter,
-  clerk: clerkRouter,
   subscription: subscriptionRouter,
   stripe: stripeRouter,
   feedback: feedbackRouter,

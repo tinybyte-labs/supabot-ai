@@ -5,18 +5,23 @@ import {
   createQuickPromptValidator,
   updateQuickPromptValidator,
 } from "@acme/core";
-import "@clerk/nextjs/api";
 
 export const quickPromptRouter = router({
   list: publicProcedure
-    .input(
-      z.object({
-        chatbotId: z.string(),
-      }),
-    )
-    .query(({ ctx, input: { chatbotId } }) => {
+    .input(z.object({ chatbotId: z.string() }))
+    .query(async ({ ctx, input: { chatbotId } }) => {
+      const chatbot = await ctx.db.chatbot.findFirst({
+        where: { id: chatbotId },
+        select: { id: true },
+      });
+      if (!chatbot) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Chatbot not found!",
+        });
+      }
       return ctx.db.quickPrompt.findMany({
-        where: { chatbot: { id: chatbotId } },
+        where: { chatbot: { id: chatbot.id } },
         orderBy: {
           updatedAt: "desc",
         },
@@ -26,7 +31,10 @@ export const quickPromptRouter = router({
     .input(createQuickPromptValidator)
     .mutation(async ({ ctx, input: { chatbotId, ...data } }) => {
       const chatbot = await ctx.db.chatbot.findFirst({
-        where: { id: chatbotId, organizationId: ctx.auth.orgId },
+        where: {
+          id: chatbotId,
+          organization: { members: { some: { userId: ctx.session.user.id } } },
+        },
         select: { id: true },
       });
       if (!chatbot) {
@@ -41,7 +49,15 @@ export const quickPromptRouter = router({
     .input(updateQuickPromptValidator)
     .mutation(async ({ ctx, input: { id, ...data } }) => {
       const quickPrompt = await ctx.db.quickPrompt.findFirst({
-        where: { id, chatbot: { organizationId: ctx.auth.orgId } },
+        where: {
+          id,
+          chatbot: {
+            organization: {
+              members: { some: { userId: ctx.session.user.id } },
+            },
+          },
+        },
+        select: { id: true },
       });
       if (!quickPrompt) {
         throw new TRPCError({
@@ -49,13 +65,21 @@ export const quickPromptRouter = router({
           message: "Quick Prompt not found!",
         });
       }
-      return ctx.db.quickPrompt.update({ where: { id }, data });
+      return ctx.db.quickPrompt.update({ where: { id: quickPrompt.id }, data });
     }),
   delete: protectedProcedure
-    .input(z.string())
+    .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const quickPrompt = await ctx.db.quickPrompt.findFirst({
-        where: { id: input, chatbot: { organizationId: ctx.auth.orgId } },
+        where: {
+          id: input.id,
+          chatbot: {
+            organization: {
+              members: { some: { userId: ctx.session.user.id } },
+            },
+          },
+        },
+        select: { id: true },
       });
       if (!quickPrompt) {
         throw new TRPCError({
@@ -63,15 +87,19 @@ export const quickPromptRouter = router({
           message: "Quick Prompt not found!",
         });
       }
-      return ctx.db.quickPrompt.delete({ where: { id: input } });
+      return ctx.db.quickPrompt.delete({ where: { id: quickPrompt.id } });
     }),
   deleteMany: protectedProcedure
-    .input(z.string().array())
+    .input(z.object({ ids: z.string().array() }))
     .mutation(async ({ ctx, input }) => {
       return ctx.db.quickPrompt.deleteMany({
         where: {
-          id: { in: input },
-          chatbot: { organizationId: ctx.auth.orgId },
+          id: { in: input.ids },
+          chatbot: {
+            organization: {
+              members: { some: { userId: ctx.session.user.id } },
+            },
+          },
         },
       });
     }),

@@ -1,15 +1,22 @@
 import SecondaryPageHeader from "@/components/SecondaryPageHeader";
 import StatCard from "@/components/StatCard";
 import { useOrganization } from "@/hooks/useOrganization";
+import { usePlan } from "@/hooks/usePlan";
 import { trpc } from "@/utils/trpc";
 import { Users, Bot, Link2, Infinity, FileText } from "lucide-react";
 
 const Usage = () => {
-  const { plan } = useOrganization();
-  const usage = trpc.subscription.usage.useQuery();
+  const { data: currentOrg, isSuccess: isOrgLoaded } = useOrganization();
+  const plan = usePlan();
+  const usage = trpc.subscription.usage.useQuery(
+    { orgSlug: currentOrg?.slug || "" },
+    { enabled: isOrgLoaded },
+  );
+
   if (usage.isLoading) {
     return <p>Loading...</p>;
   }
+
   if (usage.isError) {
     return <p>{usage.error.message}</p>;
   }

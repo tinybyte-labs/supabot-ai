@@ -1,82 +1,82 @@
 import { TRPCError } from "@trpc/server";
 import { protectedProcedure, router } from "../trpc";
 import { getFirstAndLastDay } from "@acme/core";
-import "@clerk/nextjs/api";
+import { z } from "zod";
 
 export const subscriptionRouter = router({
-  usage: protectedProcedure.query(async ({ ctx }) => {
-    const orgId = ctx.auth.orgId;
-    if (!orgId) {
-      throw new TRPCError({
-        code: "FORBIDDEN",
-        message: "No organization selected",
+  usage: protectedProcedure
+    .input(z.object({ orgSlug: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const org = await ctx.db.organization.findUnique({
+        where: {
+          slug: input.orgSlug,
+          members: { some: { userId: ctx.session.user.id } },
+        },
+        select: {
+          id: true,
+          billingCycleStartDay: true,
+        },
       });
-    }
-    const org = await ctx.db.organization.findUnique({
-      where: { id: orgId },
-      select: {
-        billingCycleStartDay: true,
-      },
-    });
-    if (!org) {
-      throw new TRPCError({
-        code: "NOT_FOUND",
-        message: "Organization not found!",
-      });
-    }
-
-    const chatbotsCount = () =>
-      ctx.db.chatbot.count({
-        where: { organizationId: orgId },
-      });
-
-    const messagesPerMonthCount = async () => {
-      let messagesPerMonth = 0;
-      if (org.billingCycleStartDay) {
-        const { firstDay, lastDay } = getFirstAndLastDay(
-          org.billingCycleStartDay,
-        );
-        messagesPerMonth = await ctx.db.message.count({
-          where: {
-            conversation: { chatbot: { organizationId: orgId } },
-            createdAt: {
-              gte: firstDay,
-              lte: lastDay,
-            },
-          },
+      if (!org) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Organization not found!",
         });
       }
-      return messagesPerMonth;
-    };
+      const chatbotsCount = () =>
+        ctx.db.chatbot.count({
+          where: { organizationId: org.id },
+        });
 
-    const documentsCount = () =>
-      ctx.db.document.count({
-        where: { chatbot: { organizationId: orgId }, linkId: null },
-      });
+      const messagesPerMonthCount = async () => {
+        let messagesPerMonth = 0;
+        if (org.billingCycleStartDay) {
+          const { firstDay, lastDay } = getFirstAndLastDay(
+            org.billingCycleStartDay,
+          );
+          messagesPerMonth = await ctx.db.message.count({
+            where: {
+              conversation: { chatbot: { organizationId: org.id } },
+              createdAt: {
+                gte: firstDay,
+                lte: lastDay,
+              },
+            },
+          });
+        }
+        return messagesPerMonth;
+      };
 
-    const linksCount = () =>
-      ctx.db.link.count({
-        where: { chatbot: { organizationId: orgId } },
-      });
+      const documentsCount = () =>
+        ctx.db.document.count({
+          where: { chatbot: { organizationId: org.id }, linkId: null },
+        });
 
-    const teamMembersCount = () =>
-      ctx.db.organizationMembership.count({ where: { organizationId: orgId } });
+      const linksCount = () =>
+        ctx.db.link.count({
+          where: { chatbot: { organizationId: org.id } },
+        });
 
-    const [chatbots, messagesPerMonth, documents, links, teamMembers] =
-      await Promise.all([
-        chatbotsCount(),
-        messagesPerMonthCount(),
-        documentsCount(),
-        linksCount(),
-        teamMembersCount(),
-      ]);
+      const teamMembersCount = () =>
+        ctx.db.organizationMembership.count({
+          where: { organizationId: org.id },
+        });
 
-    return {
-      chatbots,
-      messagesPerMonth,
-      documents,
-      links,
-      teamMembers,
-    };
-  }),
+      const [chatbots, messagesPerMonth, documents, links, teamMembers] =
+        await Promise.all([
+          chatbotsCount(),
+          messagesPerMonthCount(),
+          documentsCount(),
+          linksCount(),
+          teamMembersCount(),
+        ]);
+
+      return {
+        chatbots,
+        messagesPerMonth,
+        documents,
+        links,
+        teamMembers,
+      };
+    }),
 });

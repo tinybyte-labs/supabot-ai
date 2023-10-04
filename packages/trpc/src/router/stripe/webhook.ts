@@ -1,10 +1,10 @@
 import { stripe } from "../../stripe";
 import { publicProcedure, router } from "../../trpc";
 import { planFromPriceId } from "@acme/core";
+import { freePlan } from "@acme/plans";
 import { TRPCError } from "@trpc/server";
 import Stripe from "stripe";
 import { z } from "zod";
-import "@clerk/nextjs/api";
 
 const webhookProcedure = publicProcedure.input(
   z.object({
@@ -70,7 +70,7 @@ export const stripeWebhookRouter = router({
     await opts.ctx.db.organization.update({
       where: { customerId },
       data: {
-        plan: "free",
+        plan: freePlan.id,
         subscriptionId: null,
         priceId: null,
         billingCycleStartDay: new Date().getDate(),

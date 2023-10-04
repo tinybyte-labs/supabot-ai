@@ -16,11 +16,10 @@ import {
   FormMessage,
 } from "../ui/form";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../ui/input";
 import { useToast } from "../ui/use-toast";
-import { updateQuickPromptValidator } from "@acme/core";
+import { updateQuickPromptValidator, UpdateQuickPromptDto } from "@acme/core";
 import { Loader2 } from "lucide-react";
 import { Textarea } from "../ui/textarea";
 import { QuickPrompt } from "@acme/db";
@@ -37,7 +36,7 @@ const UpdateQuickPromptModal = ({
   onOpenChange: (value: boolean) => void;
   prompt: QuickPrompt;
 }) => {
-  const form = useForm<z.infer<typeof updateQuickPromptValidator>>({
+  const form = useForm<UpdateQuickPromptDto>({
     resolver: zodResolver(updateQuickPromptValidator),
     values: {
       id: prompt.id,
@@ -65,7 +64,7 @@ const UpdateQuickPromptModal = ({
     },
   });
 
-  const handleSubmit = (data: z.infer<typeof updateQuickPromptValidator>) =>
+  const handleSubmit = (data: UpdateQuickPromptDto) =>
     updateQuickPrompt.mutate(data);
 
   return (

@@ -4,13 +4,6 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^db:generate", "^db:deploy", "^build"],
-      "env": [
-        "*",
-        "NEXT_PUBLIC_CLERK_SIGN_IN_URL",
-        "NEXT_PUBLIC_CLERK_SIGN_UP_URL",
-        "NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL",
-        "NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL"
-      ],
       "outputs": [".next/**", "!.next/cache/**"]
     },
     "lint": {},
@@ -20,9 +13,15 @@
       "persistent": true
     },
     "db:generate": {
+      "env": ["DATABASE_URL"],
       "cache": false
     },
     "db:deploy": {
+      "env": ["DATABASE_URL"],
+      "cache": false
+    },
+    "db:studio": {
+      "env": ["DATABASE_URL"],
       "cache": false
     }
   }

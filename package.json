@@ -8,8 +8,11 @@
     "lint": "turbo run lint",
     "db:generate": "turbo run db:generate",
     "db:deploy": "turbo run db:deploy",
+    "db:studio": "turbo run db:studio",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "db:up": "docker compose --profile dev up -d",
+    "db:down": "docker compose --profile dev down -v"
   },
   "devDependencies": {
     "@acme/tsconfig": "workspace:*",

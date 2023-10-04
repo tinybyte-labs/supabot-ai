@@ -1,7 +1,6 @@
 import { Toaster } from "@/components/ui/toaster";
 import "@/styles/globals.css";
 import { AppPropsWithLayout } from "@/types/next";
-import { ClerkProvider } from "@clerk/nextjs";
 import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { useCallback, useEffect } from "react";
@@ -16,10 +15,14 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Elements } from "@stripe/react-stripe-js";
 import { stripePromise } from "@/lib/stripe";
 import { trpc } from "@/utils/trpc";
+import { SessionProvider } from "next-auth/react";
 
 const inter = Inter({ subsets: ["latin"] });
 
-function App({ Component, pageProps }: AppPropsWithLayout) {
+function App({
+  Component,
+  pageProps: { session, ...pageProps },
+}: AppPropsWithLayout) {
   const getLayout = Component.getLayout ?? ((page) => page);
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useAtom(sidebarOpenAtom);
@@ -51,7 +54,7 @@ function App({ Component, pageProps }: AppPropsWithLayout) {
 
   return (
     <Elements stripe={stripePromise}>
-      <ClerkProvider {...pageProps}>
+      <SessionProvider session={session}>
         <TooltipProvider>
           <div className={cn(inter.className, "antialiased")}>
             <Head>
@@ -75,7 +78,7 @@ function App({ Component, pageProps }: AppPropsWithLayout) {
           </div>
         </TooltipProvider>
         <Toaster />
-      </ClerkProvider>
+      </SessionProvider>
     </Elements>
   );
 }

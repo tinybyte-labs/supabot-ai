@@ -1,33 +1,28 @@
 import { TRPCError, initTRPC } from "@trpc/server";
 import superjson from "superjson";
-import type {
-  SignedInAuthObject,
-  SignedOutAuthObject,
-} from "@clerk/nextjs/api";
-import { getAuth } from "@clerk/nextjs/server";
 import { inferAsyncReturnType } from "@trpc/server";
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
 import requestIp from "request-ip";
-import { PrismaClient } from "@acme/db";
-
-const prisma = new PrismaClient();
+import { db } from "@acme/db";
+import { getSession, type Session } from "@acme/auth";
 
 interface AuthContext {
-  auth: SignedInAuthObject | SignedOutAuthObject;
+  session: Session | null;
   clientIp: string | null;
 }
 
 export const createContextInner = async (opts: AuthContext) => {
   return {
-    ...opts,
-    db: prisma,
+    session: opts.session,
+    clientIp: opts.clientIp,
+    db,
   };
 };
 
 export const createContext = async (opts: CreateNextContextOptions) => {
-  const auth = getAuth(opts.req);
+  const session = await getSession(opts.req, opts.res);
   const clientIp = requestIp.getClientIp(opts.req);
-  return await createContextInner({ auth, clientIp });
+  return await createContextInner({ clientIp, session });
 };
 
 export type Context = inferAsyncReturnType<typeof createContext>;
@@ -43,17 +38,6 @@ const t = initTRPC.context<typeof createContext>().create({
   },
 });
 
-const isAuthed = t.middleware(({ next, ctx }) => {
-  if (!ctx.auth.userId) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
-  return next({
-    ctx: {
-      auth: ctx.auth,
-    },
-  });
-});
-
 /**
  * Export reusable router and procedure helpers
  * that can be used throughout the router
@@ -61,5 +45,25 @@ const isAuthed = t.middleware(({ next, ctx }) => {
 export const router = t.router;
 export const publicProcedure = t.procedure;
 
-// export this procedure to be used anywhere in your application
-export const protectedProcedure = t.procedure.use(isAuthed);
+const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
+  if (!ctx.session?.user) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+  return next({
+    ctx: {
+      // infers the `session` as non-nullable
+      session: { ...ctx.session, user: ctx.session.user },
+    },
+  });
+});
+
+/**
+ * Protected (authed) procedure
+ *
+ * If you want a query or mutation to ONLY be accessible to logged in users, use
+ * this. It verifies the session is valid and guarantees ctx.session.user is not
+ * null
+ *
+ * @see https://trpc.io/docs/procedures
+ */
+export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);

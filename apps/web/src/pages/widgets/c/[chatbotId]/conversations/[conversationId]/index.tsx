@@ -43,20 +43,12 @@ const ConversationPage: NextPageWithLayout = () => {
     [chatbot.settings],
   );
   const conversationQuery = trpc.conversation.publicGetById.useQuery(
-    {
-      conversationId,
-      chatbotId,
-      userId: user?.id,
-    },
+    { conversationId },
     { enabled: router.isReady },
   );
   const messagesQuery = trpc.message.list.useQuery(
-    {
-      conversationId: conversationQuery.data?.id || "",
-    },
-    {
-      enabled: conversationQuery.isSuccess,
-    },
+    { conversationId: conversationQuery.data?.id || "" },
+    { enabled: conversationQuery.isSuccess },
   );
   const quickPromptsQuery = trpc.quickPrompt.list.useQuery(
     { chatbotId: chatbot.id },

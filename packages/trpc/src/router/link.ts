@@ -5,7 +5,6 @@ import * as z from "zod";
 import { plans } from "@acme/plans";
 import { trainLink } from "@acme/core";
 import { PrismaClient } from "@acme/db";
-import "@clerk/nextjs/api";
 
 const trainLinks = async (linkIds: string[], db: PrismaClient) => {
   if (process.env.NODE_ENV === "development") {
@@ -31,9 +30,22 @@ export const linkRouter = router({
         chatbotId: z.string(),
       }),
     )
-    .query(({ ctx, input: { chatbotId } }) => {
+    .query(async ({ ctx, input: { chatbotId } }) => {
+      const chatbot = await ctx.db.chatbot.findUnique({
+        where: {
+          id: chatbotId,
+          organization: { members: { some: { userId: ctx.session.user.id } } },
+        },
+        select: { id: true },
+      });
+      if (!chatbot) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Chatbot not found!",
+        });
+      }
       return ctx.db.link.findMany({
-        where: { chatbot: { id: chatbotId, organizationId: ctx.auth.orgId } },
+        where: { chatbot: { id: chatbot.id } },
         orderBy: {
           updatedAt: "desc",
         },
@@ -47,31 +59,17 @@ export const linkRouter = router({
       }),
     )
     .mutation(async ({ ctx, input: { chatbotId, url } }) => {
-      const orgId = ctx.auth.orgId;
-      if (!orgId) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "No organization selected",
-        });
-      }
-      const org = await ctx.db.organization.findUnique({
-        where: { id: orgId },
+      const chatbot = await ctx.db.chatbot.findUnique({
+        where: {
+          id: chatbotId,
+          organization: { members: { some: { userId: ctx.session.user.id } } },
+        },
         select: {
-          plan: true,
-          billingCycleStartDay: true,
+          id: true,
+          organization: { select: { id: true, plan: true } },
         },
       });
-      if (!org) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Organization not found!",
-        });
-      }
 
-      const chatbot = await ctx.db.chatbot.findFirst({
-        where: { id: chatbotId, organizationId: ctx.auth.orgId },
-        select: { id: true },
-      });
       if (!chatbot) {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -79,7 +77,7 @@ export const linkRouter = router({
         });
       }
 
-      const plan = plans.find((plan) => plan.id === org.plan);
+      const plan = plans.find((plan) => plan.id === chatbot.organization.plan);
       if (!plan) {
         throw new TRPCError({
           code: "FORBIDDEN",
@@ -90,7 +88,7 @@ export const linkRouter = router({
       if (plan.limits.links !== "unlimited") {
         const links = await ctx.db.link.count({
           where: {
-            chatbot: { organizationId: orgId },
+            chatbot: { organizationId: chatbot.organization.id },
           },
         });
         if (links >= plan.limits.links) {
@@ -102,7 +100,7 @@ export const linkRouter = router({
       }
 
       const link = await ctx.db.link.create({
-        data: { url: url, chatbotId },
+        data: { url: url, chatbotId: chatbot.id },
         select: { id: true },
       });
       await trainLinks([link.id], ctx.db);
@@ -116,30 +114,17 @@ export const linkRouter = router({
       }),
     )
     .mutation(async ({ ctx, input: { chatbotId, urls } }) => {
-      const orgId = ctx.auth.orgId;
-      if (!orgId) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "No organization selected",
-        });
-      }
-      const org = await ctx.db.organization.findUnique({
-        where: { id: orgId },
+      const chatbot = await ctx.db.chatbot.findUnique({
+        where: {
+          id: chatbotId,
+          organization: { members: { some: { userId: ctx.session.user.id } } },
+        },
         select: {
-          plan: true,
-          billingCycleStartDay: true,
+          id: true,
+          organization: { select: { id: true, plan: true } },
         },
       });
-      if (!org) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Organization not found!",
-        });
-      }
-      const chatbot = await ctx.db.chatbot.findFirst({
-        where: { id: chatbotId, organizationId: ctx.auth.orgId },
-        select: { id: true },
-      });
+
       if (!chatbot) {
         throw new TRPCError({
           code: "NOT_FOUND",
@@ -147,7 +132,7 @@ export const linkRouter = router({
         });
       }
 
-      const plan = plans.find((plan) => plan.id === org.plan);
+      const plan = plans.find((plan) => plan.id === chatbot.organization.plan);
       if (!plan) {
         throw new TRPCError({
           code: "FORBIDDEN",
@@ -158,7 +143,7 @@ export const linkRouter = router({
       if (plan.limits.links !== "unlimited") {
         const links = await ctx.db.link.count({
           where: {
-            chatbot: { organizationId: orgId },
+            chatbot: { organizationId: chatbot.organization.id },
           },
         });
         if (links + urls.length > plan.limits.links) {
@@ -172,7 +157,7 @@ export const linkRouter = router({
       const links = await Promise.allSettled(
         urls.map((url) =>
           ctx.db.link.create({
-            data: { url, chatbotId },
+            data: { url, chatbotId: chatbot.id },
             select: { id: true },
           }),
         ),
@@ -187,22 +172,40 @@ export const linkRouter = router({
       return linkIds;
     }),
   retrain: protectedProcedure
-    .input(z.string())
+    .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const link = await ctx.db.link.findFirstOrThrow({
-        where: { id: input, chatbot: { organizationId: ctx.auth.orgId } },
+      const link = await ctx.db.link.findUnique({
+        where: {
+          id: input.id,
+          chatbot: {
+            organization: {
+              members: { some: { userId: ctx.session.user.id } },
+            },
+          },
+        },
         select: { id: true },
       });
+      if (!link) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Link not found!" });
+      }
       await trainLinks([link.id], ctx.db);
       return link;
     }),
   retrainMany: protectedProcedure
-    .input(z.array(z.string()))
+    .input(
+      z.object({
+        ids: z.array(z.string()),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       const links = await ctx.db.link.findMany({
         where: {
-          id: { in: input },
-          chatbot: { organizationId: ctx.auth.orgId },
+          id: { in: input.ids },
+          chatbot: {
+            organization: {
+              members: { some: { userId: ctx.session.user.id } },
+            },
+          },
         },
         select: { id: true },
       });
@@ -213,19 +216,34 @@ export const linkRouter = router({
       return links;
     }),
   delete: protectedProcedure
-    .input(z.string())
+    .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       return ctx.db.link.delete({
-        where: { id: input, chatbot: { organizationId: ctx.auth.orgId } },
+        where: {
+          id: input.id,
+          chatbot: {
+            organization: {
+              members: { some: { userId: ctx.session.user.id } },
+            },
+          },
+        },
       });
     }),
   deleteMany: protectedProcedure
-    .input(z.array(z.string()))
+    .input(
+      z.object({
+        ids: z.array(z.string()),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       return ctx.db.link.deleteMany({
         where: {
-          id: { in: input },
-          chatbot: { organizationId: ctx.auth.orgId },
+          id: { in: input.ids },
+          chatbot: {
+            organization: {
+              members: { some: { userId: ctx.session.user.id } },
+            },
+          },
         },
       });
     }),

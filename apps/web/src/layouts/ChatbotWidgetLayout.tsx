@@ -43,13 +43,19 @@ const ChatbotWidgetLayout = ({
   const storageKey = useMemo(() => `${chatbotId}_user`, [chatbotId]);
   const [userId, setUserId] = useState<string | null>(null);
 
-  const chatbotQuery = trpc.chatbot.findById.useQuery(chatbotId, {
-    enabled: router.isReady,
-  });
+  const chatbotQuery = trpc.chatbot.findById.useQuery(
+    { chatbotId },
+    {
+      enabled: router.isReady,
+    },
+  );
 
-  const userQuery = trpc.chatbotUser.getUser.useQuery(userId || "", {
-    enabled: !!userId,
-  });
+  const userQuery = trpc.chatbotUser.getUser.useQuery(
+    { userId: userId || "" },
+    {
+      enabled: !!userId,
+    },
+  );
 
   const logIn = trpc.chatbotUser.logIn.useMutation({
     onSettled: () => {

@@ -1,4 +1,3 @@
-import { useAuth } from "@clerk/nextjs";
 import Link from "next/link";
 import { Skeleton } from "./ui/skeleton";
 import FullLogo from "./FullLogo";
@@ -9,6 +8,7 @@ import { useCallback, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import Logo from "./Logo";
 import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
 
 const menu = [
   {
@@ -33,7 +33,7 @@ const menu = [
   },
 ];
 export default function MarketingHeader() {
-  const { isLoaded, isSignedIn } = useAuth();
+  const { data, status } = useSession();
   const [showMenu, setShowMenu] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const router = useRouter();
@@ -69,7 +69,7 @@ export default function MarketingHeader() {
   return (
     <header
       className={cn(
-        "sticky left-0 right-0 top-0 z-30 border-b bg-background transition-all md:border-b-transparent md:bg-transparent",
+        "bg-background sticky left-0 right-0 top-0 z-30 border-b transition-all md:border-b-transparent md:bg-transparent",
         {
           "md:border-b-border md:bg-background/80 md:backdrop-blur-md":
             scrolled,
@@ -107,28 +107,19 @@ export default function MarketingHeader() {
           })}
         </nav>
         <div className="flex flex-1 items-center justify-end gap-2 max-md:hidden">
-          {!isLoaded ? (
+          {status === "loading" ? (
             <>
               <Skeleton className="h-10 w-[93px] rounded-full" />
               <Skeleton className="h-10 w-[124px] rounded-full" />
             </>
-          ) : isSignedIn ? (
+          ) : status === "authenticated" ? (
             <Button asChild className="rounded-full px-6">
-              <Link href="/chatbots">Dashboard</Link>
+              <Link href="/dashboard">Dashboard</Link>
             </Button>
           ) : (
-            <>
-              <Button
-                asChild
-                variant="ghost"
-                className="rounded-full px-6 max-lg:hidden"
-              >
-                <Link href="/signin">Sign In</Link>
-              </Button>
-              <Button asChild className="rounded-full px-6">
-                <Link href="/register">Get started</Link>
-              </Button>
-            </>
+            <Button asChild className="rounded-full px-6 max-lg:hidden">
+              <Link href="/signin">Get Started</Link>
+            </Button>
           )}
         </div>
         <div className="flex flex-1 items-center justify-end md:hidden">
@@ -167,29 +158,19 @@ export default function MarketingHeader() {
           </nav>
 
           <div className="mt-12 flex flex-col gap-2">
-            {!isLoaded ? (
+            {status === "loading" ? (
               <>
                 <Skeleton className="h-12 rounded-lg" />
                 <Skeleton className="h-12 rounded-lg" />
               </>
-            ) : isSignedIn ? (
+            ) : status === "authenticated" ? (
               <Button asChild size="lg" onClick={closeSidebar}>
-                <Link href="/chatbots">Dashboard</Link>
+                <Link href="/dashboard">Dashboard</Link>
               </Button>
             ) : (
-              <>
-                <Button
-                  asChild
-                  variant="outline"
-                  size="lg"
-                  onClick={closeSidebar}
-                >
-                  <Link href="/signin">Sign In</Link>
-                </Button>
-                <Button asChild size="lg" onClick={closeSidebar}>
-                  <Link href="/register">Get started</Link>
-                </Button>
-              </>
+              <Button asChild size="lg" onClick={closeSidebar}>
+                <Link href="/signin">Get started</Link>
+              </Button>
             )}
           </div>
         </div>

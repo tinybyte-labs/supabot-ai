@@ -1,4 +1,3 @@
-import { useAuth, useSession } from "@clerk/nextjs";
 import { Skeleton } from "./ui/skeleton";
 import {
   DropdownMenu,
@@ -13,7 +12,6 @@ import { Button } from "./ui/button";
 import {
   ChevronsUpDown,
   Computer,
-  ExternalLink,
   HelpCircle,
   Home,
   LayoutDashboard,
@@ -27,6 +25,7 @@ import { useTheme } from "next-themes";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "./ui/select";
 import { ReactNode } from "react";
 import { Label } from "./ui/label";
+import { signOut, useSession } from "next-auth/react";
 
 const themes: Record<string, { label: string; icon: ReactNode }> = {
   system: {
@@ -44,12 +43,15 @@ const themes: Record<string, { label: string; icon: ReactNode }> = {
 };
 
 const FullUserDropdownButton = () => {
-  const { isLoaded, session } = useSession();
-  const { signOut } = useAuth();
+  const { status, data: session } = useSession();
   const { theme, setTheme } = useTheme();
 
-  if (!(isLoaded && session)) {
+  if (status === "loading") {
     return <Skeleton className="h-[50px] w-full" />;
+  }
+
+  if (status === "unauthenticated") {
+    return <p>Unauthenticated</p>;
   }
 
   return (
@@ -60,29 +62,26 @@ const FullUserDropdownButton = () => {
           variant="outline"
         >
           <Avatar className="h-8 w-8">
-            {session.user.imageUrl && (
-              <AvatarImage src={session.user.imageUrl} />
-            )}
+            {session?.user.image && <AvatarImage src={session.user.image} />}
             <AvatarFallback>
               <User size={20} />
             </AvatarFallback>
           </Avatar>
           <div className="flex flex-1 flex-col overflow-hidden">
             <p className="truncate font-medium leading-4">
-              {session.user.fullName ||
-                session.user.primaryEmailAddress?.emailAddress}
+              {session?.user.name || session?.user.email}
             </p>
-            <p className="truncate text-sm font-normal leading-4 text-muted-foreground">
-              {session.user.primaryEmailAddress?.emailAddress}
+            <p className="text-muted-foreground truncate text-sm font-normal leading-4">
+              {session?.user.email}
             </p>
           </div>
-          <ChevronsUpDown className="h-4 w-4 text-muted-foreground" />
+          <ChevronsUpDown className="text-muted-foreground h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="w-56">
         <DropdownMenuGroup>
           <DropdownMenuLabel className="truncate">
-            {session.user.primaryEmailAddress?.emailAddress}
+            {session?.user.email}
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
@@ -122,7 +121,7 @@ const FullUserDropdownButton = () => {
           <DropdownMenuLabel>Links</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
-            <Link href="/chatbots">
+            <Link href="/dashboard">
               <LayoutDashboard size={18} className="mr-2" />
               Dashboard
             </Link>
@@ -143,7 +142,7 @@ const FullUserDropdownButton = () => {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem onClick={() => signOut({ sessionId: session?.id })}>
+        <DropdownMenuItem onClick={() => signOut()}>
           <LogOut size={18} className="mr-2" />
           Log Out
         </DropdownMenuItem>

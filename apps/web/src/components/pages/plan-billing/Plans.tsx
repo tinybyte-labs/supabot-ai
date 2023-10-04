@@ -2,12 +2,14 @@ import PlansGrid from "@/components/PlansGrid";
 import SecondaryPageHeader from "@/components/SecondaryPageHeader";
 import { useToast } from "@/components/ui/use-toast";
 import { useOrganization } from "@/hooks/useOrganization";
+import { usePlan } from "@/hooks/usePlan";
 import { trpc } from "@/utils/trpc";
 import { useStripe } from "@stripe/react-stripe-js";
 import { useState } from "react";
 
 const Plans = () => {
-  const { plan, priceId } = useOrganization();
+  const { data: currentOrg } = useOrganization();
+  const plan = usePlan();
   const [loading, setLoading] = useState(false);
   const stripe = useStripe();
   const { toast } = useToast();
@@ -33,7 +35,7 @@ const Plans = () => {
     },
   });
   const handleUpgrade = async (priceId: string) =>
-    getCustomerPortal.mutate({ priceId });
+    getCustomerPortal.mutate({ priceId, orgSlug: currentOrg?.slug || "" });
 
   return (
     <section className="space-y-8" id="plans">
@@ -45,7 +47,7 @@ const Plans = () => {
         buttonLabel={() => `Change Plan`}
         onPlanClick={handleUpgrade}
         loading={loading}
-        currentPriceId={priceId}
+        currentPriceId={currentOrg?.priceId}
       />
     </section>
   );

@@ -24,7 +24,7 @@ const Hero = () => {
               className="h-14 rounded-full px-12 text-base"
               size="lg"
             >
-              <Link href="/register">
+              <Link href="/signin">
                 Get Started
                 <ArrowRight size={24} className="-mr-2 ml-4" />
               </Link>

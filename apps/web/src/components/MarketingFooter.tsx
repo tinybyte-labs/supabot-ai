@@ -92,8 +92,8 @@ const Nav = ({
     <div className="col-span-1">
       <h3 className="mb-4 font-medium">{title}</h3>
       <ul className="flex flex-col space-y-2">
-        {items.map((item) => (
-          <li key={item.href}>
+        {items.map((item, i) => (
+          <li key={`${item.href}-${i}`}>
             <Link
               href={item.href}
               target={item.external ? "_blank" : undefined}

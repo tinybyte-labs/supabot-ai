@@ -1,11 +1,11 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { verifySignature } from "@upstash/qstash/nextjs";
 import { isBefore, subHours } from "date-fns";
-import { prisma } from "@/lib/prisma";
+import { db } from "@acme/db";
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const conversations = await prisma.conversation.findMany({
+    const conversations = await db.conversation.findMany({
       where: {
         status: "OPEN",
       },
@@ -17,7 +17,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
     const results = await Promise.allSettled(
       conversations.map(async (conversation) => {
-        const lastMessage = await prisma.message.findFirst({
+        const lastMessage = await db.message.findFirst({
           where: { conversationId: conversation.id },
           select: {
             createdAt: true,
@@ -30,7 +30,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
           : conversation.createdAt;
 
         if (isBefore(date, subHours(new Date(), 4))) {
-          const prismaResponse = await prisma.conversation.update({
+          const prismaResponse = await db.conversation.update({
             where: { id: conversation.id },
             data: { status: "CLOSED", closedAt: new Date() },
           });

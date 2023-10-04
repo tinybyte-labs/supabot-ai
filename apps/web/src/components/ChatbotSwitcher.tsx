@@ -20,21 +20,20 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Image from "next/image";
 import { Check, ChevronsUpDown, Plus } from "lucide-react";
 import { trpc } from "@/utils/trpc";
+import { useChatbot } from "@/hooks/useChatbot";
+import { useOrganization } from "@/hooks/useOrganization";
 
 const ChatbotSwitcher = ({ className }: { className?: string }) => {
-  const {
-    isReady,
-    query: { chatbotId },
-  } = useRouter();
-  const { isSuccess: chatbotLoaded, data: currentChatbot } =
-    trpc.chatbot.findById.useQuery(chatbotId as string, {
-      enabled: isReady,
-    });
-  const [open, setOpen] = useState(false);
+  const { data: currentChatbot, isSuccess: isChatbotLoaded } = useChatbot();
+  const { data: currentOrg, isSuccess: isOrgLoaded } = useOrganization();
   const router = useRouter();
-  const chatbots = trpc.chatbot.list.useQuery();
+  const [open, setOpen] = useState(false);
+  const chatbots = trpc.chatbot.list.useQuery(
+    { orgSlug: currentOrg?.slug || "" },
+    { enabled: isOrgLoaded },
+  );
 
-  if (!(chatbotLoaded && currentChatbot)) {
+  if (!isChatbotLoaded || !isOrgLoaded) {
     return <Skeleton className={cn("h-10 min-w-[180px]", className)} />;
   }
 
@@ -47,9 +46,7 @@ const ChatbotSwitcher = ({ className }: { className?: string }) => {
           className={cn("justify-start text-left", className)}
         >
           <Avatar className="-ml-1 mr-2 h-6 w-6">
-            {currentChatbot?.image && (
-              <AvatarImage src={currentChatbot.image} />
-            )}
+            {currentChatbot.image && <AvatarImage src={currentChatbot.image} />}
             <AvatarFallback>
               <Image
                 src={`/api/avatar.svg?seed=${currentChatbot.id}&initials=${currentChatbot.name}&size=128`}
@@ -73,7 +70,7 @@ const ChatbotSwitcher = ({ className }: { className?: string }) => {
               <CommandItem
                 key={chatbot.id}
                 onSelect={() => {
-                  router.push(`/chatbots/${chatbot.id}`);
+                  router.push(`/${currentOrg.slug}/chatbots/${chatbot.id}`);
                   setOpen(false);
                 }}
               >
@@ -106,7 +103,9 @@ const ChatbotSwitcher = ({ className }: { className?: string }) => {
           </CommandGroup>
           <CommandSeparator />
           <CommandGroup>
-            <CommandItem onSelect={() => router.push("/chatbots/new")}>
+            <CommandItem
+              onSelect={() => router.push(`/${currentOrg.slug}/chatbots/new`)}
+            >
               <Plus className="mr-2 h-4 w-4" />
               Create Chatbot
             </CommandItem>

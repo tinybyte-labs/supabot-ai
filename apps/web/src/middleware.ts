@@ -1,51 +1,39 @@
-import { authMiddleware, redirectToSignIn } from "@clerk/nextjs";
+import withAuth from "next-auth/middleware";
 import { NextResponse } from "next/server";
-import { REDIRECTS } from "./utils/constants";
+import { PUBLIC_PATH_NAMES, REDIRECTS } from "./utils/constants";
 
-export default authMiddleware({
-  publicRoutes: [
-    "/",
-    "/home",
-    "/pricing",
-    "/contact",
-    "/help",
-    "/changelog(.*)",
-    "/blog(.*)",
-    "/widgets(.*)",
-    "/api(.*)",
-    ...REDIRECTS.map((item) => item.pathname),
-  ],
-  ignoredRoutes: ["/api/widget(.*)"],
-  beforeAuth: (req) => {
-    if (req.nextUrl.pathname === "/home") {
+export default withAuth(
+  (req) => {
+    const path = req.nextUrl.pathname.slice(1);
+    if (REDIRECTS[path]) {
+      return NextResponse.redirect(REDIRECTS[path]);
+    }
+    if (path === "home") {
       return NextResponse.rewrite(new URL("/", req.url));
     }
-    const redirectUrl = REDIRECTS.find(
-      (item) => item.pathname === req.nextUrl.pathname,
-    );
-    if (redirectUrl) {
-      return NextResponse.redirect(new URL(redirectUrl.redirectTo, req.url));
+    const token = req.nextauth.token;
+    if (token?.user) {
+      if (path === "") {
+        return NextResponse.redirect(new URL("/dashboard", req.url));
+      }
     }
   },
-  afterAuth: (auth, req) => {
-    const path = req.nextUrl.pathname.split("?")[0];
-
-    if (auth.userId && path === "/") {
-      const dashboard = new URL("/chatbots", req.url);
-      return NextResponse.redirect(dashboard);
-    }
-
-    if (!auth.isPublicRoute && !auth.userId) {
-      return redirectToSignIn({ returnBackUrl: req.url });
-    }
-
-    if (!auth.isPublicRoute && !auth.orgId && path !== "/create-org") {
-      const url = new URL("/create-org", req.url);
-      return NextResponse.redirect(url);
-    }
+  {
+    callbacks: {
+      authorized: ({ token, req }) => {
+        const path = req.nextUrl.pathname.slice(1);
+        if (
+          path === "" ||
+          [...PUBLIC_PATH_NAMES].find((item) => path.startsWith(item))
+        ) {
+          return true;
+        }
+        return !!token;
+      },
+    },
+    pages: {
+      signIn: "/signin",
+      error: "/signin",
+    },
   },
-});
-
-export const config = {
-  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
-};
+);

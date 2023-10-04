@@ -3,21 +3,23 @@ import { protectedProcedure, publicProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { IpInfo, getIpInfo } from "@acme/core";
 import { compareDesc } from "date-fns";
-import "@clerk/nextjs/api";
 
 export const conversationRouter = router({
   getById: protectedProcedure
     .input(
       z.object({
         conversationId: z.string(),
-        chatbotId: z.string(),
       }),
     )
     .query(async ({ ctx, input }) => {
       const conversation = await ctx.db.conversation.findFirst({
         where: {
           id: input.conversationId,
-          chatbot: { id: input.chatbotId, organizationId: ctx.auth.orgId },
+          chatbot: {
+            organization: {
+              members: { some: { userId: ctx.session.user.id } },
+            },
+          },
         },
         select: {
           id: true,
@@ -78,12 +80,21 @@ export const conversationRouter = router({
       }),
     )
     .query(async ({ ctx, input }) => {
+      const chatbot = await ctx.db.chatbot.findUnique({
+        where: {
+          id: input.chatbotId,
+          organization: { members: { some: { userId: ctx.session.user.id } } },
+        },
+      });
+      if (!chatbot) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Chatbot not found!",
+        });
+      }
       const conversations = await ctx.db.conversation.findMany({
         where: {
-          chatbot: {
-            id: input.chatbotId,
-            organizationId: ctx.auth.orgId,
-          },
+          chatbotId: chatbot.id,
           ...(!!input.status ? { status: input.status } : {}),
         },
         select: {
@@ -125,7 +136,9 @@ export const conversationRouter = router({
         where: {
           id: opts.input.conversationId,
           chatbot: {
-            organizationId: opts.ctx.auth.orgId,
+            organization: {
+              members: { some: { userId: opts.ctx.session.user.id } },
+            },
           },
         },
       });
@@ -153,18 +166,13 @@ export const conversationRouter = router({
     .input(
       z.object({
         conversationId: z.string(),
-        chatbotId: z.string(),
-        userId: z.string().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
       const conversation = await ctx.db.conversation.findUnique({
-        where: { id: input.conversationId, chatbotId: input.chatbotId },
+        where: { id: input.conversationId },
       });
-      if (
-        !conversation ||
-        (conversation.userId && conversation.userId !== input.userId)
-      ) {
+      if (!conversation) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Conversation not found!",

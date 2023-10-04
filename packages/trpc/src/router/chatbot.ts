@@ -4,106 +4,131 @@ import * as z from "zod";
 import { defaultChatbotSettings } from "@acme/core";
 import { plans } from "@acme/plans";
 import { createChatbotValidator, updateChatbotValidator } from "@acme/core";
-import "@clerk/nextjs/api";
 
 export const chatbotRouter = router({
-  list: protectedProcedure.query(async ({ ctx }) => {
-    if (!ctx.auth.orgId) {
-      throw new TRPCError({
-        code: "FORBIDDEN",
-        message: "No org found!. Please select a organization",
-      });
-    }
-    return ctx.db.chatbot.findMany({
-      where: { organizationId: ctx.auth.orgId },
-      orderBy: { updatedAt: "desc" },
-    });
-  }),
-  stats: protectedProcedure.input(z.string()).query(async ({ ctx, input }) => {
-    const chatbot = await ctx.db.chatbot.findUnique({
-      where: { id: input, organizationId: ctx.auth.orgId },
-      select: {
-        _count: {
-          select: {
-            links: true,
-            quickPrompts: true,
-            conversations: true,
-            users: true,
-            documents: true,
+  list: protectedProcedure
+    .input(z.object({ orgSlug: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return ctx.db.chatbot.findMany({
+        where: {
+          organization: {
+            slug: input.orgSlug,
+            members: {
+              some: {
+                userId: ctx.session.user.id,
+              },
+            },
           },
         },
-      },
-    });
-
-    if (!chatbot) {
-      throw new TRPCError({ code: "NOT_FOUND", message: "Chatbot not found!" });
-    }
-
-    const messageLikeCountPromise = ctx.db.message.count({
-      where: {
-        conversation: {
-          chatbotId: input,
+        orderBy: { updatedAt: "desc" },
+      });
+    }),
+  stats: protectedProcedure
+    .input(
+      z.object({
+        chatbotId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const chatbot = await ctx.db.chatbot.findUnique({
+        where: {
+          id: input.chatbotId,
+          organization: {
+            members: {
+              some: {
+                userId: ctx.session.user.id,
+              },
+            },
+          },
         },
-        reaction: "LIKE",
-      },
-    });
-
-    const messageDislikeCountPromise = ctx.db.message.count({
-      where: {
-        conversation: {
-          chatbotId: input,
+        select: {
+          id: true,
+          _count: {
+            select: {
+              links: true,
+              quickPrompts: true,
+              conversations: true,
+              users: true,
+              documents: true,
+            },
+          },
         },
-        reaction: "DISLIKE",
-      },
-    });
+      });
 
-    const [messageLikeCount, messageDislikeCount] = await Promise.all([
-      messageLikeCountPromise,
-      messageDislikeCountPromise,
-    ]);
+      if (!chatbot) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Chatbot not found!",
+        });
+      }
 
-    return {
-      linksCount: chatbot?._count.links || 0,
-      quickPromptCount: chatbot?._count.quickPrompts || 0,
-      userCount: chatbot?._count.users || 0,
-      conversationCount: chatbot?._count.conversations || 0,
-      documentCount: chatbot?._count.documents || 0,
-      messageLikeCount,
-      messageDislikeCount,
-    };
-  }),
-  findById: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
-    const chatbot = await ctx.db.chatbot.findUnique({
-      where: { id: input },
-    });
-    if (!chatbot) {
-      throw new TRPCError({ code: "NOT_FOUND", message: "Chatbot not found!" });
-    }
-    return chatbot;
-  }),
+      const messageLikeCountPromise = ctx.db.message.count({
+        where: {
+          conversation: {
+            chatbotId: chatbot.id,
+          },
+          reaction: "LIKE",
+        },
+      });
+
+      const messageDislikeCountPromise = ctx.db.message.count({
+        where: {
+          conversation: {
+            chatbotId: chatbot.id,
+          },
+          reaction: "DISLIKE",
+        },
+      });
+
+      const [messageLikeCount, messageDislikeCount] = await Promise.all([
+        messageLikeCountPromise,
+        messageDislikeCountPromise,
+      ]);
+
+      return {
+        linksCount: chatbot?._count.links || 0,
+        quickPromptCount: chatbot?._count.quickPrompts || 0,
+        userCount: chatbot?._count.users || 0,
+        conversationCount: chatbot?._count.conversations || 0,
+        documentCount: chatbot?._count.documents || 0,
+        messageLikeCount,
+        messageDislikeCount,
+      };
+    }),
+  findById: publicProcedure
+    .input(z.object({ chatbotId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const chatbot = await ctx.db.chatbot.findUnique({
+        where: { id: input.chatbotId },
+      });
+      if (!chatbot) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Chatbot not found!",
+        });
+      }
+      return chatbot;
+    }),
   create: protectedProcedure
     .input(createChatbotValidator)
     .mutation(async ({ ctx, input }) => {
-      const orgId = ctx.auth.orgId;
-      if (!orgId) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "No organization selected",
-        });
-      }
-      const org = await ctx.db.organization.findUnique({
-        where: { id: orgId },
+      const organization = await ctx.db.organization.findUnique({
+        where: {
+          slug: input.orgSlug,
+          members: { some: { userId: ctx.session.user.id } },
+        },
         select: {
+          id: true,
           plan: true,
         },
       });
-      if (!org) {
+      if (!organization) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Organization not found!",
         });
       }
-      const plan = plans.find((plan) => plan.id === org.plan);
+      const plan = plans.find((plan) => plan.id === organization.plan);
       if (!plan) {
         throw new TRPCError({
           code: "FORBIDDEN",
@@ -112,7 +137,7 @@ export const chatbotRouter = router({
       }
       if (plan.limits.chatbots !== "unlimited") {
         const chatbotsCount = await ctx.db.chatbot.count({
-          where: { organizationId: orgId },
+          where: { organizationId: organization.id },
         });
         if (chatbotsCount >= plan.limits.chatbots) {
           throw new TRPCError({
@@ -124,38 +149,30 @@ export const chatbotRouter = router({
       return ctx.db.chatbot.create({
         data: {
           name: input.name,
-          organizationId: orgId,
+          organizationId: organization.id,
           settings: defaultChatbotSettings,
-          createdBy: ctx.auth.userId,
         },
       });
     }),
   update: protectedProcedure
     .input(updateChatbotValidator)
     .mutation(async ({ ctx, input: { id, ...data } }) => {
-      if (!ctx.auth.orgId) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "No organization selected",
-        });
-      }
-      const chatbot = await ctx.db.chatbot.findUnique({
-        where: { id, organizationId: ctx.auth.orgId },
-      });
-      if (!chatbot) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Chatbot not found!",
-        });
-      }
       return ctx.db.chatbot.update({
-        where: { id },
+        where: {
+          id,
+          organization: { members: { some: { userId: ctx.session.user.id } } },
+        },
         data,
       });
     }),
-  delete: protectedProcedure.input(z.string()).mutation(({ ctx, input }) => {
-    return ctx.db.chatbot.delete({
-      where: { id: input, organizationId: ctx.auth.orgId },
-    });
-  }),
+  delete: protectedProcedure
+    .input(z.object({ chatbotId: z.string() }))
+    .mutation(({ ctx, input }) => {
+      return ctx.db.chatbot.delete({
+        where: {
+          id: input.chatbotId,
+          organization: { members: { some: { userId: ctx.session.user.id } } },
+        },
+      });
+    }),
 });

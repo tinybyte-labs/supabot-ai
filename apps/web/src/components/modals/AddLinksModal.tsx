@@ -6,7 +6,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
-import { useChatbot } from "@/providers/ChatbotProvider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Button } from "../ui/button";
 import { useMemo, useState } from "react";
@@ -35,17 +34,18 @@ import {
 import Link from "next/link";
 import { DataTable } from "../tables/DataTable";
 import { trpc } from "@/utils/trpc";
+import { useChatbot } from "@/hooks/useChatbot";
 
 const AddLinksModal: ModalFn = ({ onOpenChange, open }) => {
-  const { isLoaded, chatbot } = useChatbot();
+  const { data: chatbot, isSuccess: isChatbotLoaded } = useChatbot();
   const { toast } = useToast();
   const utils = trpc.useContext();
 
   const addLinks = trpc.link.createMany.useMutation({
-    onSuccess: (data) => {
+    onSuccess: (data, vars) => {
       onOpenChange(false);
       toast({ title: `${data.length} links added` });
-      utils.link.list.invalidate({ chatbotId: chatbot?.id });
+      utils.link.list.invalidate({ chatbotId: vars.chatbotId });
     },
     onError: (error) => {
       toast({
@@ -55,10 +55,6 @@ const AddLinksModal: ModalFn = ({ onOpenChange, open }) => {
       });
     },
   });
-
-  if (!(isLoaded && chatbot)) {
-    return null;
-  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -75,6 +71,7 @@ const AddLinksModal: ModalFn = ({ onOpenChange, open }) => {
           <TabsContent value="url">
             <LinksFromUrl
               onAddUrls={(urls) => {
+                if (!isChatbotLoaded) return;
                 addLinks.mutate({ chatbotId: chatbot.id, urls });
               }}
               isAdding={addLinks.isLoading}
@@ -83,6 +80,7 @@ const AddLinksModal: ModalFn = ({ onOpenChange, open }) => {
           <TabsContent value="website">
             <LinksFromWebsite
               onAddUrls={(urls) => {
+                if (!isChatbotLoaded) return;
                 addLinks.mutate({ chatbotId: chatbot.id, urls });
               }}
               isAdding={addLinks.isLoading}
@@ -91,6 +89,7 @@ const AddLinksModal: ModalFn = ({ onOpenChange, open }) => {
           <TabsContent value="sitemap">
             <LinksFromSitemap
               onAddUrls={(urls) => {
+                if (!isChatbotLoaded) return;
                 addLinks.mutate({ chatbotId: chatbot.id, urls });
               }}
               isAdding={addLinks.isLoading}
