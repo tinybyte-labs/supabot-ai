@@ -10,19 +10,14 @@ const SubscriptionPlans = () => {
           <h2 className="text-center text-3xl font-bold md:text-5xl">
             Simple, transparent pricing
           </h2>
-          <p className="mt-4 text-center font-medium text-muted-foreground md:text-lg">
+          <p className="text-muted-foreground mt-4 text-center font-medium md:text-lg">
             Choose plan that works for you and your team.
           </p>
         </div>
 
         <PlansGrid
           buttonLabel={(plan) => `Get started with ${plan.name}`}
-          onPlanClick={() =>
-            router.push({
-              pathname: "/register",
-              search: "redirect_url=/plan-billing#plans",
-            })
-          }
+          onPlanClick={() => router.push("/signin")}
         />
       </div>
     </section>

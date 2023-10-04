@@ -33,6 +33,7 @@ export default withAuth(
     },
     pages: {
       signIn: "/signin",
+      error: "/signin",
     },
   },
 );

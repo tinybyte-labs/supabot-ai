@@ -48,7 +48,7 @@ const CurrentPlan = () => {
       />
       <div className="flex flex-wrap gap-2">
         <Button asChild variant="secondary">
-          <Link href={`/plan-billing#plans`}>
+          <Link href={`/${router.query.orgSlug}/plan-billing#plans`}>
             View plans and upgrade
             <ArrowRight size={20} className="-mr-1 ml-2" />
           </Link>

@@ -117,18 +117,9 @@ export default function MarketingHeader() {
               <Link href="/dashboard">Dashboard</Link>
             </Button>
           ) : (
-            <>
-              <Button
-                asChild
-                variant="ghost"
-                className="rounded-full px-6 max-lg:hidden"
-              >
-                <Link href="/signin">Sign In</Link>
-              </Button>
-              <Button asChild className="rounded-full px-6">
-                <Link href="/register">Get started</Link>
-              </Button>
-            </>
+            <Button asChild className="rounded-full px-6 max-lg:hidden">
+              <Link href="/signin">Get Started</Link>
+            </Button>
           )}
         </div>
         <div className="flex flex-1 items-center justify-end md:hidden">
@@ -177,19 +168,9 @@ export default function MarketingHeader() {
                 <Link href="/dashboard">Dashboard</Link>
               </Button>
             ) : (
-              <>
-                <Button
-                  asChild
-                  variant="outline"
-                  size="lg"
-                  onClick={closeSidebar}
-                >
-                  <Link href="/signin">Sign In</Link>
-                </Button>
-                <Button asChild size="lg" onClick={closeSidebar}>
-                  <Link href="/register">Get started</Link>
-                </Button>
-              </>
+              <Button asChild size="lg" onClick={closeSidebar}>
+                <Link href="/signin">Get started</Link>
+              </Button>
             )}
           </div>
         </div>
