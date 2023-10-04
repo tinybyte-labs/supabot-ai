@@ -12,6 +12,8 @@ import { Chatbot } from "@acme/db";
 import { trpc } from "@/utils/trpc";
 import { useRouter } from "next/router";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useModal } from "@/components/modals/useModal";
+import CreateChatbotModal from "@/components/modals/CreateChatbotModal";
 
 const ChatbotsGrid = ({ chatbots }: { chatbots: Chatbot[] }) => {
   const router = useRouter();
@@ -87,14 +89,15 @@ const ChatbotsPage: NextPageWithLayout = () => {
     { orgSlug },
     { enabled: router.isReady },
   );
+  const [Modal, { openModal }] = useModal(CreateChatbotModal);
+
   return (
     <>
+      <Modal />
       <DashboardPageHeader title="Chatbots">
-        <Button asChild>
-          <Link href={`/${orgSlug}/chatbots/new`}>
-            <Plus size={20} className="-ml-1 mr-2" />
-            Create Chatbot
-          </Link>
+        <Button onClick={() => openModal()}>
+          <Plus size={20} className="-ml-1 mr-2" />
+          Create Chatbot
         </Button>
       </DashboardPageHeader>
 

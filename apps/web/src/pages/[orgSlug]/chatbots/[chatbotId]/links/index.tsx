@@ -14,8 +14,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
+import { useChatbot } from "@/hooks/useChatbot";
 import ChatbotLayout from "@/layouts/ChatbotLayout";
-import { useChatbot } from "@/providers/ChatbotProvider";
 import { NextPageWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
 import { Link as LinkTable } from "@acme/db";
@@ -40,11 +40,9 @@ import { useMemo } from "react";
 
 const LinksPage: NextPageWithLayout = () => {
   const [Modal, { openModal }] = useModal(AddLinksModal);
-  const { isLoaded, chatbot } = useChatbot();
-  const linksQuery = trpc.link.list.useQuery(
-    { chatbotId: chatbot?.id || "" },
-    { enabled: isLoaded },
-  );
+  const { data: chatbot } = useChatbot();
+
+  const linksQuery = trpc.link.list.useQuery({ chatbotId: chatbot?.id || "" });
 
   const retrainMany = trpc.link.retrainMany.useMutation({
     onSuccess: (data) => {

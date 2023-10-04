@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
 import ChatbotLayout from "@/layouts/ChatbotLayout";
-import { useChatbot } from "@/providers/ChatbotProvider";
 import { NextPageWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
 import { ChatbotUser } from "@acme/db";

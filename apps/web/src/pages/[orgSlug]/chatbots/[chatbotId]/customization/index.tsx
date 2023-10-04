@@ -15,7 +15,6 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import ChatbotLayout from "@/layouts/ChatbotLayout";
-import { useChatbot } from "@/providers/ChatbotProvider";
 import { NextPageWithLayout } from "@/types/next";
 import {
   type ChatbotSettings,
@@ -24,7 +23,7 @@ import {
 } from "@acme/core";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Chatbot } from "@acme/db";
-import { ExternalLink, Loader2 } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import {
@@ -36,19 +35,15 @@ import {
 import ColorPicker from "@/components/ColorPicker";
 import { defaultChatbotSettings } from "@/data/defaultChatbotSettings";
 import { trpc } from "@/utils/trpc";
+import { useChatbot } from "@/hooks/useChatbot";
 
 const ChatbotCustomizationPage: NextPageWithLayout = () => {
-  const { chatbot, isLoaded } = useChatbot();
-  if (!isLoaded) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center">
-        <Loader2 size={24} className="animate-spin" />
-      </div>
-    );
-  }
+  const { data: chatbot } = useChatbot();
+
   if (!chatbot) {
     return null;
   }
+
   return (
     <>
       <DashboardPageHeader title="Customization">

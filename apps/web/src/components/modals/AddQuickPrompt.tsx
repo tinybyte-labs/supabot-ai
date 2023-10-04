@@ -6,7 +6,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
-import { useChatbot } from "@/providers/ChatbotProvider";
 import { Button } from "../ui/button";
 import {
   Form,
@@ -28,9 +27,10 @@ import { useEffect } from "react";
 import { APP_NAME } from "@/utils/constants";
 import { Checkbox } from "../ui/checkbox";
 import { trpc } from "@/utils/trpc";
+import { useChatbot } from "@/hooks/useChatbot";
 
 const AddQuickPromptModal: ModalFn = ({ onOpenChange, open }) => {
-  const { isLoaded, chatbot } = useChatbot();
+  const { data: chatbot } = useChatbot();
   const form = useForm<CreateQuickPromptDto>({
     resolver: zodResolver(createQuickPromptValidator),
     defaultValues: {
@@ -45,10 +45,10 @@ const AddQuickPromptModal: ModalFn = ({ onOpenChange, open }) => {
   const utils = trpc.useContext();
 
   const addQuickPrompt = trpc.quickPrompt.create.useMutation({
-    onSuccess: (data) => {
+    onSuccess: (_, vars) => {
       onOpenChange(false);
       toast({ title: `Quick prompt added` });
-      utils.quickPrompt.list.invalidate({ chatbotId: data.chatbotId });
+      utils.quickPrompt.list.invalidate({ chatbotId: vars.chatbotId });
     },
     onError: (error) => {
       toast({
@@ -68,7 +68,7 @@ const AddQuickPromptModal: ModalFn = ({ onOpenChange, open }) => {
     }
   }, [chatbot, form]);
 
-  if (!(isLoaded && chatbot)) {
+  if (!chatbot) {
     return null;
   }
 

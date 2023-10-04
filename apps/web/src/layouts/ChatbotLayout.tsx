@@ -5,7 +5,6 @@ import FullUserDropdownButton from "@/components/FullUserDropdownButton";
 import Logo from "@/components/Logo";
 import SideBarNav, { SideBarNavProps } from "@/components/SideBarNav";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { ChatbotProvider } from "@/providers/ChatbotProvider";
 import { useAtom } from "jotai";
 import {
   LayoutGrid,
@@ -15,15 +14,16 @@ import {
   Palette,
   Settings,
   MessageSquareIcon,
+  Loader2,
 } from "lucide-react";
 import { ThemeProvider } from "next-themes";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { ReactNode } from "react";
-import Script from "next/script";
-import { BASE_DOMAIN } from "@/utils/constants";
 import AppBar from "@/components/AppBar";
 import { cn } from "@/lib/utils";
+import ChatbotWidgetScript from "@/components/ChatbotWidgetScript";
+import { useChatbot } from "@/hooks/useChatbot";
 
 const ChatbotLayout = ({
   children,
@@ -33,34 +33,44 @@ const ChatbotLayout = ({
   noBottomPadding?: boolean;
 }) => {
   const [sidebarOpen, setSidebarOpen] = useAtom(sidebarOpenAtom);
-
+  const { isLoading, isError, error, data: chatbot } = useChatbot();
   return (
     <ThemeProvider enableSystem attribute="class">
-      <ChatbotProvider>
-        <DevWarningBar />
-        <div className="bg-card text-card-foreground fixed bottom-0 left-0 top-0 w-64 border-r max-lg:hidden">
-          <SideBar />
+      {isLoading ? (
+        <div className="flex min-h-screen flex-col items-center justify-center">
+          <Loader2 size={24} className="animate-spin" />
         </div>
-        <main
-          className={cn("flex min-h-screen flex-1 flex-col lg:ml-64", {
-            "pb-16": !noBottomPadding,
-          })}
-        >
-          <AppBar />
-
-          {children}
-        </main>
-        <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-          <SheetContent className="p-0" side="left">
+      ) : isError ? (
+        <div className="flex min-h-screen flex-col items-center justify-center">
+          <p>Error: {error.message}</p>
+        </div>
+      ) : !chatbot ? (
+        <div className="flex min-h-screen flex-col items-center justify-center">
+          <p>Chatbot not found!</p>
+        </div>
+      ) : (
+        <>
+          <DevWarningBar />
+          <div className="bg-card text-card-foreground fixed bottom-0 left-0 top-0 w-64 border-r max-lg:hidden">
             <SideBar />
-          </SheetContent>
-        </Sheet>
-      </ChatbotProvider>
+          </div>
+          <main
+            className={cn("flex min-h-screen flex-1 flex-col lg:ml-64", {
+              "pb-16": !noBottomPadding,
+            })}
+          >
+            <AppBar />
+            {children}
+          </main>
+          <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+            <SheetContent className="p-0" side="left">
+              <SideBar />
+            </SheetContent>
+          </Sheet>
+        </>
+      )}
 
-      <Script
-        strategy="lazyOnload"
-        src={`${BASE_DOMAIN}/api/widget/js?id=${process.env.NEXT_PUBLIC_CHATBOT_ID}`}
-      ></Script>
+      <ChatbotWidgetScript />
     </ThemeProvider>
   );
 };

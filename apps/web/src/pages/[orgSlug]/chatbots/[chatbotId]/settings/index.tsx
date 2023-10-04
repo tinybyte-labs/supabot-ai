@@ -16,10 +16,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
 import ChatbotSettingsLayout from "@/layouts/ChatbotSettingsLayout";
-import { useChatbot } from "@/providers/ChatbotProvider";
 import { NextPageWithLayout } from "@/types/next";
 import { updateChatbotValidator } from "@acme/core";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,6 +27,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { APP_NAME } from "@/utils/constants";
 import { trpc } from "@/utils/trpc";
+import { useChatbot } from "@/hooks/useChatbot";
 
 const ChatbotSettingsPage: NextPageWithLayout = () => {
   return (
@@ -46,11 +45,7 @@ ChatbotSettingsPage.getLayout = (page) => (
 export default ChatbotSettingsPage;
 
 const ChatbotIdCard = () => {
-  const { isLoaded, chatbot } = useChatbot();
-
-  if (!isLoaded) {
-    return <Skeleton className="h-64" />;
-  }
+  const { data: chatbot } = useChatbot();
 
   if (!chatbot) {
     return null;
@@ -72,13 +67,13 @@ const ChatbotIdCard = () => {
 };
 
 const UpdateNameFrom = () => {
-  const { isLoaded, chatbot } = useChatbot();
+  const { data: chatbot } = useChatbot();
 
   const form = useForm<z.infer<typeof updateChatbotValidator>>({
     resolver: zodResolver(updateChatbotValidator),
     values: {
-      name: chatbot?.name || "",
-      id: chatbot?.id || "",
+      name: "",
+      id: "",
     },
   });
 
@@ -97,19 +92,16 @@ const UpdateNameFrom = () => {
       });
     },
   });
+
   const handleSubmit = (data: z.infer<typeof updateChatbotValidator>) =>
     updateChatbot.mutate(data);
 
   useEffect(() => {
-    if (chatbot?.name) {
+    if (chatbot) {
       form.setValue("name", chatbot.name);
       form.setValue("id", chatbot.id);
     }
   }, [chatbot, form]);
-
-  if (!isLoaded) {
-    return <Skeleton className="h-64" />;
-  }
 
   if (!chatbot) {
     return null;

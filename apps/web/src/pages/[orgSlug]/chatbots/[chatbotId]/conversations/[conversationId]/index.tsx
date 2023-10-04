@@ -9,8 +9,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
 import { COUNTRIES } from "@/data/countries";
+import { useChatbot } from "@/hooks/useChatbot";
 import ConversationsLayout from "@/layouts/ConversationsLayout";
-import { useChatbot } from "@/providers/ChatbotProvider";
 import { NextPageWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
 import { getChatbotStyle, type ChatbotSettings, type IpInfo } from "@acme/core";
@@ -25,8 +25,7 @@ const ConversationPage: NextPageWithLayout = () => {
   const router = useRouter();
   const { resolvedTheme } = useTheme();
   const conversationId = router.query.conversationId as string;
-  const chatbotId = router.query.chatbotId as string;
-  const { chatbot } = useChatbot();
+  const { data: chatbot } = useChatbot();
   const { toast } = useToast();
   const chatbotSettings: ChatbotSettings = useMemo(
     () => ({ ...(chatbot?.settings as any) }),
@@ -42,13 +41,15 @@ const ConversationPage: NextPageWithLayout = () => {
   );
   const utils = trpc.useContext();
   const updateConversationMutation = trpc.conversation.update.useMutation({
-    onSuccess: () => {
+    onSuccess: (data, vars) => {
       toast({
         title: "Success",
         description: "Conversation status changed to closed",
       });
-      utils.conversation.list.invalidate({ chatbotId });
-      utils.conversation.getById.invalidate({ conversationId });
+      utils.conversation.list.invalidate({ chatbotId: data.chatbotId });
+      utils.conversation.getById.invalidate({
+        conversationId: vars.conversationId,
+      });
     },
     onError: (error) => {
       toast({

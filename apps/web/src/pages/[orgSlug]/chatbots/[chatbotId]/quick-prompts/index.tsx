@@ -16,7 +16,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
 import ChatbotLayout from "@/layouts/ChatbotLayout";
-import { useChatbot } from "@/providers/ChatbotProvider";
+import { useChatbot } from "@/hooks/useChatbot";
 import { NextPageWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
 import { QuickPrompt } from "@acme/db";
@@ -101,12 +101,12 @@ const columns: ColumnDef<QuickPrompt>[] = [
 
 const QuickPromptsPage: NextPageWithLayout = () => {
   const [Modal, { openModal }] = useModal(AddQuickPromptModal);
-  const { isLoaded, chatbot } = useChatbot();
-  const quickPromptsQuery = trpc.quickPrompt.list.useQuery(
-    { chatbotId: chatbot?.id || "" },
-    { enabled: isLoaded },
-  );
+  const { data: chatbot } = useChatbot();
   const { toast } = useToast();
+
+  const quickPromptsQuery = trpc.quickPrompt.list.useQuery({
+    chatbotId: chatbot?.id || "",
+  });
 
   const deleteMany = trpc.quickPrompt.deleteMany.useMutation({
     onSuccess: (data) => {

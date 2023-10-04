@@ -1,7 +1,5 @@
 import ChatbotSettingsLayout from "@/layouts/ChatbotSettingsLayout";
 import { NextPageWithLayout } from "@/types/next";
-import { useChatbot } from "@/providers/ChatbotProvider";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Card,
   CardDescription,
@@ -25,6 +23,8 @@ import { DialogFooter } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/router";
 import { trpc } from "@/utils/trpc";
+import { useChatbot } from "@/hooks/useChatbot";
+import { useOrganization } from "@/hooks/useOrganization";
 
 const ChatbotAdvancedSettingsPage: NextPageWithLayout = () => {
   return (
@@ -41,16 +41,15 @@ ChatbotAdvancedSettingsPage.getLayout = (page) => (
 export default ChatbotAdvancedSettingsPage;
 
 const DeleteChatbotCard = () => {
-  const { isLoaded, chatbot } = useChatbot();
-
+  const { data: chatbot } = useChatbot();
+  const { data: org } = useOrganization();
   const { toast } = useToast();
   const router = useRouter();
-  const { orgSlug } = router.query as { chatbotId: string; orgSlug: string };
 
   const deleteChatbot = trpc.chatbot.delete.useMutation({
     onSuccess: () => {
       toast({ title: "Chatbot deleted" });
-      router.push(`/${orgSlug}`);
+      router.push(`/${org?.slug}`);
     },
     onError: (error) => {
       toast({
@@ -61,12 +60,10 @@ const DeleteChatbotCard = () => {
     },
   });
 
-  if (!isLoaded) {
-    return <Skeleton className="h-32" />;
-  }
   if (!chatbot) {
     return null;
   }
+
   return (
     <Card className="border-destructive">
       <CardHeader>

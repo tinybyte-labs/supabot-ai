@@ -10,59 +10,47 @@ import { CreditCard, LayoutGrid, Loader2, Settings } from "lucide-react";
 import { ThemeProvider } from "next-themes";
 import Link from "next/link";
 import { ReactNode, useMemo } from "react";
-import Script from "next/script";
-import { BASE_DOMAIN } from "@/utils/constants";
 import AppBar from "@/components/AppBar";
 import { useRouter } from "next/router";
 import { useOrganization } from "@/hooks/useOrganization";
+import ChatbotWidgetScript from "@/components/ChatbotWidgetScript";
 
 const DashboardLayout = ({ children }: { children: ReactNode }) => {
   const [sidebarOpen, setSidebarOpen] = useAtom(sidebarOpenAtom);
   const { isLoading, isError, error, data: currentOrg } = useOrganization();
 
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center">
-        <Loader2 size={24} className="animate-spin" />
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center">
-        <p>Error: {error.message}</p>
-      </div>
-    );
-  }
-
-  if (!currentOrg) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center">
-        <p>Organization not found!</p>
-      </div>
-    );
-  }
-
   return (
     <ThemeProvider enableSystem attribute="class">
       <DevWarningBar />
-      <div className="bg-card text-card-foreground fixed bottom-0 left-0 top-0 w-64 border-r max-lg:hidden">
-        <SideBar />
-      </div>
-      <main className="min-h-screen flex-1 flex-col pb-16 lg:ml-64">
-        <AppBar />
-        {children}
-      </main>
-      <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-        <SheetContent className="p-0" side="left">
-          <SideBar />
-        </SheetContent>
-      </Sheet>
-      <Script
-        strategy="lazyOnload"
-        src={`${BASE_DOMAIN}/api/widget/js?id=${process.env.NEXT_PUBLIC_CHATBOT_ID}`}
-      ></Script>
+      {isLoading ? (
+        <div className="flex min-h-screen flex-col items-center justify-center">
+          <Loader2 size={24} className="animate-spin" />
+        </div>
+      ) : isError ? (
+        <div className="flex min-h-screen flex-col items-center justify-center">
+          <p>Error: {error.message}</p>
+        </div>
+      ) : !currentOrg ? (
+        <div className="flex min-h-screen flex-col items-center justify-center">
+          <p>Organization not found!</p>
+        </div>
+      ) : (
+        <>
+          <div className="bg-card text-card-foreground fixed bottom-0 left-0 top-0 w-64 border-r max-lg:hidden">
+            <SideBar />
+          </div>
+          <main className="min-h-screen flex-1 flex-col pb-16 lg:ml-64">
+            <AppBar />
+            {children}
+          </main>
+          <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+            <SheetContent className="p-0" side="left">
+              <SideBar />
+            </SheetContent>
+          </Sheet>
+        </>
+      )}
+      <ChatbotWidgetScript />
     </ThemeProvider>
   );
 };
