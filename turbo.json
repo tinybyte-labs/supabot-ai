@@ -4,7 +4,6 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^db:generate", "^db:deploy", "^build"],
-      "env": ["*", "DATABASE_URL"],
       "outputs": [".next/**", "!.next/cache/**"]
     },
     "lint": {},
