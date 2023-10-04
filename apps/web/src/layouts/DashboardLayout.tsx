@@ -6,50 +6,35 @@ import OrganizationSwitcher from "@/components/OrganizationSwitcher";
 import SideBarNav, { SideBarNavProps } from "@/components/SideBarNav";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { useAtom } from "jotai";
-import { CreditCard, LayoutGrid, Loader2, Settings } from "lucide-react";
+import { CreditCard, LayoutGrid, Settings } from "lucide-react";
 import { ThemeProvider } from "next-themes";
 import Link from "next/link";
 import { ReactNode, useMemo } from "react";
 import AppBar from "@/components/AppBar";
-import { useRouter } from "next/router";
-import { useOrganization } from "@/hooks/useOrganization";
 import ChatbotWidgetScript from "@/components/ChatbotWidgetScript";
+import OrgGuard from "@/components/OrgGuard";
+import { useRouter } from "next/router";
 
 const DashboardLayout = ({ children }: { children: ReactNode }) => {
   const [sidebarOpen, setSidebarOpen] = useAtom(sidebarOpenAtom);
-  const { isLoading, isError, error, data: currentOrg } = useOrganization();
 
   return (
     <ThemeProvider enableSystem attribute="class">
       <DevWarningBar />
-      {isLoading ? (
-        <div className="flex min-h-screen flex-col items-center justify-center">
-          <Loader2 size={24} className="animate-spin" />
+      <OrgGuard>
+        <div className="bg-card text-card-foreground fixed bottom-0 left-0 top-0 w-64 border-r max-lg:hidden">
+          <SideBar />
         </div>
-      ) : isError ? (
-        <div className="flex min-h-screen flex-col items-center justify-center">
-          <p>Error: {error.message}</p>
-        </div>
-      ) : !currentOrg ? (
-        <div className="flex min-h-screen flex-col items-center justify-center">
-          <p>Organization not found!</p>
-        </div>
-      ) : (
-        <>
-          <div className="bg-card text-card-foreground fixed bottom-0 left-0 top-0 w-64 border-r max-lg:hidden">
+        <main className="min-h-screen flex-1 flex-col pb-16 lg:ml-64">
+          <AppBar />
+          {children}
+        </main>
+        <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+          <SheetContent className="p-0" side="left">
             <SideBar />
-          </div>
-          <main className="min-h-screen flex-1 flex-col pb-16 lg:ml-64">
-            <AppBar />
-            {children}
-          </main>
-          <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-            <SheetContent className="p-0" side="left">
-              <SideBar />
-            </SheetContent>
-          </Sheet>
-        </>
-      )}
+          </SheetContent>
+        </Sheet>
+      </OrgGuard>
       <ChatbotWidgetScript />
     </ThemeProvider>
   );
@@ -59,37 +44,36 @@ export default DashboardLayout;
 
 const SideBar = () => {
   const router = useRouter();
-  const orgSlug = router.query.orgSlug as string;
   const list: SideBarNavProps["list"] = useMemo(
     () => [
       {
         items: [
           {
-            href: `/${orgSlug}`,
+            href: `/${router.query.orgSlug}`,
             label: "Chatbots",
             icon: <LayoutGrid size={20} />,
             end: true,
           },
           {
-            href: `/${orgSlug}/plan-billing`,
+            href: `/${router.query.orgSlug}/plan-billing`,
             label: "Plan & Billing",
             icon: <CreditCard size={20} />,
           },
           {
-            href: `/${orgSlug}/settings`,
+            href: `/${router.query.orgSlug}/settings`,
             label: "Settings",
             icon: <Settings size={20} />,
           },
         ],
       },
     ],
-    [orgSlug],
+    [router.query.orgSlug],
   );
 
   return (
     <aside className="flex h-full w-full flex-col">
       <header className="flex justify-start p-4">
-        <Link href={`/${orgSlug}`}>
+        <Link href={`/${router.query.orgSlug}`}>
           <Logo className="h-12 w-12" />
         </Link>
       </header>

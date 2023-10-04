@@ -10,14 +10,19 @@ import { Button } from "@/components/ui/button";
 import ErrorBox from "@/components/ErrorBox";
 import { Chatbot } from "@acme/db";
 import { trpc } from "@/utils/trpc";
-import { useRouter } from "next/router";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useModal } from "@/components/modals/useModal";
 import CreateChatbotModal from "@/components/modals/CreateChatbotModal";
+import { useOrganization } from "@/hooks/useOrganization";
 
-const ChatbotsGrid = ({ chatbots }: { chatbots: Chatbot[] }) => {
-  const router = useRouter();
-  const { orgSlug } = router.query as { orgSlug: string };
+const ChatbotsGrid = ({
+  chatbots,
+  onCreateChatbot,
+}: {
+  chatbots: Chatbot[];
+  onCreateChatbot: () => void;
+}) => {
+  const { data: org } = useOrganization();
   if (!chatbots.length) {
     return (
       <div className="mx-auto max-w-screen-sm text-center">
@@ -27,11 +32,9 @@ const ChatbotsGrid = ({ chatbots }: { chatbots: Chatbot[] }) => {
           your very first chatbot? Click the button below to embark on your
           chatbot creation journey! 🚀
         </p>
-        <Button asChild className="mt-6">
-          <Link href={`/${orgSlug}/chatbots/new`}>
-            <Plus size={20} className="-ml-1 mr-2" />
-            New Chatbot
-          </Link>
+        <Button className="mt-6" onClick={onCreateChatbot}>
+          <Plus size={20} className="-ml-1 mr-2" />
+          New Chatbot
         </Button>
       </div>
     );
@@ -42,7 +45,7 @@ const ChatbotsGrid = ({ chatbots }: { chatbots: Chatbot[] }) => {
       {chatbots.map((chatbot) => (
         <Link
           key={chatbot.id}
-          href={`/${orgSlug}/chatbots/${chatbot.id}`}
+          href={`/${org?.slug}/chatbots/${chatbot.id}`}
           className="bg-card text-card-foreground hover:border-foreground/20 flex flex-col gap-4 rounded-lg border p-4 shadow-sm transition-all hover:shadow-lg"
         >
           <div className="flex items-center gap-4">
@@ -83,11 +86,10 @@ const ChatbotsLoading = () => (
 );
 
 const ChatbotsPage: NextPageWithLayout = () => {
-  const router = useRouter();
-  const orgSlug = router.query.orgSlug as string;
+  const { data: org, isSuccess: isOrgLoaded } = useOrganization();
   const chatbotsQuery = trpc.chatbot.list.useQuery(
-    { orgSlug },
-    { enabled: router.isReady },
+    { orgSlug: org?.slug || "" },
+    { enabled: isOrgLoaded },
   );
   const [Modal, { openModal }] = useModal(CreateChatbotModal);
 
@@ -113,7 +115,10 @@ const ChatbotsPage: NextPageWithLayout = () => {
             className="col-span-full"
           />
         ) : (
-          <ChatbotsGrid chatbots={chatbotsQuery.data} />
+          <ChatbotsGrid
+            chatbots={chatbotsQuery.data}
+            onCreateChatbot={() => openModal()}
+          />
         )}
       </div>
     </>

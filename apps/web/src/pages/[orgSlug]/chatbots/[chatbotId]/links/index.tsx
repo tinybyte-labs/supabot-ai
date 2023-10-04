@@ -40,9 +40,12 @@ import { useMemo } from "react";
 
 const LinksPage: NextPageWithLayout = () => {
   const [Modal, { openModal }] = useModal(AddLinksModal);
-  const { data: chatbot } = useChatbot();
+  const { data: chatbot, isSuccess: isChatbotLoaded } = useChatbot();
 
-  const linksQuery = trpc.link.list.useQuery({ chatbotId: chatbot?.id || "" });
+  const linksQuery = trpc.link.list.useQuery(
+    { chatbotId: chatbot?.id || "" },
+    { enabled: isChatbotLoaded },
+  );
 
   const retrainMany = trpc.link.retrainMany.useMutation({
     onSuccess: (data) => {
@@ -99,13 +102,11 @@ const LinksPage: NextPageWithLayout = () => {
   const { toast } = useToast();
 
   const onRetrainMany = () => {
-    if (!chatbot) return;
     const links = table.getSelectedRowModel().rows;
     retrainMany.mutate({ ids: links.map((link) => link.original.id) });
   };
 
   const onDeleteMany = () => {
-    if (!chatbot) return;
     const links = table.getSelectedRowModel().rows;
     deleteMany.mutate({ ids: links.map((link) => link.original.id) });
   };

@@ -1,5 +1,5 @@
 import { AlertTriangle } from "lucide-react";
-import React from "react";
+import React, { ReactNode } from "react";
 import { Button, ButtonLoader } from "./ui/button";
 import { cn } from "@/lib/utils";
 
@@ -9,6 +9,7 @@ export type ErrorBoxProps = {
   onRetry?: () => void;
   isRefetching?: boolean;
   className?: string;
+  children?: ReactNode;
 };
 const ErrorBox = ({
   title = "Error",
@@ -16,6 +17,7 @@ const ErrorBox = ({
   onRetry,
   isRefetching,
   className,
+  children,
 }: ErrorBoxProps) => (
   <div
     className={cn(
@@ -25,18 +27,10 @@ const ErrorBox = ({
   >
     <AlertTriangle size={48} />
     <p className="mt-6 text-lg font-semibold">{title}</p>
-    <p className="mt-1 text-sm text-muted-foreground">{description}</p>
-    {!!onRetry && (
-      <Button
-        variant="outline"
-        disabled={isRefetching}
-        onClick={onRetry}
-        className="mt-6"
-      >
-        {isRefetching && <ButtonLoader />}
-        Retry
-      </Button>
-    )}
+    <p className="text-muted-foreground mt-1 text-sm">{description}</p>
+    <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+      {children}
+    </div>
   </div>
 );
 

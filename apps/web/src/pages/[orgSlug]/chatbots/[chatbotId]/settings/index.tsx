@@ -28,6 +28,7 @@ import { z } from "zod";
 import { APP_NAME } from "@/utils/constants";
 import { trpc } from "@/utils/trpc";
 import { useChatbot } from "@/hooks/useChatbot";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const ChatbotSettingsPage: NextPageWithLayout = () => {
   return (
@@ -45,10 +46,10 @@ ChatbotSettingsPage.getLayout = (page) => (
 export default ChatbotSettingsPage;
 
 const ChatbotIdCard = () => {
-  const { data: chatbot } = useChatbot();
+  const { data: chatbot, isSuccess: isChatbotLoaded } = useChatbot();
 
-  if (!chatbot) {
-    return null;
+  if (!isChatbotLoaded) {
+    return <Skeleton className="h-64" />;
   }
 
   return (
@@ -67,7 +68,7 @@ const ChatbotIdCard = () => {
 };
 
 const UpdateNameFrom = () => {
-  const { data: chatbot } = useChatbot();
+  const { data: chatbot, isSuccess: isChatbotLoaded } = useChatbot();
 
   const form = useForm<z.infer<typeof updateChatbotValidator>>({
     resolver: zodResolver(updateChatbotValidator),
@@ -103,8 +104,8 @@ const UpdateNameFrom = () => {
     }
   }, [chatbot, form]);
 
-  if (!chatbot) {
-    return null;
+  if (!isChatbotLoaded) {
+    return <Skeleton className="h-64" />;
   }
 
   return (

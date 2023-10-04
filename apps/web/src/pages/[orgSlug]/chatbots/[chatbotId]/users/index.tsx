@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
+import { useChatbot } from "@/hooks/useChatbot";
 import ChatbotLayout from "@/layouts/ChatbotLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
@@ -21,7 +22,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { Loader2, MoreHorizontal, RefreshCw } from "lucide-react";
-import { useRouter } from "next/router";
 import { useMemo } from "react";
 
 type Data = ChatbotUser & { _count: { conversations: number } };
@@ -126,13 +126,10 @@ const ActionButton = ({ data }: { data: Data }) => {
 };
 
 const ChatbotUsersPage: NextPageWithLayout = () => {
-  const router = useRouter();
-  const chatbotId = router.query.chatbotId as string;
+  const { data: chatbot, isSuccess: isChatbotLoaded } = useChatbot();
   const chatbotUsersQuery = trpc.chatbotUser.list.useQuery(
-    {
-      chatbotId: chatbotId,
-    },
-    { enabled: router.isReady },
+    { chatbotId: chatbot?.id || "" },
+    { enabled: isChatbotLoaded },
   );
 
   const data = useMemo(

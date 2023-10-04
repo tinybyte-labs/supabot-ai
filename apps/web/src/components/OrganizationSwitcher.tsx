@@ -21,15 +21,18 @@ import { useState } from "react";
 import PlanBadge from "./PlanBadge";
 import { trpc } from "@/utils/trpc";
 import { usePlan } from "@/hooks/usePlan";
+import { Skeleton } from "./ui/skeleton";
 
 const OrganizationSwitcher = ({ className }: { className?: string }) => {
-  const { data: currentOrg } = useOrganization();
+  const { data: currentOrg, isSuccess: isOrgLoaded } = useOrganization();
   const plan = usePlan();
   const orgListQuery = trpc.organization.getAll.useQuery();
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
-  if (!currentOrg) return null;
+  if (!isOrgLoaded) {
+    return <Skeleton className={cn("h-10 min-w-[180px]", className)} />;
+  }
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

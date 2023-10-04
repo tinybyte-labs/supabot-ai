@@ -2,6 +2,8 @@ import DashboardPageHeader from "@/components/DashboardPageHeader";
 import QuickInstallationCard from "@/components/QuickInstallationCard";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useChatbot } from "@/hooks/useChatbot";
+import { useOrganization } from "@/hooks/useOrganization";
 import ChatbotLayout from "@/layouts/ChatbotLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
@@ -20,19 +22,14 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 
 const ChatbotOverviewPage: NextPageWithLayout = () => {
-  const router = useRouter();
-  const { chatbotId, orgSlug } = router.query as {
-    chatbotId: string;
-    orgSlug: string;
-  };
+  const { data: org, isSuccess: isOrgLoaded } = useOrganization();
+  const { data: chatbot, isSuccess: isChatbotLoaded } = useChatbot();
   const statusQuery = trpc.chatbot.stats.useQuery(
-    { chatbotId },
-    {
-      enabled: router.isReady,
-    },
+    { chatbotId: chatbot?.id || "" },
+    { enabled: isChatbotLoaded },
   );
 
-  if (statusQuery.isLoading) {
+  if (!isOrgLoaded || !isChatbotLoaded || statusQuery.isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Loader2 size={24} className="animate-spin" />
@@ -52,7 +49,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
     <>
       <DashboardPageHeader title="Overview">
         <Button variant="outline" asChild>
-          <Link href={`/demo/c/${chatbotId}`} target="_blank">
+          <Link href={`/demo/c/${chatbot.id}`} target="_blank">
             Demo
             <ExternalLink size={18} className="-mr-1 ml-2" />
           </Link>
@@ -70,7 +67,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
                 {statusQuery.data.linksCount.toLocaleString()}
               </div>
               <Link
-                href={`/${orgSlug}/chatbots/${chatbotId}/links`}
+                href={`/${org.slug}/chatbots/${chatbot.id}/links`}
                 className="text-muted-foreground hover:text-accent-foreground mt-2 inline-flex items-center text-sm underline-offset-4 hover:underline"
               >
                 All Links
@@ -91,7 +88,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
                 {statusQuery.data.quickPromptCount.toLocaleString()}
               </div>
               <Link
-                href={`/${orgSlug}/chatbots/${chatbotId}/quick-prompts`}
+                href={`/${org.slug}/chatbots/${chatbot.id}/quick-prompts`}
                 className="text-muted-foreground hover:text-accent-foreground mt-2 inline-flex items-center text-sm underline-offset-4 hover:underline"
               >
                 All Quick Prompts
@@ -110,7 +107,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
                 {statusQuery.data.userCount.toLocaleString()}
               </div>
               <Link
-                href={`/${orgSlug}/chatbots/${chatbotId}/users`}
+                href={`/${org.slug}/chatbots/${chatbot.id}/users`}
                 className="text-muted-foreground hover:text-accent-foreground mt-2 inline-flex items-center text-sm underline-offset-4 hover:underline"
               >
                 All Users
@@ -131,7 +128,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
                 {statusQuery.data.conversationCount.toLocaleString()}
               </div>
               <Link
-                href={`/${orgSlug}/chatbots/${chatbotId}/conversations`}
+                href={`/${org.slug}/chatbots/${chatbot.id}/conversations`}
                 className="text-muted-foreground hover:text-accent-foreground mt-2 inline-flex items-center text-sm underline-offset-4 hover:underline"
               >
                 All Conversations
@@ -166,7 +163,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
             </CardContent>
           </Card>
         </div>
-        <QuickInstallationCard chatbotId={chatbotId} />
+        <QuickInstallationCard chatbotId={chatbot.id} />
       </div>
     </>
   );

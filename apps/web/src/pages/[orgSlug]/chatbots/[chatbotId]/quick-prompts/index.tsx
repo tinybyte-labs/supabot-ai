@@ -1,5 +1,5 @@
 import DashboardPageHeader from "@/components/DashboardPageHeader";
-import AddQuickPromptModal from "@/components/modals/AddQuickPrompt";
+import AddQuickPromptModal from "@/components/modals/AddQuickPromptModal";
 import UpdateQuickPromptModal from "@/components/modals/UpdateQuickPromptModal";
 import { useModal } from "@/components/modals/useModal";
 import { DataTable } from "@/components/tables/DataTable";
@@ -101,12 +101,13 @@ const columns: ColumnDef<QuickPrompt>[] = [
 
 const QuickPromptsPage: NextPageWithLayout = () => {
   const [Modal, { openModal }] = useModal(AddQuickPromptModal);
-  const { data: chatbot } = useChatbot();
+  const { data: chatbot, isSuccess: isChatbotLoaded } = useChatbot();
   const { toast } = useToast();
 
-  const quickPromptsQuery = trpc.quickPrompt.list.useQuery({
-    chatbotId: chatbot?.id || "",
-  });
+  const quickPromptsQuery = trpc.quickPrompt.list.useQuery(
+    { chatbotId: chatbot?.id || "" },
+    { enabled: isChatbotLoaded },
+  );
 
   const deleteMany = trpc.quickPrompt.deleteMany.useMutation({
     onSuccess: (data) => {
@@ -144,12 +145,11 @@ const QuickPromptsPage: NextPageWithLayout = () => {
   });
 
   const onDeleteMany = useCallback(() => {
-    if (!chatbot) return;
     const selectedQuickPrompts = table.getSelectedRowModel().rows;
     deleteMany.mutate({
       ids: selectedQuickPrompts.map((prompt) => prompt.original.id),
     });
-  }, [chatbot, deleteMany, table]);
+  }, [deleteMany, table]);
 
   return (
     <>

@@ -25,10 +25,11 @@ import { useEffect } from "react";
 import { trpc } from "@/utils/trpc";
 import { useRouter } from "next/router";
 import { Loader2 } from "lucide-react";
+import { useOrganization } from "@/hooks/useOrganization";
 
 const CreateChatbotModal: ModalFn = ({ onOpenChange, open }) => {
   const router = useRouter();
-  const orgSlug = router.query.orgSlug as string;
+  const { isSuccess: isOrgLoaded, data: currentOrg } = useOrganization();
   const form = useForm<CreateChatbotDto>({
     resolver: zodResolver(createChatbotValidator),
     defaultValues: {
@@ -41,10 +42,10 @@ const CreateChatbotModal: ModalFn = ({ onOpenChange, open }) => {
   const utils = trpc.useContext();
 
   const createChatbot = trpc.chatbot.create.useMutation({
-    onSuccess: (data) => {
+    onSuccess: (data, vars) => {
       toast({ title: "Chatbot created" });
-      utils.chatbot.list.invalidate({ orgSlug });
-      router.push(`/${orgSlug}/chatbots/${data.id}`);
+      utils.chatbot.list.invalidate({ orgSlug: vars.orgSlug });
+      router.push(`/${vars.orgSlug}/chatbots/${data.id}`);
     },
     onError: (error) => {
       toast({
@@ -57,10 +58,10 @@ const CreateChatbotModal: ModalFn = ({ onOpenChange, open }) => {
   const onSubmit = async (data: CreateChatbotDto) => createChatbot.mutate(data);
 
   useEffect(() => {
-    if (orgSlug) {
-      form.setValue("orgSlug", orgSlug);
+    if (isOrgLoaded) {
+      form.setValue("orgSlug", currentOrg.slug);
     }
-  }, [form, orgSlug]);
+  }, [currentOrg, form, isOrgLoaded]);
 
   return (
     <Dialog

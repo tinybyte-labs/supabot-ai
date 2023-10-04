@@ -37,7 +37,7 @@ import { trpc } from "@/utils/trpc";
 import { useChatbot } from "@/hooks/useChatbot";
 
 const AddLinksModal: ModalFn = ({ onOpenChange, open }) => {
-  const { data: chatbot } = useChatbot();
+  const { data: chatbot, isSuccess: isChatbotLoaded } = useChatbot();
   const { toast } = useToast();
   const utils = trpc.useContext();
 
@@ -56,8 +56,6 @@ const AddLinksModal: ModalFn = ({ onOpenChange, open }) => {
     },
   });
 
-  if (!chatbot) return null;
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="flex max-w-xl flex-col overflow-hidden">
@@ -73,6 +71,7 @@ const AddLinksModal: ModalFn = ({ onOpenChange, open }) => {
           <TabsContent value="url">
             <LinksFromUrl
               onAddUrls={(urls) => {
+                if (!isChatbotLoaded) return;
                 addLinks.mutate({ chatbotId: chatbot.id, urls });
               }}
               isAdding={addLinks.isLoading}
@@ -81,6 +80,7 @@ const AddLinksModal: ModalFn = ({ onOpenChange, open }) => {
           <TabsContent value="website">
             <LinksFromWebsite
               onAddUrls={(urls) => {
+                if (!isChatbotLoaded) return;
                 addLinks.mutate({ chatbotId: chatbot.id, urls });
               }}
               isAdding={addLinks.isLoading}
@@ -89,6 +89,7 @@ const AddLinksModal: ModalFn = ({ onOpenChange, open }) => {
           <TabsContent value="sitemap">
             <LinksFromSitemap
               onAddUrls={(urls) => {
+                if (!isChatbotLoaded) return;
                 addLinks.mutate({ chatbotId: chatbot.id, urls });
               }}
               isAdding={addLinks.isLoading}

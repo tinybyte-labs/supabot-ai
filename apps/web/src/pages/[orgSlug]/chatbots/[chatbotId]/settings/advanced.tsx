@@ -24,7 +24,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/router";
 import { trpc } from "@/utils/trpc";
 import { useChatbot } from "@/hooks/useChatbot";
-import { useOrganization } from "@/hooks/useOrganization";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const ChatbotAdvancedSettingsPage: NextPageWithLayout = () => {
   return (
@@ -41,15 +41,14 @@ ChatbotAdvancedSettingsPage.getLayout = (page) => (
 export default ChatbotAdvancedSettingsPage;
 
 const DeleteChatbotCard = () => {
-  const { data: chatbot } = useChatbot();
-  const { data: org } = useOrganization();
+  const { data: chatbot, isSuccess: isChatbotLoaded } = useChatbot();
   const { toast } = useToast();
   const router = useRouter();
 
   const deleteChatbot = trpc.chatbot.delete.useMutation({
     onSuccess: () => {
       toast({ title: "Chatbot deleted" });
-      router.push(`/${org?.slug}`);
+      router.push(`/${router.query.orgSlug}`);
     },
     onError: (error) => {
       toast({
@@ -60,8 +59,8 @@ const DeleteChatbotCard = () => {
     },
   });
 
-  if (!chatbot) {
-    return null;
+  if (!isChatbotLoaded) {
+    return <Skeleton className="h-32" />;
   }
 
   return (

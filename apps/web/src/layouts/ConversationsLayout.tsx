@@ -21,18 +21,17 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { trpc } from "@/utils/trpc";
+import { useOrganization } from "@/hooks/useOrganization";
+import { useChatbot } from "@/hooks/useChatbot";
 
 const ConversationsLayout = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
-  const { orgSlug, chatbotId } = router.query as {
-    chatbotId: string;
-    orgSlug: string;
-  };
-  const conversationId = router.query.conversationId as string;
+  const { data: chatbot, isSuccess: isChatbotLoaded } = useChatbot();
+  const { conversationId } = router.query as { conversationId: string };
   const [statusFilter, setStatusFilter] = useState("ALL");
   const conversationsQuery = trpc.conversation.list.useQuery(
     {
-      chatbotId: chatbotId,
+      chatbotId: chatbot?.id || "",
       status:
         statusFilter === "OPEN"
           ? "OPEN"
@@ -40,27 +39,24 @@ const ConversationsLayout = ({ children }: { children: ReactNode }) => {
           ? "CLOSED"
           : undefined,
     },
-    { enabled: router.isReady },
+    { enabled: isChatbotLoaded },
   );
 
   useEffect(() => {
     if (
+      !conversationId &&
       conversationsQuery.isSuccess &&
-      conversationsQuery.data.length > 0 &&
-      router.isReady &&
-      !conversationId
+      conversationsQuery.data.length > 0
     ) {
       router.replace(
-        `/${orgSlug}/chatbots/${chatbotId}/conversations/${conversationsQuery.data[0].id}`,
+        `/${router.query.orgSlug}/chatbots/${router.query.chatbotId}/conversations/${conversationsQuery.data[0].id}`,
       );
     }
   }, [
-    chatbotId,
     conversationId,
     conversationsQuery.data,
     conversationsQuery.isSuccess,
     router,
-    orgSlug,
   ]);
 
   return (
@@ -152,7 +148,7 @@ const ConversationsLayout = ({ children }: { children: ReactNode }) => {
                       items: conversationsQuery.data.map((conversation) => {
                         let lastMessage = conversation.messages[0];
                         return {
-                          href: `/${orgSlug}/chatbots/${chatbotId}/conversations/${conversation.id}`,
+                          href: `/${router.query.orgSlug}/chatbots/${router.query.chatbotId}/conversations/${conversation.id}`,
                           label:
                             conversation.title ||
                             (lastMessage

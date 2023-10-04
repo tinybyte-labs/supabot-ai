@@ -30,7 +30,7 @@ import { trpc } from "@/utils/trpc";
 import { useChatbot } from "@/hooks/useChatbot";
 
 const AddQuickPromptModal: ModalFn = ({ onOpenChange, open }) => {
-  const { data: chatbot } = useChatbot();
+  const { data: chatbot, isSuccess: isChatbotLoaded } = useChatbot();
   const form = useForm<CreateQuickPromptDto>({
     resolver: zodResolver(createQuickPromptValidator),
     defaultValues: {
@@ -68,10 +68,6 @@ const AddQuickPromptModal: ModalFn = ({ onOpenChange, open }) => {
     }
   }, [chatbot, form]);
 
-  if (!chatbot) {
-    return null;
-  }
-
   return (
     <Dialog
       open={open}
@@ -91,13 +87,6 @@ const AddQuickPromptModal: ModalFn = ({ onOpenChange, open }) => {
             className="grid gap-6"
             onSubmit={form.handleSubmit(handleSubmit)}
           >
-            <input
-              type="text"
-              {...form.register("chatbotId")}
-              readOnly
-              hidden
-            />
-
             <FormField
               control={form.control}
               name="title"

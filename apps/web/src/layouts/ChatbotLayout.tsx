@@ -14,16 +14,16 @@ import {
   Palette,
   Settings,
   MessageSquareIcon,
-  Loader2,
 } from "lucide-react";
 import { ThemeProvider } from "next-themes";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { ReactNode } from "react";
 import AppBar from "@/components/AppBar";
 import { cn } from "@/lib/utils";
 import ChatbotWidgetScript from "@/components/ChatbotWidgetScript";
-import { useChatbot } from "@/hooks/useChatbot";
+import { useRouter } from "next/router";
+import OrgGuard from "@/components/OrgGuard";
+import ChatbotGuard from "@/components/ChatbotGuard";
 
 const ChatbotLayout = ({
   children,
@@ -33,23 +33,10 @@ const ChatbotLayout = ({
   noBottomPadding?: boolean;
 }) => {
   const [sidebarOpen, setSidebarOpen] = useAtom(sidebarOpenAtom);
-  const { isLoading, isError, error, data: chatbot } = useChatbot();
   return (
     <ThemeProvider enableSystem attribute="class">
-      {isLoading ? (
-        <div className="flex min-h-screen flex-col items-center justify-center">
-          <Loader2 size={24} className="animate-spin" />
-        </div>
-      ) : isError ? (
-        <div className="flex min-h-screen flex-col items-center justify-center">
-          <p>Error: {error.message}</p>
-        </div>
-      ) : !chatbot ? (
-        <div className="flex min-h-screen flex-col items-center justify-center">
-          <p>Chatbot not found!</p>
-        </div>
-      ) : (
-        <>
+      <OrgGuard>
+        <ChatbotGuard>
           <DevWarningBar />
           <div className="bg-card text-card-foreground fixed bottom-0 left-0 top-0 w-64 border-r max-lg:hidden">
             <SideBar />
@@ -67,9 +54,8 @@ const ChatbotLayout = ({
               <SideBar />
             </SheetContent>
           </Sheet>
-        </>
-      )}
-
+        </ChatbotGuard>
+      </OrgGuard>
       <ChatbotWidgetScript />
     </ThemeProvider>
   );
@@ -79,27 +65,23 @@ export default ChatbotLayout;
 
 const SideBar = () => {
   const router = useRouter();
-  const { chatbotId, orgSlug } = router.query as {
-    chatbotId: string;
-    orgSlug: string;
-  };
 
   const list: SideBarNavProps["list"] = [
     {
       items: [
         {
-          href: `/${orgSlug}/chatbots/${chatbotId}`,
+          href: `/${router.query.orgSlug}/chatbots/${router.query.chatbotId}`,
           label: "Overview",
           icon: <LayoutGrid size={20} />,
           end: true,
         },
         {
-          href: `/${orgSlug}/chatbots/${chatbotId}/users`,
+          href: `/${router.query.orgSlug}/chatbots/${router.query.chatbotId}/users`,
           label: "Users",
           icon: <Users size={20} />,
         },
         {
-          href: `/${orgSlug}/chatbots/${chatbotId}/conversations`,
+          href: `/${router.query.orgSlug}/chatbots/${router.query.chatbotId}/conversations`,
           label: "Conversations",
           icon: <MessagesSquare size={20} />,
         },
@@ -109,12 +91,12 @@ const SideBar = () => {
       title: "CONTENT",
       items: [
         {
-          href: `/${orgSlug}/chatbots/${chatbotId}/links`,
+          href: `/${router.query.orgSlug}/chatbots/${router.query.chatbotId}/links`,
           label: "Links",
           icon: <LinkIcon size={20} />,
         },
         {
-          href: `/${orgSlug}/chatbots/${chatbotId}/quick-prompts`,
+          href: `/${router.query.orgSlug}/chatbots/${router.query.chatbotId}/quick-prompts`,
           label: "Quick Prompts",
           icon: <MessageSquareIcon size={20} />,
         },
@@ -124,12 +106,12 @@ const SideBar = () => {
       title: "CONFIGURE",
       items: [
         {
-          href: `/${orgSlug}/chatbots/${chatbotId}/customization`,
+          href: `/${router.query.orgSlug}/chatbots/${router.query.chatbotId}/customization`,
           label: "Customization",
           icon: <Palette size={20} />,
         },
         {
-          href: `/${orgSlug}/chatbots/${chatbotId}/settings`,
+          href: `/${router.query.orgSlug}/chatbots/${router.query.chatbotId}/settings`,
           label: "Settings",
           icon: <Settings size={20} />,
         },
@@ -140,7 +122,7 @@ const SideBar = () => {
   return (
     <aside className="flex h-full w-full flex-col">
       <header className="flex justify-start p-4">
-        <Link href={`/${orgSlug}`}>
+        <Link href={`/${router.query.orgSlug}`}>
           <Logo className="h-12 w-12" />
         </Link>
       </header>

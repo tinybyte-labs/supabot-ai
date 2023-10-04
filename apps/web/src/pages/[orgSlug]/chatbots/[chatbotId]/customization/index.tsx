@@ -23,7 +23,7 @@ import {
 } from "@acme/core";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Chatbot } from "@acme/db";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import {
@@ -38,10 +38,14 @@ import { trpc } from "@/utils/trpc";
 import { useChatbot } from "@/hooks/useChatbot";
 
 const ChatbotCustomizationPage: NextPageWithLayout = () => {
-  const { data: chatbot } = useChatbot();
+  const { data: chatbot, isSuccess: isChatbotLoaded } = useChatbot();
 
-  if (!chatbot) {
-    return null;
+  if (!isChatbotLoaded) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center">
+        <Loader2 size={24} className="animate-spin" />
+      </div>
+    );
   }
 
   return (
