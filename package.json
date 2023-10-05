@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev",
+    "dev": "turbo run dev --concurrency=11",
     "lint": "turbo run lint",
     "db:generate": "turbo run db:generate",
     "db:deploy": "turbo run db:deploy",
@@ -12,10 +12,12 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "prepare": "husky install",
     "db:up": "docker compose --profile dev up -d",
-    "db:down": "docker compose --profile dev down -v"
+    "db:down": "docker compose --profile dev down -v",
+    "stripe:listen": "stripe listen --forward-to localhost:3000/api/webhook/stripe"
   },
   "devDependencies": {
     "@acme/tsconfig": "workspace:*",
+    "concurrently": "^8.2.1",
     "eslint": "8.47.0",
     "husky": "^8.0.0",
     "prettier": "^3.0.3",

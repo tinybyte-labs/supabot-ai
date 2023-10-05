@@ -15,6 +15,9 @@ importers:
       '@acme/tsconfig':
         specifier: workspace:*
         version: link:packages/tsconfig
+      concurrently:
+        specifier: ^8.2.1
+        version: 8.2.1
       eslint:
         specifier: 8.47.0
         version: 8.47.0
@@ -269,9 +272,6 @@ importers:
       '@types/react-dom':
         specifier: 18.2.7
         version: 18.2.7
-      concurrently:
-        specifier: ^8.2.1
-        version: 8.2.1
       eslint:
         specifier: 8.47.0
         version: 8.47.0

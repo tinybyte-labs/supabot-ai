@@ -8,20 +8,16 @@
     },
     "lint": {},
     "dev": {
-      "dependsOn": ["^db:generate"],
       "cache": false,
       "persistent": true
     },
     "db:generate": {
-      "env": ["DATABASE_URL"],
       "cache": false
     },
     "db:deploy": {
-      "env": ["DATABASE_URL"],
       "cache": false
     },
     "db:studio": {
-      "env": ["DATABASE_URL"],
       "cache": false
     }
   }
