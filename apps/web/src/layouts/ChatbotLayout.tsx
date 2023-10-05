@@ -37,7 +37,6 @@ const ChatbotLayout = ({
     <ThemeProvider enableSystem attribute="class">
       <OrgGuard>
         <ChatbotGuard>
-          <DevWarningBar />
           <div className="bg-card text-card-foreground fixed bottom-0 left-0 top-0 w-64 border-r max-lg:hidden">
             <SideBar />
           </div>
@@ -46,6 +45,7 @@ const ChatbotLayout = ({
               "pb-16": !noBottomPadding,
             })}
           >
+            <DevWarningBar />
             <AppBar />
             {children}
           </main>
