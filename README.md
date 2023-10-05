@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-    <a href="https://supabotai.com">Website</a>
+    <a href="https://supabotai.com/home">Website</a>
     ·
     <a href="https://supabotai.com/issues">Issues</a>
     ·
@@ -15,14 +15,6 @@
     ·
     <a href="https://supabotai.com/twitter">Twitter</a>
 </p>
-
-## Table of Content
-
-- [Table of Content](#table-of-content)
-- [Introduction](#introduction)
-- [Tech Stack](#tech-stack)
-- [Local Development](#local-development)
-- [LICENSE](#license)
 
 ## Introduction
 
@@ -39,7 +31,7 @@ Welcome to SupaBot AI, an open-source chatbot service powered by ChatGPT, design
 - [Turborepo](https://turbo.build) - Monorepo
 - [Upstash](https://upstash.com) - Redis, QStash
 - [Prisma](https://prisma.com) - ORM
-- [Clerk](https://clerk.com) - Auth
+- [NextAuth.js](https://next-auth.js.org/) - Auth
 - [tRPC](https://trpc.io/) - typesafe API
 - [Resend](https://resend.com) - Email
 - [React Email](https://react.email) - Email with JSX
