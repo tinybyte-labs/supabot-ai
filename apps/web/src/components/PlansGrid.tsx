@@ -4,7 +4,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
 import { Check, HelpCircle, Loader2 } from "lucide-react";
 import { Switch } from "./ui/switch";
 import { useState } from "react";
@@ -144,96 +143,102 @@ const PlansGrid = ({
         />
         <p className="text-muted-foreground">Billed Annually</p>
       </div>
-      <div className="grid grid-cols-1 gap-8 pt-4 lg:grid-cols-2 xl:grid-cols-4 xl:gap-4">
-        {pricingItems.map((item) => {
-          const popular = item.id === "business";
-          const plan = plans.find((plan) => plan.id === item.id);
-          if (!plan) {
-            return null;
-          }
-          const price = plan.price[interval];
-          const isCurrentPlan = price.priceId === currentPriceId;
-          return (
-            <div key={item.id} className="relative">
-              {popular && (
-                <div className="absolute inset-0 -z-10 translate-y-10 bg-foreground/5 blur-3xl"></div>
-              )}
+      <div className="relative z-10">
+        <div className="absolute -left-10 -top-10 -z-10 h-[500px] w-[500px] rotate-45 rounded-[100px] bg-indigo-500/40 blur-[160px]"></div>
+        <div className="absolute -right-0 top-10 -z-10 h-[500px] w-[500px] scale-x-125 rounded-[100px] bg-pink-500/40 blur-[180px]"></div>
 
+        <div className="mt-16 grid grid-cols-1 rounded-2xl max-xl:gap-6 lg:grid-cols-2 xl:grid-cols-4">
+          {pricingItems.map((item) => {
+            const popular = item.id === "business";
+            const plan = plans.find((plan) => plan.id === item.id);
+            if (!plan) {
+              return null;
+            }
+            const price = plan.price[interval];
+            const isCurrentPlan = price.priceId === currentPriceId;
+            return (
               <div
-                className={cn(
-                  "relative flex h-full flex-1 flex-col rounded-2xl border bg-card text-card-foreground",
-                  {
-                    "border-primary": popular,
-                  },
-                )}
+                key={item.id}
+                className="bg-background/50 relative border-y border-white/20 first:rounded-l-2xl first:border-l last:rounded-r-2xl last:border-r max-xl:rounded-2xl max-xl:border"
               >
                 {popular && (
-                  <div className="absolute left-1/2 top-0 flex h-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground">
+                  <div className="absolute -top-4 left-1/2 flex h-8 -translate-x-1/2 items-center justify-center rounded-full bg-indigo-500 px-4 text-sm font-medium text-white">
                     Most Popular
                   </div>
                 )}
-                <div className="flex flex-col items-center gap-3 border-b p-4 pt-8 text-center">
-                  <h3 className="text-2xl font-semibold">{item.name}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {item.description}
-                  </p>
-                  <p className="text-6xl font-semibold">
-                    {(interval === "monthly" ? price.amount : price.amount / 12)
-                      .toFixed(1)
-                      .replace(rx, "$1")}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    per month, billed {interval}
-                  </p>
-                </div>
-                <div className="flex flex-1 flex-col gap-4 p-4">
-                  {item.features.map((feature, i) => {
-                    return (
-                      <div key={i}>
-                        <Check size={20} className="mr-4 inline text-primary" />
-                        <p className="inline text-sm">
-                          {feature.text}
-                          {!!feature.explaination && (
-                            <Tooltip delayDuration={100}>
-                              <TooltipTrigger>
-                                <HelpCircle
-                                  size={20}
-                                  className="ml-2 inline text-muted-foreground"
-                                />
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                {feature.explaination}
-                              </TooltipContent>
-                            </Tooltip>
-                          )}
-                        </p>
-                      </div>
-                    );
-                  })}
-                </div>
-                <div className="border-t p-4">
-                  <Button
-                    variant={popular ? "default" : "secondary"}
-                    className="flex w-full rounded-full"
-                    size="lg"
-                    disabled={isCurrentPlan || loading}
-                    onClick={() => onPlanClick?.(price.priceId)}
-                  >
-                    {loading ? (
-                      <Loader2 size={20} className="animate-spin" />
-                    ) : isCurrentPlan ? (
-                      "Current Plan"
-                    ) : buttonLabel ? (
-                      buttonLabel(plan)
-                    ) : (
-                      "Get Started"
-                    )}
-                  </Button>
+                <div className="relative flex h-full flex-1 flex-col">
+                  <div className="flex flex-col items-center gap-3 p-6 pt-12 text-center">
+                    <h3 className="text-2xl font-semibold">{item.name}</h3>
+                    <p className="text-muted-foreground text-sm">
+                      {item.description}
+                    </p>
+                    <p className="text-6xl font-semibold">
+                      {(interval === "monthly"
+                        ? price.amount
+                        : price.amount / 12
+                      )
+                        .toFixed(1)
+                        .replace(rx, "$1")}
+                    </p>
+                    <p className="text-muted-foreground text-sm">
+                      per month, billed {interval}
+                    </p>
+                  </div>
+                  <div className="px-6">
+                    <div className="h-px w-full bg-white/20"></div>
+                  </div>
+                  <div className="flex flex-1 flex-col gap-4 p-6">
+                    {item.features.map((feature, i) => {
+                      return (
+                        <div key={i}>
+                          <Check
+                            size={20}
+                            className="text-primary mr-4 inline"
+                          />
+                          <p className="inline text-sm">
+                            {feature.text}
+                            {!!feature.explaination && (
+                              <Tooltip delayDuration={100}>
+                                <TooltipTrigger>
+                                  <HelpCircle
+                                    size={20}
+                                    className="text-muted-foreground ml-2 inline"
+                                  />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  {feature.explaination}
+                                </TooltipContent>
+                              </Tooltip>
+                            )}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="p-6">
+                    <Button
+                      variant={popular ? "primary" : "default"}
+                      className="flex w-full rounded-full"
+                      size="lg"
+                      disabled={isCurrentPlan || loading}
+                      onClick={() => onPlanClick?.(price.priceId)}
+                    >
+                      {loading ? (
+                        <Loader2 size={20} className="animate-spin" />
+                      ) : isCurrentPlan ? (
+                        "Current Plan"
+                      ) : buttonLabel ? (
+                        buttonLabel(plan)
+                      ) : (
+                        "Get Started"
+                      )}
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </div>
   );

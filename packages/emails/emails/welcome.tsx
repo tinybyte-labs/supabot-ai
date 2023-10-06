@@ -27,7 +27,7 @@ const WelcomeEmail = ({ email = "jhon@example.com" }: { email: string }) => {
           <Container className="mx-auto my-16 w-[512px] rounded-lg border border-solid border-zinc-200 p-8">
             <Section>
               <Img
-                src={`${BASE_URL}/brand-icon.png`}
+                src={`${BASE_URL}/assets/brand-icon.png`}
                 alt={`${APP_NAME} icon`}
                 width={64}
                 className="mx-auto mb-4"

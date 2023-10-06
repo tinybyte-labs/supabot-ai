@@ -11,7 +11,7 @@ export default async function handle(
 ) {
   const { searchParams } = new URL(req.url || "");
   const size = Number(searchParams.get("size")) || 144;
-  const bgColor = searchParams.get("bgColor") || "#2563EB";
+  const bgColor = searchParams.get("bgColor") || "#6466F0";
   const fgColor = searchParams.get("bgColor") || "#FFFFFF";
   const initials = searchParams.get("initials") || "?";
   const chars = initials

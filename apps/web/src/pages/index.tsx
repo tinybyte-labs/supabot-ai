@@ -5,6 +5,9 @@ import Hero from "@/components/pages/home/Hero";
 import MarketingLayout from "@/layouts/MarketingLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { APP_NAME } from "@/utils/constants";
+import { authOptions } from "@acme/auth";
+import { GetServerSideProps } from "next";
+import { getServerSession } from "next-auth";
 import Head from "next/head";
 
 const HomePage: NextPageWithLayout = () => {
@@ -30,3 +33,13 @@ const HomePage: NextPageWithLayout = () => {
 HomePage.getLayout = (page) => <MarketingLayout>{page}</MarketingLayout>;
 
 export default HomePage;
+
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+  const session = await getServerSession(req, res, authOptions);
+
+  return {
+    props: {
+      session,
+    },
+  };
+};
