@@ -158,7 +158,7 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
                     <FormLabel>Primary Color</FormLabel>
                     <FormControl>
                       <div className="relative">
-                        <Input placeholder="#2563EB" {...field} />
+                        <Input placeholder="#6466F0" {...field} />
                         <Popover>
                           <PopoverTrigger className="absolute right-2 top-1/2 -translate-y-1/2">
                             <div

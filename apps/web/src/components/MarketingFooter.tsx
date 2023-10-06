@@ -1,59 +1,70 @@
 import Link from "next/link";
 import FullLogo from "./FullLogo";
-import { APP_NAME, DOCS_URL } from "@/utils/constants";
+import { APP_NAME } from "@/utils/constants";
+import { ReactNode } from "react";
+import DiscordIcon from "./DiscordIcon";
+import TwitterIcon from "./TwitterIcon";
+import GithubIcon from "./GithubIcon";
 
 const MarketingFooter = () => {
   return (
-    <footer className="border-t">
+    <footer className="bg-background relative border-t border-t-white/10">
+      <div className="absolute -top-[40px] left-[420px] -z-10 h-[80px] w-[80px] scale-x-[3] rounded-[300px] bg-indigo-500 blur-[40px]"></div>
+      <div className="absolute -top-[60px] left-[800px] -z-10 h-[120px] w-[120px] scale-x-[3] rounded-[300px] bg-pink-500 blur-[60px]"></div>
       <div className="container">
         <div className="grid grid-cols-2 gap-8 py-8 md:grid-cols-3 md:gap-12 md:py-16 lg:grid-cols-6">
-          <div className="col-span-2 flex flex-col gap-6 md:col-span-3">
+          <div className="col-span-2 flex flex-col items-start gap-6 md:col-span-3">
             <Link href="/home">
               <FullLogo className="h-12 w-fit" />
               <p className="sr-only">{APP_NAME}</p>
             </Link>
             <p className="text-muted-foreground">
-              Transform your web experience with {APP_NAME}, the future of
-              conversational AI. Craft a personalized chatbot tailored to your
-              website&apos;s content. Enhance customer engagement and boost
-              conversions.
+              Elevate your web experience with SupaBot AI, creating personalized
+              chatbots for enhanced customer engagement and higher conversions.
             </p>
           </div>
           <Nav
-            title="Community"
+            title="Company"
             items={[
               {
-                href: "/github",
-                label: "Github",
-                external: true,
+                href: "/changelog",
+                label: "Changelog",
               },
-              {
-                href: "/discord",
-                label: "Discord",
-                external: true,
-              },
-              {
-                href: "/twitter",
-                label: "X",
-                external: true,
-              },
-            ]}
-          />
-          <Nav
-            title="Resources"
-            items={[
               {
                 href: "/blog",
                 label: "Blog",
               },
               {
-                href: DOCS_URL,
+                href: "/docs",
                 label: "Docs",
-                external: true,
               },
               {
-                href: "/changelog",
-                label: "Changelog",
+                href: "/help",
+                label: "Help",
+              },
+              {
+                href: "/contact",
+                label: "Contact Us",
+              },
+            ]}
+          />
+          <Nav
+            title="Community"
+            items={[
+              {
+                icon: <GithubIcon fontSize={18} />,
+                href: "/github",
+                label: "Github",
+              },
+              {
+                icon: <DiscordIcon fontSize={18} />,
+                href: "/discord",
+                label: "Discord",
+              },
+              {
+                icon: <TwitterIcon fontSize={18} />,
+                href: "/twitter",
+                label: "Twitter",
               },
             ]}
           />
@@ -61,18 +72,22 @@ const MarketingFooter = () => {
             title="Legal"
             items={[
               {
-                href: "/home#",
+                href: "/privicy",
                 label: "Privacy",
               },
               {
-                href: "/home#",
+                href: "/terms",
                 label: "Terms",
+              },
+              {
+                href: "/abuse",
+                label: "Abuse",
               },
             ]}
           />
         </div>
       </div>
-      <div className="container flex items-center border-t py-6">
+      <div className="container flex items-center border-t py-8">
         <p className="text-muted-foreground">© 2023 supabotai.com</p>
       </div>
     </footer>
@@ -86,20 +101,26 @@ const Nav = ({
   items,
 }: {
   title: string;
-  items: { href: string; label: string; external?: boolean }[];
+  items: {
+    icon?: ReactNode;
+    href: string;
+    label: string;
+    external?: boolean;
+  }[];
 }) => {
   return (
     <div className="col-span-1">
-      <h3 className="mb-4 font-medium">{title}</h3>
-      <ul className="flex flex-col space-y-2">
+      <h3 className="text-muted-foreground font-medium uppercase">{title}</h3>
+      <ul className="mt-6 flex flex-col space-y-2">
         {items.map((item, i) => (
           <li key={`${item.href}-${i}`}>
             <Link
               href={item.href}
               target={item.external ? "_blank" : undefined}
-              className="text-muted-foreground hover:text-accent-foreground inline-flex items-center gap-1"
+              className="text-foreground hover:text-foreground/70 inline-flex items-center gap-2"
             >
-              {item.label}
+              {item.icon}
+              <p className="leading-6">{item.label}</p>
               {item.external && (
                 <svg
                   width="1em"

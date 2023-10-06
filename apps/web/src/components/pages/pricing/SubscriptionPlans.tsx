@@ -15,10 +15,7 @@ const SubscriptionPlans = () => {
           </p>
         </div>
 
-        <PlansGrid
-          buttonLabel={(plan) => `Get started with ${plan.name}`}
-          onPlanClick={() => router.push("/signin")}
-        />
+        <PlansGrid onPlanClick={() => router.push("/signin")} />
       </div>
     </section>
   );

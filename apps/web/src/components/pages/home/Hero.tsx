@@ -6,15 +6,13 @@ import { Button } from "@/components/ui/button";
 
 const Hero = () => {
   return (
-    <section id="hero" className="py-24">
+    <section id="hero" className="py-32">
       <div className="container">
         <div className="mx-auto max-w-screen-sm md:max-w-screen-lg">
-          <div className="from-accent-foreground to-accent-foreground/70 bg-gradient-to-br bg-clip-text py-1">
-            <h1 className="text-center text-4xl font-bold tracking-tight text-transparent md:text-5xl lg:text-7xl">
-              {HERO_TITLE}
-            </h1>
-          </div>
-          <p className="text-muted-foreground mt-6 text-center font-medium md:text-lg lg:text-xl">
+          <h1 className="text-center text-4xl font-bold tracking-tight opacity-90 md:text-5xl lg:text-6xl">
+            {HERO_TITLE}
+          </h1>
+          <p className="mx-auto mt-4 max-w-screen-sm text-center font-medium opacity-60 md:text-lg">
             {HERO_SUBTITLE}
           </p>
 
@@ -23,6 +21,7 @@ const Hero = () => {
               asChild
               className="h-14 rounded-full px-12 text-base"
               size="lg"
+              variant="primary"
             >
               <Link href="/signin">
                 Get Started
@@ -31,7 +30,7 @@ const Hero = () => {
             </Button>
             <Button
               asChild
-              className="h-14 rounded-full bg-transparent px-12 text-base"
+              className="h-14 rounded-full bg-white/5 px-12 text-base hover:border-white/30 hover:bg-white/10"
               size="lg"
               variant="outline"
             >
@@ -43,24 +42,19 @@ const Hero = () => {
           </div>
         </div>
 
-        <div className="relative mt-14 md:mt-24">
-          <Image
-            src="/assets/home-main-screenshot-dark.png"
-            alt="Screenshot"
-            width={2880}
-            height={1800}
-            className="hidden w-full rounded-lg border dark:block md:rounded-2xl"
-            quality={60}
-          />
-          <Image
-            src="/assets/home-main-screenshot-light.png"
-            alt="Screenshot"
-            width={2880}
-            height={1800}
-            className="w-full rounded-lg border dark:hidden md:rounded-2xl"
-            quality={60}
-          />
-          <div className="bg-foreground/5 absolute inset-0 -z-10 blur-3xl"></div>
+        <div className="relative z-10 mt-16 md:mt-32">
+          <div className="overflow-hidden rounded-xl border-4 border-white/10 ring-1 ring-white/30 md:rounded-3xl md:border-8">
+            <Image
+              src="/assets/home-main-screenshot.png"
+              alt="Screenshot"
+              width={2880}
+              height={1800}
+              className="bg-background w-full"
+              quality={60}
+            />
+          </div>
+          <div className="absolute -left-10 -top-10 -z-10 h-[500px] w-[500px] rotate-45 scale-y-125 rounded-[100px] bg-indigo-500/30 blur-[120px]"></div>
+          <div className="absolute -right-0 top-10 -z-10 h-[500px] w-[500px] scale-x-125 rounded-[100px] bg-pink-500/30 blur-[140px]"></div>
         </div>
       </div>
     </section>

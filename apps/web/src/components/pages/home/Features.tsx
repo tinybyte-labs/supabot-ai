@@ -11,51 +11,48 @@ const features = [
     title: "Intuitive Analytics",
     icon: <LineChart size={24} />,
     screenshotUrl: "/assets/intuitive-analytics.png",
-    darkScreenshotUrl: "/assets/intuitive-analytics-dark.png",
   },
   {
     id: "train-ai",
     title: "Train AI",
     icon: <Bot size={24} />,
     screenshotUrl: "/assets/train-ai.png",
-    darkScreenshotUrl: "/assets/train-ai-dark.png",
   },
   {
     id: "customize-the-look",
     title: "Customize the Look",
     icon: <Palette size={24} />,
     screenshotUrl: "/assets/customize-the-look.png",
-    darkScreenshotUrl: "/assets/customize-the-look-dark.png",
   },
 ];
 
 const Features = () => {
   const [feature, setFeature] = useState(features[0].id);
   return (
-    <section id="features" className="py-24">
+    <section id="features" className="py-32">
       <div className="container">
         <div className="mx-auto max-w-screen-md">
-          <h2 className="text-center text-3xl font-bold md:text-5xl">
+          <h2 className="text-center text-3xl font-bold opacity-90 md:text-5xl">
             Powerful AI ChatBot for the modern Web
           </h2>
-          <p className="mt-4 text-center font-medium text-muted-foreground md:text-lg">
+          <p className="mt-4 text-center font-medium opacity-70 md:text-lg">
             {APP_NAME} is not just any ChatBot. It is powered by OpenAI’s
             ChatGPT LLM plus it is trained on your own website content to give
             your customers the best personalized experience.
           </p>
         </div>
 
-        <div className="mt-16">
+        <div className="z-10 mt-16">
           <Tabs.Root value={feature} onValueChange={setFeature}>
             <Tabs.List asChild>
-              <div className="mb-8 grid gap-4 md:grid-cols-3 md:gap-8">
+              <div className="relative mb-8 grid gap-4 md:grid-cols-3 md:gap-8">
                 {features.map((item) => (
                   <Tabs.Trigger asChild key={item.id} value={item.id}>
                     <button
                       className={cn(
-                        "flex h-16 items-center gap-4 rounded-xl border px-6 text-left font-medium text-muted-foreground transition-colors hover:text-accent-foreground",
+                        "text-muted-foreground hover:text-accent-foreground flex h-16 items-center gap-4 rounded-xl border border-white/10 bg-white/5 px-6 text-left font-medium transition-colors hover:border-white/30",
                         {
-                          "border-foreground/20 text-accent-foreground":
+                          "text-accent-foreground border-white/30":
                             item.id === feature,
                         },
                       )}
@@ -70,23 +67,17 @@ const Features = () => {
             {features.map((feature) => (
               <Tabs.Content value={feature.id} key={feature.id} asChild>
                 <div className="relative">
-                  <Image
-                    src={feature.screenshotUrl}
-                    width={1600}
-                    height={900}
-                    alt="Customize the Look"
-                    className="overflow-hidden rounded-lg border dark:hidden md:rounded-2xl"
-                    loading="lazy"
-                  />
-                  <Image
-                    src={feature.darkScreenshotUrl}
-                    width={1600}
-                    height={900}
-                    alt="Customize the Look"
-                    className="hidden overflow-hidden rounded-lg border dark:block md:rounded-2xl"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 -z-10 bg-foreground/5 blur-3xl"></div>
+                  <div className="overflow-hidden rounded-xl border-4 border-white/10 ring-1 ring-white/30 md:rounded-3xl md:border-8">
+                    <Image
+                      src={feature.screenshotUrl}
+                      width={1600}
+                      height={900}
+                      alt="Customize the Look"
+                      className="bg-background w-full"
+                    />
+                  </div>
+                  <div className="absolute -left-10 -top-10 -z-10 h-[500px] w-[500px] rotate-45 rounded-[100px] bg-indigo-500/30 blur-[120px]"></div>
+                  <div className="absolute -right-0 bottom-10 -z-10 h-[500px] w-[500px] scale-x-125 rounded-[100px] bg-pink-500/30 blur-[140px]"></div>
                 </div>
               </Tabs.Content>
             ))}

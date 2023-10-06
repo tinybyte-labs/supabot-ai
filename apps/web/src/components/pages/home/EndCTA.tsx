@@ -5,19 +5,23 @@ import { Button } from "@/components/ui/button";
 
 const EndCTA = () => {
   return (
-    <section id="end-cta" className="py-24">
+    <section id="end-cta" className="py-32">
       <div className="container">
         <div className="mx-auto max-w-screen-md">
-          <h2 className="text-center text-3xl font-bold md:text-5xl">
+          <h2 className="text-center text-3xl font-bold opacity-90 md:text-5xl">
             Ready to Elevate Your Website&apos;s Conversations?
           </h2>
-          <p className="text-muted-foreground mt-4 text-center font-medium md:text-lg">
+          <p className="mt-4 text-center font-medium opacity-70 md:text-lg">
             Unlock the Power of {APP_NAME} and Transform Your Web Experience
             Today. Join the Conversation!
           </p>
         </div>
         <div className="mt-16 flex justify-center">
-          <Button asChild className="h-14 rounded-full px-12 text-base">
+          <Button
+            variant="primary"
+            asChild
+            className="h-14 rounded-full px-12 text-base"
+          >
             <Link href="/signin">
               Get Started Now!
               <ArrowRight size={24} className="-mr-2 ml-4" />
