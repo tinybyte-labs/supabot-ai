@@ -1,5 +1,4 @@
 import * as z from "zod";
-export * from "./clerk-events";
 
 export const createOrgValidator = z.object({
   name: z
