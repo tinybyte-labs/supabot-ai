@@ -6,58 +6,62 @@ export const fetchUrlsFromSitemap = async (url: string) => {
   return urls;
 };
 
+const invalidSuffixes = [
+  "./",
+  ".xml",
+  ".jpg",
+  ".jpeg",
+  ".png",
+  ".gif",
+  ".tiff",
+  ".psd",
+  ".eps",
+  ".ai",
+  ".indd",
+  ".raw",
+  ".svg",
+  ".json",
+];
+const invalidPrefixes = ["mailto:", "javascript:"];
+
 const getAllUrlsFromWebpage = async (pageUrl: URL) => {
   try {
-    const res = await fetch(pageUrl);
-    const $ = cheerio.load(await res.text());
+    const res = await fetch(pageUrl, {
+      headers: {
+        Accept: "text/html; charset=utf-8",
+      },
+    });
+    if (!res.ok) {
+      throw new Error(res.statusText);
+    }
+    const html = await res.text();
+    const $ = cheerio.load(html, { baseURI: pageUrl.origin });
     const anchorTags = $("a");
-    const paths = [];
+    const urls: string[] = [];
 
     for (const anchor of anchorTags) {
       const href = $(anchor).attr("href");
-      if (typeof href !== "string") {
+      if (typeof href !== "string" || href.trim() === "") {
         continue;
       }
-      const url = new URL(href, pageUrl);
-      if (url.origin === pageUrl.origin) {
-        if (url.pathname.includes(".")) {
-          continue;
-        }
-        paths.push(url.pathname);
+      const url = new URL(href, pageUrl.origin);
+      if (
+        url.origin === pageUrl.origin &&
+        !urls.includes(url.pathname) &&
+        invalidPrefixes.findIndex((prefix) => url.href.startsWith(prefix)) ===
+          -1 &&
+        invalidSuffixes.findIndex((suffix) => url.href.endsWith(suffix)) === -1
+      ) {
+        urls.push(url.pathname);
       }
     }
-
-    return [...new Set(paths)];
-  } catch (err) {
+    return [...new Set(urls)];
+  } catch (error) {
     return [];
   }
 };
 
-const fetchPathnames = async (
-  pageUrl: URL,
-  collectedPathnames: string[] = [],
-): Promise<string[]> => {
-  let pathnames = [...new Set([pageUrl.pathname, ...collectedPathnames])];
-  const pathsFromCurrentPage = await getAllUrlsFromWebpage(pageUrl);
-
-  for (const path of pathsFromCurrentPage) {
-    if (!pathnames.includes(path)) {
-      try {
-        pathnames.push(path);
-        const newPathnames = await fetchPathnames(
-          new URL(path, pageUrl),
-          pathnames,
-        );
-        pathnames.push(...newPathnames);
-      } catch (error) {}
-    }
-  }
-
-  return [...new Set(pathnames)];
-};
-
 export const fetchUrlsFromWebsite = async (url: string) => {
-  let pathnames = await fetchPathnames(new URL(url));
-  const urls = pathnames.map((path) => new URL(path, url).href);
-  return urls.sort((a, b) => a.localeCompare(b));
+  const paths = await getAllUrlsFromWebpage(new URL(url));
+  return paths.map((path) => new URL(path, url).href);
 };

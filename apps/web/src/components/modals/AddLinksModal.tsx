@@ -171,7 +171,11 @@ const LinksFromWebsite = ({
         </form>
       </Form>
 
-      <UrlsTable onAddUrls={onAddUrls} urls={urls} isAdding={isAdding} />
+      <UrlsTable
+        onAddUrls={onAddUrls}
+        urls={urls.map((url) => ({ url }))}
+        isAdding={isAdding}
+      />
     </div>
   );
 };
@@ -243,7 +247,11 @@ const LinksFromSitemap = ({
         </form>
       </Form>
 
-      <UrlsTable onAddUrls={onAddUrls} urls={urls} isAdding={isAdding} />
+      <UrlsTable
+        onAddUrls={onAddUrls}
+        urls={urls.map((url) => ({ url }))}
+        isAdding={isAdding}
+      />
     </div>
   );
 };
@@ -309,11 +317,11 @@ const UrlsTable = ({
   onAddUrls,
   isAdding,
 }: {
-  urls: string[];
+  urls: { url: string }[];
   onAddUrls: (urls: string[]) => void;
   isAdding?: boolean;
 }) => {
-  const columns: ColumnDef<string>[] = useMemo(
+  const columns: ColumnDef<{ url: string }>[] = useMemo(
     () => [
       {
         id: "select",
@@ -337,13 +345,13 @@ const UrlsTable = ({
         ),
       },
       {
-        id: "url",
+        accessorKey: "url",
         enableHiding: false,
         header: () => <div>URL</div>,
         cell: ({ row }) => {
           return (
-            <Link href={row.original} target="_blank">
-              {row.original}
+            <Link href={row.original.url} target="_blank">
+              {row.original.url}
             </Link>
           );
         },
@@ -376,7 +384,7 @@ const UrlsTable = ({
           disabled={table.getSelectedRowModel().rows.length === 0 || isAdding}
           onClick={() => {
             const urls = table.getSelectedRowModel().rows;
-            onAddUrls(urls.map((url) => url.original));
+            onAddUrls(urls.map((url) => url.original.url));
           }}
         >
           {isAdding && (
