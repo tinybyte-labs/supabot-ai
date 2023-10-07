@@ -22,10 +22,9 @@ const invalidSuffixes = [
   ".svg",
   ".json",
 ];
-const invalidPrefixes = ["#", "mailto:", "javascript:"];
+const invalidPrefixes = ["mailto:", "javascript:"];
 
 const getAllUrlsFromWebpage = async (pageUrl: URL) => {
-  console.log(pageUrl.pathname);
   try {
     const res = await fetch(pageUrl, {
       headers: {
@@ -38,7 +37,7 @@ const getAllUrlsFromWebpage = async (pageUrl: URL) => {
     const html = await res.text();
     const $ = cheerio.load(html, { baseURI: pageUrl.origin });
     const anchorTags = $("a");
-    const paths = [];
+    const urls: string[] = [];
 
     for (const anchor of anchorTags) {
       const href = $(anchor).attr("href");
@@ -48,49 +47,21 @@ const getAllUrlsFromWebpage = async (pageUrl: URL) => {
       const url = new URL(href, pageUrl.origin);
       if (
         url.origin === pageUrl.origin &&
-        invalidPrefixes.findIndex((prefix) =>
-          url.pathname.startsWith(prefix),
-        ) === -1 &&
-        invalidSuffixes.findIndex((suffix) => url.pathname.endsWith(suffix)) ===
+        !urls.includes(url.pathname) &&
+        invalidPrefixes.findIndex((prefix) => url.href.startsWith(prefix)) ===
           -1 &&
-        url.pathname !== pageUrl.pathname &&
-        url.pathname.startsWith(pageUrl.pathname)
+        invalidSuffixes.findIndex((suffix) => url.href.endsWith(suffix)) === -1
       ) {
-        paths.push(url.pathname);
+        urls.push(url.pathname);
       }
     }
-
-    return [...new Set(paths)];
+    return [...new Set(urls)];
   } catch (error) {
-    console.log("Failed to fetch", pageUrl.href);
-    return null;
+    return [];
   }
 };
 
 export const fetchUrlsFromWebsite = async (url: string) => {
-  const visitedPaths: string[] = [];
-  const fetchPathnames = async (pageUrl: URL): Promise<string[]> => {
-    if (visitedPaths.length >= 100) {
-      return [];
-    }
-    visitedPaths.push(pageUrl.pathname);
-    const paths = await getAllUrlsFromWebpage(pageUrl);
-    if (paths === null) {
-      return [];
-    }
-    const uniquePaths = paths.filter((path) => !visitedPaths.includes(path));
-
-    const pathsList = await Promise.allSettled(
-      uniquePaths.map((path) => fetchPathnames(new URL(path, pageUrl))),
-    );
-    const newPaths: string[] = [
-      pageUrl.pathname,
-      ...pathsList.flatMap((g) => (g.status === "fulfilled" ? g.value : [])),
-    ];
-    return [...new Set(newPaths)];
-  };
-
-  let pathnames = await fetchPathnames(new URL(url));
-  const urls = pathnames.map((path) => new URL(path, url).href);
-  return urls.sort((a, b) => a.localeCompare(b));
+  const paths = await getAllUrlsFromWebpage(new URL(url));
+  return paths.map((path) => new URL(path, url).href);
 };
