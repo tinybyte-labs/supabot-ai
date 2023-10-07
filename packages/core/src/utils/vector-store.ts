@@ -74,17 +74,17 @@ export async function getDocuments({
 }) {
   const documents = await db.$queryRaw`
     SELECT 
-      "Document".id,
-      "Document".content,
-      "Link".url as source,
-      1 - ("Document".embedding <=> ${embedding}::vector) as similarity
+      "Document"."id",
+      "Document"."content",
+      "Link"."url" as "source",
+      1 - ("Document"."embedding" <=> ${embedding}::vector) as "similarity"
     FROM "Document"
-    LEFT JOIN "Link" ON "Link".id = "Document".linkId
+    LEFT JOIN "Link" ON "Link"."id" = "Document"."linkId"
     WHERE 
-      "Document".chatbotId = ${chatbotId} 
+      "Document"."chatbotId" = ${chatbotId} 
       AND 
-      1 - ("Document".embedding <=> ${embedding}::vector) > ${threshold}
-    ORDER BY similarity DESC
+      1 - ("Document"."embedding" <=> ${embedding}::vector) > ${threshold}
+    ORDER BY "similarity" DESC
     LIMIT ${limit};
   `;
   return documents as {
