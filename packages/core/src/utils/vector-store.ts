@@ -32,7 +32,7 @@ export async function addVectors({
             select: { id: true },
           });
           await db.$executeRaw`
-            UPDATE documents 
+            UPDATE "Document"
             SET embedding = ${embedding}::vector 
             WHERE id = ${doc.id}
           `;
@@ -74,17 +74,17 @@ export async function getDocuments({
 }) {
   const documents = await db.$queryRaw`
     SELECT 
-      documents.id,
-      documents.content,
-      links.url as source,
-      1 - (documents.embedding <=> ${embedding}::vector) as similarity
-    FROM documents
-    LEFT JOIN links ON links.id = documents.link_id
+      "Document"."id",
+      "Document"."content",
+      "Link"."url" as "source",
+      1 - ("Document"."embedding" <=> ${embedding}::vector) as "similarity"
+    FROM "Document"
+    LEFT JOIN "Link" ON "Link"."id" = "Document"."linkId"
     WHERE 
-      documents.chatbot_id = ${chatbotId} 
+      "Document"."chatbotId" = ${chatbotId} 
       AND 
-      1 - (documents.embedding <=> ${embedding}::vector) > ${threshold}
-    ORDER BY similarity DESC
+      1 - ("Document"."embedding" <=> ${embedding}::vector) > ${threshold}
+    ORDER BY "similarity" DESC
     LIMIT ${limit};
   `;
   return documents as {

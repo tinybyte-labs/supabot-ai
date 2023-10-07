@@ -66,16 +66,20 @@ export const trainLink = async (linkId: string, db: PrismaClient) => {
     // fetch the website
     const docs = await getDocumentsFromWeb(new URL(link.url));
     await addDocuments({
-      docs,
-      chatbotId: link.chatbotId,
       linkId,
+      chatbotId: link.chatbotId,
+      docs,
       db,
     });
 
     // update the link status to success.
     await db.link.update({
       where: { id: linkId },
-      data: { status: "TRAINED", lastTrainedAt: new Date() },
+      data: {
+        status: "TRAINED",
+        lastTrainedAt: new Date(),
+        error: null,
+      },
     });
   } catch (error: any) {
     await db.link.update({
