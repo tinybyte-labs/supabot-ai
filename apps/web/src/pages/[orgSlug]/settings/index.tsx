@@ -1,8 +1,11 @@
 import DashboardPageHeader from "@/components/DashboardPageHeader";
+import DeleteOrganizationConfirmModal from "@/components/modals/DeleteOrganizationConfirmModal";
+import { useModal } from "@/components/modals/useModal";
 import { Button, ButtonLoader } from "@/components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -36,12 +39,16 @@ const OrganizationSettingsPage: NextPageWithLayout = () => {
   return (
     <>
       <DashboardPageHeader title="Organization" />
-      <main className="container">
+      <main className="container space-y-8">
         {isSuccess ? (
-          <GeneralSettings />
+          <>
+            <GeneralSettingsCard />
+            <DeleteOrgCard />
+          </>
         ) : (
           <>
-            <Skeleton className="h-[400px]" />
+            <Skeleton className="h-[386px]" />
+            <Skeleton className="h-[386px]" />
           </>
         )}
       </main>
@@ -55,7 +62,7 @@ OrganizationSettingsPage.getLayout = (page) => (
 
 export default OrganizationSettingsPage;
 
-const GeneralSettings = () => {
+const GeneralSettingsCard = () => {
   const { data: org } = useOrganization();
   const form = useForm<UpdateOrgDto>({
     resolver: zodResolver(updateOrgValidator),
@@ -155,6 +162,27 @@ const GeneralSettings = () => {
           </CardFooter>
         </form>
       </Form>
+    </Card>
+  );
+};
+
+const DeleteOrgCard = () => {
+  const [Modal, { openModal }] = useModal(DeleteOrganizationConfirmModal);
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Delete Organization</CardTitle>
+        <CardDescription>
+          If you want to permanently delete this workspace and all of its data,
+          including but not limited to users and chatbots, you can do so below.
+        </CardDescription>
+      </CardHeader>
+      <CardFooter>
+        <Button variant="destructive" onClick={openModal}>
+          Delete this Organization
+        </Button>
+      </CardFooter>
+      <Modal />
     </Card>
   );
 };

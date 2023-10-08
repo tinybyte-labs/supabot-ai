@@ -118,4 +118,51 @@ export const organizationRouter = router({
         });
       }
     }),
+  delete: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async (opts) => {
+      const org = await opts.ctx.db.organization.findUnique({
+        where: { id: opts.input.id },
+      });
+      if (!org) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Organization not found!",
+        });
+      }
+      const member = await opts.ctx.db.organizationMembership.findUnique({
+        where: {
+          userId_organizationId: {
+            userId: opts.ctx.session.user.id,
+            organizationId: org.id,
+          },
+        },
+      });
+
+      if (!member) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You don't have access to this organization",
+        });
+      }
+
+      if (member.role !== "OWNER") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Only organization owner can delete their organization.",
+        });
+      }
+
+      try {
+        const deletedOrg = await opts.ctx.db.organization.delete({
+          where: { id: org.id },
+        });
+        return deletedOrg;
+      } catch (error: any) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: error.message || "Something went wrong!",
+        });
+      }
+    }),
 });
