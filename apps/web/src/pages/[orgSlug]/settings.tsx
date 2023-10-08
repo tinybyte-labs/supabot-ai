@@ -38,7 +38,7 @@ const OrganizationSettingsPage: NextPageWithLayout = () => {
 
   return (
     <>
-      <DashboardPageHeader title="Organization" />
+      <DashboardPageHeader title="Settings" />
       <main className="container space-y-8">
         {isSuccess ? (
           <>
@@ -48,7 +48,7 @@ const OrganizationSettingsPage: NextPageWithLayout = () => {
         ) : (
           <>
             <Skeleton className="h-[386px]" />
-            <Skeleton className="h-[386px]" />
+            <Skeleton className="h-[184px]" />
           </>
         )}
       </main>
