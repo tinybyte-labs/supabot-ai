@@ -6,7 +6,7 @@ import OrganizationSwitcher from "@/components/OrganizationSwitcher";
 import SideBarNav, { SideBarNavProps } from "@/components/SideBarNav";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { useAtom } from "jotai";
-import { CreditCard, LayoutGrid, Settings } from "lucide-react";
+import { CreditCard, LayoutGrid, Settings, Users } from "lucide-react";
 import { ThemeProvider } from "next-themes";
 import Link from "next/link";
 import { ReactNode, useMemo } from "react";
@@ -21,7 +21,7 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
   return (
     <ThemeProvider enableSystem attribute="class">
       <OrgGuard>
-        <div className="bg-card text-card-foreground fixed bottom-0 left-0 top-0 w-64 border-r max-lg:hidden">
+        <div className="bg-card text-card-foreground fixed bottom-0 left-0 top-0 z-20 w-64 border-r max-lg:hidden">
           <SideBar />
         </div>
         <main className="min-h-screen flex-1 flex-col pb-16 lg:ml-64">
@@ -58,6 +58,11 @@ const SideBar = () => {
             href: `/${router.query.orgSlug}/plan-billing`,
             label: "Plan & Billing",
             icon: <CreditCard size={20} />,
+          },
+          {
+            href: `/${router.query.orgSlug}/members`,
+            label: "Members",
+            icon: <Users size={20} />,
           },
           {
             href: `/${router.query.orgSlug}/settings`,

@@ -37,7 +37,7 @@ const ChatbotLayout = ({
     <ThemeProvider enableSystem attribute="class">
       <OrgGuard>
         <ChatbotGuard>
-          <div className="bg-card text-card-foreground fixed bottom-0 left-0 top-0 w-64 border-r max-lg:hidden">
+          <div className="bg-card text-card-foreground fixed bottom-0 left-0 top-0 z-20 w-64 border-r max-lg:hidden">
             <SideBar />
           </div>
           <main
