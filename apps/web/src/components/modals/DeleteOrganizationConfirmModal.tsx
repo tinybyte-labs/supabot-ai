@@ -38,11 +38,9 @@ const DeleteOrganizationConfirmModal: ModalFn = ({ onOpenChange, open }) => {
   const utils = trpc.useContext();
 
   const deleteOrgMutation = trpc.organization.delete.useMutation({
-    onSuccess: async (data) => {
+    onSuccess: async () => {
       toast({ title: "Success", description: "Organization has been deleted" });
       utils.organization.getAll.invalidate();
-      utils.organization.getById.invalidate({ id: data.id });
-      utils.organization.getBySlug.invalidate({ slug: data.slug });
       router.push("/dashboard");
     },
     onError: (error) => {
