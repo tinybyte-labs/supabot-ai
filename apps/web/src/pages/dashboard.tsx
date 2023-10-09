@@ -27,6 +27,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
       organization: {
         select: {
           slug: true,
+          plan: true,
         },
       },
     },
@@ -43,7 +44,10 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
 
   return {
     redirect: {
-      destination: `/${org.organization.slug}`,
+      destination:
+        org.organization.plan === "free"
+          ? `/${org.organization.slug}/plan-billing#plans`
+          : `/${org.organization.slug}`,
       permanent: false,
     },
   };
