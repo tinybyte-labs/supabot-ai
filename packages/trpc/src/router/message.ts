@@ -14,7 +14,7 @@ import {
 } from "openai-edge";
 import GPT3Tokenizer from "gpt3-tokenizer";
 import { TRPCError } from "@trpc/server";
-import { plans } from "@acme/plans";
+import { allPlans } from "@acme/plans";
 import { PrismaClient } from "@acme/db";
 
 const tokenizer = new GPT3Tokenizer({ type: "gpt3" });
@@ -76,7 +76,7 @@ export const messageRouter = router({
           message: "Conversation not found!",
         });
       }
-      const plan = plans.find(
+      const plan = allPlans.find(
         (plan) => plan.id === conversation.chatbot.organization.plan,
       );
       if (!plan) {

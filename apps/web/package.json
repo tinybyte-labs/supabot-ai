@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@acme/plans": "workspace:*",
     "@acme/auth": "workspace:*",
     "@acme/core": "workspace:*",
     "@acme/db": "workspace:*",

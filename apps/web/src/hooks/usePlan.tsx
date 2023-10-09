@@ -1,12 +1,12 @@
 import { useMemo } from "react";
 import { useOrganization } from "./useOrganization";
-import { freePlan, plans } from "@/data/plans";
+import { freePlan, allPlans } from "@acme/plans";
 
 export const usePlan = () => {
   const orgQuery = useOrganization();
 
   return useMemo(
-    () => plans.find((plan) => plan.id === orgQuery.data?.plan) || freePlan,
+    () => allPlans.find((plan) => plan.id === orgQuery.data?.plan) || freePlan,
     [orgQuery.data?.plan],
   );
 };

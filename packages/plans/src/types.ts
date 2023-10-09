@@ -3,6 +3,7 @@ export type PlanInterval = "monthly" | "yearly";
 export type Plan = {
   id: string;
   name: string;
+  description?: string;
   limits: {
     chatbots: number | "unlimited";
     messagesPerMonth: number | "unlimited";
@@ -21,4 +22,9 @@ export type Plan = {
       priceId: string;
     }
   >;
+};
+
+export type PlanFeature = {
+  text: string;
+  explanation?: string;
 };

@@ -8,114 +8,18 @@ import { Check, HelpCircle, Loader2 } from "lucide-react";
 import { Switch } from "./ui/switch";
 import { useState } from "react";
 import { Plan, PlanInterval } from "@/types/plan";
-import { plans } from "@/data/plans";
+import { getFeaturesForPlan, proPlans } from "@acme/plans";
 
-const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
+const roundPricingRegex = /\.0+$|(\.[0-9]*[1-9])0+$/;
 
-const features = (planId: string) => {
-  const plan = plans.find((plan) => plan.id === planId);
-  if (!plan) return [];
-  return [
-    {
-      text: `${
-        plan.limits.chatbots === "unlimited"
-          ? "Unlimited"
-          : `Up to ${plan.limits.chatbots.toLocaleString()}`
-      } chatbot${
-        plan.limits.chatbots === "unlimited" || plan.limits.chatbots > 1
-          ? "s"
-          : ""
-      }`,
-    },
-    {
-      text: `${
-        plan.limits.links === "unlimited"
-          ? "Unlimited"
-          : `Up to ${plan.limits.links.toLocaleString()}`
-      } link${
-        plan.limits.links === "unlimited" || plan.limits.links > 1 ? "s" : ""
-      }`,
-    },
-    {
-      text: `${
-        plan.limits.documents === "unlimited"
-          ? "Unlimited"
-          : `Up to ${plan.limits.documents.toLocaleString()}`
-      } document${
-        plan.limits.documents === "unlimited" || plan.limits.documents > 1
-          ? "s"
-          : ""
-      }`,
-    },
-    {
-      text: `${
-        plan.limits.messagesPerMonth === "unlimited"
-          ? "Unlimited"
-          : `Up to ${plan.limits.messagesPerMonth.toLocaleString()}`
-      } AI messages/mo`,
-    },
-    {
-      text: `${
-        plan.limits.teamMembers === "unlimited"
-          ? "Unlimited"
-          : `Up to ${plan.limits.teamMembers.toLocaleString()}`
-      } team members`,
-    },
-    {
-      text: `${
-        plan.limits.advancedCustomization ? "Advanced" : "Basic"
-      } customization`,
-    },
-    ...(plan.limits.apiAccess
-      ? [
-          {
-            text: `API Access`,
-            explaination: `Under development. ETA: December 2023`,
-          },
-        ]
-      : []),
-    ...(plan.limits.prioritySupport
-      ? [
-          {
-            text: `Priority support`,
-            explaination: `Email & chat support within 24 hours.`,
-          },
-        ]
-      : []),
-  ];
+export type PlansGridProps = {
+  hidePopularBadge?: boolean;
+  currentPriceId?: string | null;
+  loading?: boolean;
+  onPlanClick?: (priceId: string) => void;
+  buttonLabel?: (plan: Plan) => string;
+  initialInterval?: PlanInterval;
 };
-
-const pricingItems: {
-  id: string;
-  name: string;
-  description?: string;
-  features: { text: string; explaination?: string }[];
-}[] = [
-  {
-    id: "starter",
-    name: "Starter",
-    description: "For startups & side projects",
-    features: features("starter"),
-  },
-  {
-    id: "team",
-    name: "Team",
-    description: "For small to medium teams",
-    features: features("team"),
-  },
-  {
-    id: "business",
-    name: "Business",
-    description: "For larger teams with increased usage",
-    features: features("business"),
-  },
-  {
-    id: "enterprise",
-    name: "Enterprise",
-    description: "For businesses with custom needs",
-    features: features("enterprise"),
-  },
-];
 
 const PlansGrid = ({
   currentPriceId,
@@ -123,14 +27,7 @@ const PlansGrid = ({
   buttonLabel,
   loading,
   initialInterval = "monthly",
-}: {
-  hidePopularBadge?: boolean;
-  currentPriceId?: string | null;
-  loading?: boolean;
-  onPlanClick?: (priceId: string) => void;
-  buttonLabel?: (plan: Plan) => string;
-  initialInterval?: PlanInterval;
-}) => {
+}: PlansGridProps) => {
   const [interval, setInterval] = useState<PlanInterval>(initialInterval);
 
   return (
@@ -148,17 +45,14 @@ const PlansGrid = ({
         <div className="absolute -right-0 top-10 -z-10 h-[500px] w-[500px] scale-x-125 rounded-[100px] bg-pink-500/40 blur-[180px]"></div>
 
         <div className="mt-16 grid grid-cols-1 rounded-2xl max-xl:gap-6 lg:grid-cols-2 xl:grid-cols-4">
-          {pricingItems.map((item) => {
-            const popular = item.id === "business";
-            const plan = plans.find((plan) => plan.id === item.id);
-            if (!plan) {
-              return null;
-            }
+          {proPlans.map((plan) => {
+            const popular = plan.id === "business";
             const price = plan.price[interval];
             const isCurrentPlan = price.priceId === currentPriceId;
+            const features = getFeaturesForPlan(plan.id);
             return (
               <div
-                key={item.id}
+                key={plan.id}
                 className="bg-background/50 relative border-y border-white/20 first:rounded-l-2xl first:border-l last:rounded-r-2xl last:border-r max-xl:rounded-2xl max-xl:border"
               >
                 {popular && (
@@ -168,9 +62,9 @@ const PlansGrid = ({
                 )}
                 <div className="relative flex h-full flex-1 flex-col">
                   <div className="flex flex-col items-center gap-3 p-6 pt-12 text-center">
-                    <h3 className="text-2xl font-semibold">{item.name}</h3>
+                    <h3 className="text-2xl font-semibold">{plan.name}</h3>
                     <p className="text-muted-foreground text-sm">
-                      {item.description}
+                      {plan.description}
                     </p>
                     <p className="text-6xl font-semibold">
                       {(interval === "monthly"
@@ -178,7 +72,7 @@ const PlansGrid = ({
                         : price.amount / 12
                       )
                         .toFixed(1)
-                        .replace(rx, "$1")}
+                        .replace(roundPricingRegex, "$1")}
                     </p>
                     <p className="text-muted-foreground text-sm">
                       per month, billed {interval}
@@ -188,7 +82,7 @@ const PlansGrid = ({
                     <div className="h-px w-full bg-white/20"></div>
                   </div>
                   <div className="flex flex-1 flex-col gap-4 p-6">
-                    {item.features.map((feature, i) => {
+                    {features.map((feature, i) => {
                       return (
                         <div key={i}>
                           <Check
@@ -197,7 +91,7 @@ const PlansGrid = ({
                           />
                           <p className="inline text-sm">
                             {feature.text}
-                            {!!feature.explaination && (
+                            {!!feature.explanation && (
                               <Tooltip delayDuration={100}>
                                 <TooltipTrigger>
                                   <HelpCircle
@@ -206,7 +100,7 @@ const PlansGrid = ({
                                   />
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                  {feature.explaination}
+                                  {feature.explanation}
                                 </TooltipContent>
                               </Tooltip>
                             )}

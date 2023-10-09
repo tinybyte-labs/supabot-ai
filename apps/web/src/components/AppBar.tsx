@@ -6,8 +6,8 @@ import FeedbackForm from "./forms/FeedbackForm";
 import { useState } from "react";
 import Link from "next/link";
 import { usePlan } from "@/hooks/usePlan";
-import { freePlan } from "@/data/plans";
 import { useRouter } from "next/router";
+import { freePlan } from "@acme/plans";
 
 const AppBar = () => {
   const [feedbackPopoverOpen, setFeedbackPopoverOpen] = useState(false);
