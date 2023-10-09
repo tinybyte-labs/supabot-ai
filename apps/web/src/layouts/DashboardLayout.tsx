@@ -24,7 +24,7 @@ const DashboardLayout = ({ children }: { children: ReactNode }) => {
         <div className="bg-card text-card-foreground fixed bottom-0 left-0 top-0 z-20 w-64 border-r max-lg:hidden">
           <SideBar />
         </div>
-        <main className="min-h-screen flex-1 flex-col pb-16 lg:ml-64">
+        <main className="min-h-screen flex-1 flex-col pb-32 lg:ml-64">
           <DevWarningBar />
           <AppBar />
           {children}

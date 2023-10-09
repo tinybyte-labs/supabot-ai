@@ -42,7 +42,7 @@ const ChatbotLayout = ({
           </div>
           <main
             className={cn("flex min-h-screen flex-1 flex-col lg:ml-64", {
-              "pb-16": !noBottomPadding,
+              "pb-32": !noBottomPadding,
             })}
           >
             <DevWarningBar />
