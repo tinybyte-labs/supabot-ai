@@ -32,7 +32,7 @@ export const PUBLIC_PATH_NAMES = new Set([
   "changelog",
   "contact",
   "help",
-  "privicy",
+  "privacy",
   "terms",
   "abuse",
   ...Object.keys(REDIRECTS),
