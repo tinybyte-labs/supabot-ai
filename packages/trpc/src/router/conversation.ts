@@ -117,7 +117,7 @@ export const conversationRouter = router({
         },
       });
       return conversations
-        .filter((conv) => conv.messages.length > 0)
+        .filter((conversation) => conversation.messages.length > 0)
         .sort((a, b) =>
           compareDesc(a.messages[0].updatedAt, b.messages[0].updatedAt),
         );
@@ -216,7 +216,7 @@ export const conversationRouter = router({
         },
       });
       return conversations
-        .filter((conv) => conv.messages.length > 0)
+        .filter((conversation) => conversation.messages.length > 0)
         .sort((a, b) =>
           compareDesc(a.messages[0].updatedAt, b.messages[0].updatedAt),
         );

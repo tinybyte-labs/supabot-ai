@@ -142,7 +142,7 @@ export const chatbotRouter = router({
         if (chatbotsCount >= plan.limits.chatbots) {
           throw new TRPCError({
             code: "FORBIDDEN",
-            message: "Chatbot creation limit riched",
+            message: "Chatbot creation limit reached",
           });
         }
       }

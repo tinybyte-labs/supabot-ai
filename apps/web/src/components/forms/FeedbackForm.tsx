@@ -18,7 +18,7 @@ const schema = z.object({
   message: z.string().min(1).max(500),
 });
 
-const FoodbackForm = ({ onSuccess }: { onSuccess?: () => void }) => {
+const FeedbackForm = ({ onSuccess }: { onSuccess?: () => void }) => {
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -76,4 +76,4 @@ const FoodbackForm = ({ onSuccess }: { onSuccess?: () => void }) => {
   );
 };
 
-export default FoodbackForm;
+export default FeedbackForm;
