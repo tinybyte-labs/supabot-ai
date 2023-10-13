@@ -45,7 +45,7 @@ const DeleteChatbotCard = () => {
   const { toast } = useToast();
   const router = useRouter();
 
-  const deleteChatbot = trpc.chatbot.delete.useMutation({
+  const deleteChatbot = trpc.chatbot.deleteChatbot.useMutation({
     onSuccess: () => {
       toast({ title: "Chatbot deleted" });
       router.push(`/${router.query.orgSlug}`);

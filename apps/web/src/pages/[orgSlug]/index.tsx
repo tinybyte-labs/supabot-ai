@@ -87,7 +87,7 @@ const ChatbotsLoading = () => (
 
 const ChatbotsPage: NextPageWithLayout = () => {
   const { data: org, isSuccess: isOrgLoaded } = useOrganization();
-  const chatbotsQuery = trpc.chatbot.list.useQuery(
+  const chatbotsQuery = trpc.chatbot.getChatbotsByOrgSlug.useQuery(
     { orgSlug: org?.slug || "" },
     { enabled: isOrgLoaded },
   );

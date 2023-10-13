@@ -82,7 +82,7 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
   });
   const { toast } = useToast();
 
-  const updateChatbot = trpc.chatbot.update.useMutation({
+  const updateChatbot = trpc.chatbot.updateChatbot.useMutation({
     onSuccess: () => toast({ title: "Update success" }),
     onError: (error) =>
       toast({

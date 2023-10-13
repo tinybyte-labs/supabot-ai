@@ -80,10 +80,10 @@ const UpdateNameFrom = () => {
 
   const utils = trpc.useContext();
   const { toast } = useToast();
-  const updateChatbot = trpc.chatbot.update.useMutation({
+  const updateChatbot = trpc.chatbot.updateChatbot.useMutation({
     onSuccess: (data) => {
       toast({ title: "Name updated" });
-      utils.chatbot.findById.invalidate({ chatbotId: data.id });
+      utils.chatbot.getChatbotById.invalidate({ chatbotId: data.id });
     },
     onError: (error) => {
       toast({

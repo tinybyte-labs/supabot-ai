@@ -5,7 +5,7 @@ export const useChatbot = () => {
   const router = useRouter();
   const chatbotId = router.query.chatbotId as string;
 
-  return trpc.chatbot.findById.useQuery(
+  return trpc.chatbot.getChatbotById.useQuery(
     { chatbotId },
     { enabled: router.isReady && typeof chatbotId === "string" },
   );

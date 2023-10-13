@@ -24,7 +24,7 @@ import { useRouter } from "next/router";
 const ChatbotOverviewPage: NextPageWithLayout = () => {
   const { data: org, isSuccess: isOrgLoaded } = useOrganization();
   const { data: chatbot, isSuccess: isChatbotLoaded } = useChatbot();
-  const statusQuery = trpc.chatbot.stats.useQuery(
+  const statusQuery = trpc.chatbot.getStatsForChatbot.useQuery(
     { chatbotId: chatbot?.id || "" },
     { enabled: isChatbotLoaded },
   );

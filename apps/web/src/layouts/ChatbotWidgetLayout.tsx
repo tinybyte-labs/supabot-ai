@@ -43,7 +43,7 @@ const ChatbotWidgetLayout = ({
   const storageKey = useMemo(() => `${chatbotId}_user`, [chatbotId]);
   const [userId, setUserId] = useState<string | null>(null);
 
-  const chatbotQuery = trpc.chatbot.findById.useQuery(
+  const chatbotQuery = trpc.chatbot.getChatbotById.useQuery(
     { chatbotId },
     {
       enabled: router.isReady,
