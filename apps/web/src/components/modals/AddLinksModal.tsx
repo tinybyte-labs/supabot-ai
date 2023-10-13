@@ -8,7 +8,7 @@ import {
 } from "../ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Button } from "../ui/button";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Checkbox } from "../ui/checkbox";
 import {
   Form,
@@ -37,24 +37,41 @@ import { trpc } from "@/utils/trpc";
 import { useChatbot } from "@/hooks/useChatbot";
 
 const AddLinksModal: ModalFn = ({ onOpenChange, open }) => {
-  const { data: chatbot, isSuccess: isChatbotLoaded } = useChatbot();
-  const { toast } = useToast();
-  const utils = trpc.useContext();
+  const [isAddingUrls, setIsAddingUrls] = useState(false);
 
-  const addLinks = trpc.link.createMany.useMutation({
-    onSuccess: (data, vars) => {
-      onOpenChange(false);
-      toast({ title: `${data.length} links added` });
-      utils.link.list.invalidate({ chatbotId: vars.chatbotId });
+  const { data: chatbot } = useChatbot();
+  const { toast } = useToast();
+
+  const utils = trpc.useContext();
+  const addLink = trpc.link.createLink.useMutation();
+
+  const handleAddUrls = useCallback(
+    async (urls: string[]) => {
+      if (!chatbot) {
+        return;
+      }
+      setIsAddingUrls(true);
+      try {
+        await Promise.all(
+          urls.map(async (url) =>
+            addLink.mutateAsync({ chatbotId: chatbot.id, url }),
+          ),
+        );
+        toast({ title: `${urls.length} link(s) added to queue` });
+        utils.link.getLinksForChatbot.invalidate({ chatbotId: chatbot.id });
+        setIsAddingUrls(false);
+        onOpenChange(false);
+      } catch (error: any) {
+        setIsAddingUrls(false);
+        toast({
+          title: "Error",
+          description: error.message ?? "Something went wrong!",
+          variant: "destructive",
+        });
+      }
     },
-    onError: (error) => {
-      toast({
-        title: "Failed to add links",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
+    [addLink, chatbot, onOpenChange, toast, utils.link.getLinksForChatbot],
+  );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -69,30 +86,18 @@ const AddLinksModal: ModalFn = ({ onOpenChange, open }) => {
             <TabsTrigger value="sitemap">Sitemap</TabsTrigger>
           </TabsList>
           <TabsContent value="url">
-            <LinksFromUrl
-              onAddUrls={(urls) => {
-                if (!isChatbotLoaded) return;
-                addLinks.mutate({ chatbotId: chatbot.id, urls });
-              }}
-              isAdding={addLinks.isLoading}
-            />
+            <LinksFromUrl onAddUrls={handleAddUrls} isAdding={isAddingUrls} />
           </TabsContent>
           <TabsContent value="website">
             <LinksFromWebsite
-              onAddUrls={(urls) => {
-                if (!isChatbotLoaded) return;
-                addLinks.mutate({ chatbotId: chatbot.id, urls });
-              }}
-              isAdding={addLinks.isLoading}
+              onAddUrls={handleAddUrls}
+              isAdding={isAddingUrls}
             />
           </TabsContent>
           <TabsContent value="sitemap">
             <LinksFromSitemap
-              onAddUrls={(urls) => {
-                if (!isChatbotLoaded) return;
-                addLinks.mutate({ chatbotId: chatbot.id, urls });
-              }}
-              isAdding={addLinks.isLoading}
+              onAddUrls={handleAddUrls}
+              isAdding={isAddingUrls}
             />
           </TabsContent>
         </Tabs>

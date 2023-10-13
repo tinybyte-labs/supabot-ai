@@ -25,6 +25,7 @@ export const chatbotRouter = router({
         orderBy: { updatedAt: "desc" },
       });
     }),
+  // TODO: maket it protected route and move the widgets api to another place
   getChatbotById: publicProcedure
     .input(z.object({ chatbotId: z.string() }))
     .query(async ({ ctx, input }) => {

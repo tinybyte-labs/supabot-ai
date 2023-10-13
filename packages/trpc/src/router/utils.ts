@@ -26,12 +26,10 @@ export const hasUserAccessToOrganization = async (
 ) => {
   const userId = ctx.session?.user.id;
   if (!userId) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
-
-  const user = await ctx.db.user.findUnique({ where: { id: userId } });
-  if (!user) {
-    throw new TRPCError({ code: "NOT_FOUND", message: "User not found!" });
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "User id not found!",
+    });
   }
 
   const organization = await ctx.db.organization.findUnique({
@@ -49,6 +47,9 @@ export const hasUserAccessToOrganization = async (
     where: {
       userId_organizationId: { organizationId: organization.id, userId },
     },
+    include: {
+      user: true,
+    },
   });
 
   if (!member) {
@@ -65,12 +66,14 @@ export const hasUserAccessToOrganization = async (
     });
   }
 
+  const { user, ...memberData } = member;
+
   const plan =
     allPlans.find((plan) => plan.id === organization.plan) ?? freePlan;
 
   return {
     organization,
-    member,
+    member: memberData,
     user,
     plan,
   };
@@ -83,12 +86,10 @@ export const hasUserAccessToChatbot = async (
 ) => {
   const userId = ctx.session?.user.id;
   if (!userId) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
-
-  const user = await ctx.db.user.findUnique({ where: { id: userId } });
-  if (!user) {
-    throw new TRPCError({ code: "NOT_FOUND", message: "User not found!" });
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "User id not found!",
+    });
   }
 
   const chatbot = await ctx.db.chatbot.findUnique({ where: { id: chatbotId } });
@@ -99,9 +100,13 @@ export const hasUserAccessToChatbot = async (
   const member = await ctx.db.organizationMembership.findUnique({
     where: {
       userId_organizationId: {
-        userId: user.id,
+        userId: userId,
         organizationId: chatbot.organizationId,
       },
+    },
+    include: {
+      organization: true,
+      user: true,
     },
   });
 
@@ -119,9 +124,16 @@ export const hasUserAccessToChatbot = async (
     });
   }
 
+  const { organization, user, ...memberData } = member;
+
+  const plan =
+    allPlans.find((plan) => plan.id === organization.plan) ?? freePlan;
+
   return {
-    user,
-    member,
     chatbot,
+    member: memberData,
+    user,
+    organization,
+    plan,
   };
 };

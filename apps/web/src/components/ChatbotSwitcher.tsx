@@ -28,7 +28,7 @@ const ChatbotSwitcher = ({ className }: { className?: string }) => {
   const { data: currentOrg, isSuccess: isOrgLoaded } = useOrganization();
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const chatbots = trpc.chatbot.list.useQuery(
+  const chatbots = trpc.chatbot.getAllChatbotsForOrganization.useQuery(
     { orgSlug: currentOrg?.slug || "" },
     { enabled: isOrgLoaded },
   );

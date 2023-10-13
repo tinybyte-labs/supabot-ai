@@ -36,80 +36,75 @@ import {
   Trash2,
 } from "lucide-react";
 import Link from "next/link";
-import { useMemo } from "react";
+import { useCallback, useState } from "react";
 
 const LinksPage: NextPageWithLayout = () => {
+  const { toast } = useToast();
   const [Modal, { openModal }] = useModal(AddLinksModal);
   const { data: chatbot, isSuccess: isChatbotLoaded } = useChatbot();
+  const [isRetrainingLinks, setIsRetrainingLinks] = useState(false);
+  const [isDeleteingLinks, setIsDeleteingLinks] = useState(false);
 
-  const linksQuery = trpc.link.list.useQuery(
+  const linksQuery = trpc.link.getLinksForChatbot.useQuery(
     { chatbotId: chatbot?.id || "" },
     { enabled: isChatbotLoaded },
   );
-
-  const retrainMany = trpc.link.retrainMany.useMutation({
-    onSuccess: (data) => {
-      toast({ title: `${data.length} links added to training` });
-      table.resetRowSelection();
-      linksQuery.refetch();
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-
-  const deleteMany = trpc.link.deleteMany.useMutation({
-    onSuccess: (data) => {
-      toast({ title: `${data.count} links deleted` });
-      table.resetRowSelection();
-      linksQuery.refetch();
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-
-  const isBusey = useMemo(
-    () =>
-      retrainMany.isLoading ||
-      deleteMany.isLoading ||
-      linksQuery.isRefetching ||
-      linksQuery.isLoading,
-    [
-      deleteMany.isLoading,
-      linksQuery.isLoading,
-      linksQuery.isRefetching,
-      retrainMany.isLoading,
-    ],
-  );
-  const data = useMemo(() => linksQuery.data || [], [linksQuery.data]);
+  const retrainLinkMutation = trpc.link.retrainLink.useMutation();
+  const deleteLinkMutation = trpc.link.deleteLink.useMutation();
 
   const table = useReactTable({
-    data,
+    data: linksQuery.data ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
   });
-  const { toast } = useToast();
 
-  const onRetrainMany = () => {
-    const links = table.getSelectedRowModel().rows;
-    retrainMany.mutate({ ids: links.map((link) => link.original.id) });
-  };
+  const retrainSelectedLinks = useCallback(async () => {
+    const selectedRows = table.getSelectedRowModel().rows;
+    setIsRetrainingLinks(true);
+    try {
+      await Promise.all(
+        selectedRows.map(async (row) =>
+          retrainLinkMutation.mutateAsync({ linkId: row.original.id }),
+        ),
+      );
+      toast({ title: `${selectedRows.length} link(s) added to queue` });
+      table.resetRowSelection();
+      linksQuery.refetch();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message ?? "Something went wrong!",
+        variant: "destructive",
+      });
+    } finally {
+      setIsRetrainingLinks(false);
+    }
+  }, [linksQuery, retrainLinkMutation, table, toast]);
 
-  const onDeleteMany = () => {
-    const links = table.getSelectedRowModel().rows;
-    deleteMany.mutate({ ids: links.map((link) => link.original.id) });
-  };
+  const deleteSelectedLinks = useCallback(async () => {
+    const selectedRows = table.getSelectedRowModel().rows;
+    setIsDeleteingLinks(true);
+    try {
+      await Promise.all(
+        selectedRows.map(async (row) =>
+          deleteLinkMutation.mutateAsync({ linkId: row.original.id }),
+        ),
+      );
+      toast({ title: `${selectedRows.length} links deleted` });
+      table.resetRowSelection();
+      linksQuery.refetch();
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message ?? "Something went wrong!",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleteingLinks(false);
+    }
+  }, [deleteLinkMutation, linksQuery, table, toast]);
 
   return (
     <>
@@ -125,11 +120,11 @@ const LinksPage: NextPageWithLayout = () => {
               {table.getSelectedRowModel().rows.length} row(s) selected
             </p>
             <Button
-              disabled={isBusey}
+              disabled={isRetrainingLinks}
               variant="secondary"
-              onClick={onRetrainMany}
+              onClick={retrainSelectedLinks}
             >
-              {retrainMany.isLoading ? (
+              {isRetrainingLinks ? (
                 <Loader2 size={18} className="-ml-1 mr-2 animate-spin" />
               ) : (
                 <RotateCw size={18} className="-ml-1 mr-2" />
@@ -137,11 +132,11 @@ const LinksPage: NextPageWithLayout = () => {
               Retrain Link(s)
             </Button>
             <Button
-              disabled={isBusey}
+              disabled={isDeleteingLinks}
               variant="destructive"
-              onClick={onDeleteMany}
+              onClick={deleteSelectedLinks}
             >
-              {deleteMany.isLoading ? (
+              {isDeleteingLinks ? (
                 <Loader2 size={18} className="-ml-1 mr-2 animate-spin" />
               ) : (
                 <Trash2 size={18} className="-ml-1 mr-2" />
@@ -152,7 +147,7 @@ const LinksPage: NextPageWithLayout = () => {
         ) : (
           <>
             <Button
-              disabled={isBusey}
+              disabled={linksQuery.isRefetching}
               variant="outline"
               onClick={() => linksQuery.refetch()}
             >
@@ -163,7 +158,7 @@ const LinksPage: NextPageWithLayout = () => {
               )}
               Refresh
             </Button>
-            <Button disabled={isBusey} onClick={openModal}>
+            <Button onClick={openModal}>
               <Plus size={18} className="-ml-1 mr-2" />
               Add Link
             </Button>
@@ -251,9 +246,9 @@ export const columns: ColumnDef<LinkTable>[] = [
 const ActionButton = ({ link }: { link: LinkTable }) => {
   const utils = trpc.useContext();
   const { toast } = useToast();
-  const deleteLink = trpc.link.delete.useMutation({
+  const deleteLink = trpc.link.deleteLink.useMutation({
     onSuccess: () => {
-      utils.link.list.invalidate({ chatbotId: link.chatbotId });
+      utils.link.getLinksForChatbot.invalidate({ chatbotId: link.chatbotId });
       toast({ title: "Link delete success" });
     },
     onError: (error) => {
@@ -264,9 +259,9 @@ const ActionButton = ({ link }: { link: LinkTable }) => {
       });
     },
   });
-  const retrainLink = trpc.link.retrain.useMutation({
+  const retrainLink = trpc.link.retrainLink.useMutation({
     onSuccess: () => {
-      utils.link.list.invalidate({ chatbotId: link.chatbotId });
+      utils.link.getLinksForChatbot.invalidate({ chatbotId: link.chatbotId });
       toast({ title: "Successfully added to queue" });
     },
     onError: (error) => {
@@ -295,13 +290,13 @@ const ActionButton = ({ link }: { link: LinkTable }) => {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           disabled={deleteLink.isLoading || retrainLink.isLoading}
-          onClick={() => retrainLink.mutate({ id: link.id })}
+          onClick={() => retrainLink.mutate({ linkId: link.id })}
         >
           Retrain
         </DropdownMenuItem>
         <DropdownMenuItem
           disabled={deleteLink.isLoading || retrainLink.isLoading}
-          onClick={() => deleteLink.mutate({ id: link.id })}
+          onClick={() => deleteLink.mutate({ linkId: link.id })}
         >
           Delete
         </DropdownMenuItem>
