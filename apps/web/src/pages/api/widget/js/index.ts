@@ -1,4 +1,4 @@
-import { defaultChatbotSettings } from "@/data/defaultChatbotSettings";
+import { defaultChatbotSettings } from "@acme/core";
 import { BASE_DOMAIN } from "@/utils/constants";
 import type { ChatbotSettings } from "@acme/core";
 import { db } from "@acme/db";

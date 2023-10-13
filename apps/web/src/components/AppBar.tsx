@@ -1,19 +1,32 @@
 import ToggleSidebarButton from "./ToggleSidebarButton";
 import { Button } from "./ui/button";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, Sparkles } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import FoodbackForm from "./froms/FoodbackForm";
+import FeedbackForm from "./forms/FeedbackForm";
 import { useState } from "react";
 import Link from "next/link";
+import { usePlan } from "@/hooks/usePlan";
+import { useRouter } from "next/router";
+import { freePlan } from "@acme/plans";
 
 const AppBar = () => {
   const [feedbackPopoverOpen, setFeedbackPopoverOpen] = useState(false);
+  const plan = usePlan();
+  const router = useRouter();
 
   return (
-    <header className="sticky top-0 z-30 border-b bg-background text-foreground">
+    <header className="bg-background text-foreground sticky top-0 z-30 border-b">
       <div className="flex h-14 items-center justify-end gap-2 px-4">
         <ToggleSidebarButton />
         <div className="flex-1"></div>
+        {plan.id === freePlan.id && (
+          <Button asChild>
+            <Link href={`/${router.query.orgSlug}/plan-billing#plans`}>
+              <Sparkles size={18} className="-ml-1 mr-2" />
+              Upgrade
+            </Link>
+          </Button>
+        )}
         <Popover
           open={feedbackPopoverOpen}
           onOpenChange={setFeedbackPopoverOpen}
@@ -25,7 +38,7 @@ const AppBar = () => {
             </Button>
           </PopoverTrigger>
           <PopoverContent align="end" className="w-80">
-            <FoodbackForm onSuccess={() => setFeedbackPopoverOpen(false)} />
+            <FeedbackForm onSuccess={() => setFeedbackPopoverOpen(false)} />
           </PopoverContent>
         </Popover>
         <Button asChild variant="ghost">

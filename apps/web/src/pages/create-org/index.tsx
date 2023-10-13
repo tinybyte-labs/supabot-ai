@@ -37,7 +37,7 @@ const CreateOrgPage: NextPageWithLayout = () => {
 
   const createOrgMutation = trpc.organization.create.useMutation({
     onSuccess: (data) => {
-      router.push(`/${data.slug}`);
+      router.push(`/${data.slug}/plan-billing#plans`);
       toast({ title: "Organization created" });
     },
     onError: (error) => {

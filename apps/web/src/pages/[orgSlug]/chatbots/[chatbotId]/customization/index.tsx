@@ -33,7 +33,7 @@ import {
   PopoverTrigger,
 } from "@radix-ui/react-popover";
 import ColorPicker from "@/components/ColorPicker";
-import { defaultChatbotSettings } from "@/data/defaultChatbotSettings";
+import { defaultChatbotSettings } from "@acme/core";
 import { trpc } from "@/utils/trpc";
 import { useChatbot } from "@/hooks/useChatbot";
 

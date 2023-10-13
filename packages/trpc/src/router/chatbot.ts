@@ -2,7 +2,7 @@ import { protectedProcedure, publicProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import * as z from "zod";
 import { defaultChatbotSettings } from "@acme/core";
-import { plans } from "@acme/plans";
+import { allPlans } from "@acme/plans";
 import { createChatbotValidator, updateChatbotValidator } from "@acme/core";
 
 export const chatbotRouter = router({
@@ -128,7 +128,7 @@ export const chatbotRouter = router({
           message: "Organization not found!",
         });
       }
-      const plan = plans.find((plan) => plan.id === organization.plan);
+      const plan = allPlans.find((plan) => plan.id === organization.plan);
       if (!plan) {
         throw new TRPCError({
           code: "FORBIDDEN",
@@ -142,7 +142,7 @@ export const chatbotRouter = router({
         if (chatbotsCount >= plan.limits.chatbots) {
           throw new TRPCError({
             code: "FORBIDDEN",
-            message: "Chatbot creation limit riched",
+            message: "Chatbot creation limit reached",
           });
         }
       }

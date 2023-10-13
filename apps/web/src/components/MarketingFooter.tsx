@@ -72,7 +72,7 @@ const MarketingFooter = () => {
             title="Legal"
             items={[
               {
-                href: "/privicy",
+                href: "/privacy",
                 label: "Privacy",
               },
               {

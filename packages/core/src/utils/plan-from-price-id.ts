@@ -1,7 +1,7 @@
-import { plans } from "@acme/plans";
+import { allPlans } from "@acme/plans";
 
 export const planFromPriceId = (priceId: string) => {
-  return plans.find(
+  return allPlans.find(
     (plan) =>
       plan.price.monthly.priceId === priceId ||
       plan.price.yearly.priceId === priceId,

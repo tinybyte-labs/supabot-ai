@@ -4,6 +4,7 @@ import Script from "next/script";
 const ChatbotWidgetScript = () => {
   return (
     <Script
+      async
       strategy="lazyOnload"
       src={`${BASE_DOMAIN}/api/widget/js?id=${process.env.NEXT_PUBLIC_CHATBOT_ID}`}
     ></Script>

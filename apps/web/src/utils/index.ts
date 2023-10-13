@@ -1,4 +1,4 @@
-import { defaultChatbotSettings } from "@/data/defaultChatbotSettings";
+import { defaultChatbotSettings } from "@acme/core";
 import { type ChatbotSettings, getHSLFromColor } from "@acme/core";
 
 export const getChatbotStyle = (

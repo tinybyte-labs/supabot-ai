@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { qstash } from "@acme/upstash";
 import { protectedProcedure, router } from "../trpc";
 import * as z from "zod";
-import { plans } from "@acme/plans";
+import { allPlans } from "@acme/plans";
 import { trainLink } from "@acme/core";
 import { PrismaClient } from "@acme/db";
 
@@ -77,7 +77,9 @@ export const linkRouter = router({
         });
       }
 
-      const plan = plans.find((plan) => plan.id === chatbot.organization.plan);
+      const plan = allPlans.find(
+        (plan) => plan.id === chatbot.organization.plan,
+      );
       if (!plan) {
         throw new TRPCError({
           code: "FORBIDDEN",
@@ -132,7 +134,9 @@ export const linkRouter = router({
         });
       }
 
-      const plan = plans.find((plan) => plan.id === chatbot.organization.plan);
+      const plan = allPlans.find(
+        (plan) => plan.id === chatbot.organization.plan,
+      );
       if (!plan) {
         throw new TRPCError({
           code: "FORBIDDEN",

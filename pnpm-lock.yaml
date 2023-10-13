@@ -73,6 +73,9 @@ importers:
       '@acme/emails':
         specifier: workspace:*
         version: link:../../packages/emails
+      '@acme/plans':
+        specifier: workspace:*
+        version: link:../../packages/plans
       '@acme/trpc':
         specifier: workspace:*
         version: link:../../packages/trpc
