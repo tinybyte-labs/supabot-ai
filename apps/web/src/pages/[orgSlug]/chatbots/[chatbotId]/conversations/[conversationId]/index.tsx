@@ -7,6 +7,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
 import { COUNTRIES } from "@/data/countries";
 import { useChatbot } from "@/hooks/useChatbot";
@@ -14,24 +19,42 @@ import ConversationsLayout from "@/layouts/ConversationsLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
 import { getChatbotStyle, type ChatbotSettings, type IpInfo } from "@acme/core";
+import { Conversation } from "@acme/db";
 import { formatDistanceToNow } from "date-fns";
-import { Loader2, MoreVertical, RefreshCw } from "lucide-react";
+import {
+  Loader2,
+  MoreVertical,
+  PanelRightClose,
+  PanelRightOpen,
+  RefreshCw,
+  Sidebar,
+  X,
+} from "lucide-react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/router";
-import { Fragment, useCallback, useEffect, useMemo, useRef } from "react";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 const ConversationPage: NextPageWithLayout = () => {
+  const [showDetails, setShowDetails] = useState(true);
   const scrollElRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { resolvedTheme } = useTheme();
   const conversationId = router.query.conversationId as string;
   const { data: chatbot } = useChatbot();
   const { toast } = useToast();
+
   const chatbotSettings: ChatbotSettings = useMemo(
     () => ({ ...(chatbot?.settings as any) }),
     [chatbot?.settings],
   );
-  const conversationQuery = trpc.conversation.getById.useQuery(
+  const conversationQuery = trpc.conversation.getConversationById.useQuery(
     { conversationId },
     { enabled: router.isReady },
   );
@@ -40,27 +63,28 @@ const ConversationPage: NextPageWithLayout = () => {
     { enabled: router.isReady },
   );
   const utils = trpc.useContext();
-  const updateConversationMutation = trpc.conversation.update.useMutation({
-    onSuccess: (data, vars) => {
-      toast({
-        title: "Success",
-        description: "Conversation status changed to closed",
-      });
-      utils.conversation.list.invalidate({ chatbotId: data.chatbotId });
-      utils.conversation.getById.invalidate({
-        conversationId: vars.conversationId,
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-
-  const ipInfo = conversationQuery.data?.ipInfo as IpInfo | null;
+  const updateConversationMutation =
+    trpc.conversation.updateConversation.useMutation({
+      onSuccess: (data, vars) => {
+        toast({
+          title: "Success",
+          description: "Conversation status changed to closed",
+        });
+        utils.conversation.getConversationsForChatbot.invalidate({
+          chatbotId: data.chatbotId,
+        });
+        utils.conversation.getConversationById.invalidate({
+          conversationId: vars.conversationId,
+        });
+      },
+      onError: (error) => {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    });
 
   const closeConversation = () =>
     updateConversationMutation.mutate({
@@ -116,32 +140,43 @@ const ConversationPage: NextPageWithLayout = () => {
   }
 
   return (
-    <>
-      <style>{getChatbotStyle("chatbox", chatbotSettings)}</style>
-      <div className="chatbox flex flex-1 overflow-hidden">
-        <div className="flex flex-1 flex-col overflow-hidden">
-          <div className="bg-card text-card-foreground sticky top-0 z-20 flex h-14 items-center border-b pl-4 pr-2">
-            <h2 className="flex-1 text-xl font-bold tracking-tight">
-              {conversationQuery.data?.title || conversationQuery.data?.id}
-            </h2>
-            <div className="flex justify-end gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                disabled={messagesQuery.isRefetching}
-                onClick={() => messagesQuery.refetch()}
-              >
-                {messagesQuery.isRefetching ? (
-                  <Loader2 size={20} className="animate-spin" />
-                ) : (
-                  <RefreshCw size={20} />
-                )}
-              </Button>
+    <div className="chatbox flex flex-1 overflow-hidden">
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <header className="bg-card text-card-foreground sticky top-0 z-20 flex h-14 items-center border-b px-4">
+          <div className="flex flex-1 justify-end gap-2">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  disabled={
+                    messagesQuery.isRefetching || conversationQuery.isRefetching
+                  }
+                  onClick={() => {
+                    conversationQuery.refetch();
+                    messagesQuery.refetch();
+                  }}
+                >
+                  {messagesQuery.isRefetching ||
+                  conversationQuery.isRefetching ? (
+                    <Loader2 size={20} className="animate-spin" />
+                  ) : (
+                    <RefreshCw size={20} />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" align="end">
+                Refresh Conversation
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <MoreVertical size={20} />
-                  </Button>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                      <MoreVertical size={20} />
+                    </Button>
+                  </TooltipTrigger>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                   <DropdownMenuItem
@@ -155,184 +190,82 @@ const ConversationPage: NextPageWithLayout = () => {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-            </div>
-          </div>
-          <div ref={scrollElRef} className="flex-1 overflow-y-auto">
-            {messagesQuery.isLoading ? (
-              <p>Loading...</p>
-            ) : messagesQuery.isError ? (
-              <p>{messagesQuery.error.message}</p>
-            ) : (
-              <div className="flex-1 space-y-6 p-4">
-                {chatbotSettings.welcomeMessage && (
-                  <BotMessageBubble
-                    name="BOT"
-                    message={chatbotSettings.welcomeMessage}
-                    date={conversationQuery.data.createdAt}
-                    theme={resolvedTheme === "dark" ? "dark" : "light"}
-                    preview
-                  />
-                )}
+              <TooltipContent side="bottom" align="end">
+                Menu
+              </TooltipContent>
+            </Tooltip>
 
-                {messagesQuery.data.map((message) => (
-                  <Fragment key={message.id}>
-                    {message.role === "BOT" ? (
-                      <BotMessageBubble
-                        name="BOT"
-                        message={message.body}
-                        reaction={message.reaction}
-                        sources={(message.metadata as any)?.sources as string[]}
-                        date={message.createdAt}
-                        theme={resolvedTheme === "dark" ? "dark" : "light"}
-                        preview
-                      />
-                    ) : message.role === "USER" ? (
-                      <BotMessageBubble
-                        name="CUSTOMER"
-                        message={message.body}
-                        date={message.createdAt}
-                        theme={resolvedTheme === "dark" ? "dark" : "light"}
-                        preview
-                      />
-                    ) : null}
-                  </Fragment>
-                ))}
-              </div>
+            {!showDetails && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setShowDetails(!showDetails)}
+                  >
+                    <PanelRightOpen size={20} />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" align="end">
+                  Open Details Panel
+                </TooltipContent>
+              </Tooltip>
             )}
           </div>
-        </div>
-        <div className="w-80 space-y-4 overflow-y-auto border-l p-4">
-          <section>
-            <p className="mb-2 font-semibold">Conversation</p>
-            <div className="space-y-1">
-              {[
-                {
-                  label: "Id",
-                  value: conversationQuery.data.id,
-                },
-                {
-                  label: "Path",
-                  value: conversationQuery.data.url
-                    ? new URL(conversationQuery.data.url).pathname
-                    : "Unknown",
-                },
-                {
-                  label: "Status",
-                  value: conversationQuery.data.status ?? "Unknown",
-                },
-                {
-                  label: "Started",
-                  value: formatDistanceToNow(
-                    new Date(conversationQuery.data.createdAt),
-                    {
-                      addSuffix: true,
-                    },
-                  ),
-                },
-                ...(conversationQuery.data.closedAt
-                  ? [
-                      {
-                        label: "Closed",
-                        value: formatDistanceToNow(
-                          new Date(conversationQuery.data.closedAt),
-                          {
-                            addSuffix: true,
-                          },
-                        ),
-                      },
-                    ]
-                  : []),
-              ].map((item, i) => (
-                <div key={i} className="flex text-sm">
-                  <div className="w-1/3 flex-shrink-0 font-medium">
-                    {item.label}:
-                  </div>
-                  <div className="text-muted-foreground flex-1 break-all">
-                    {item.value}
-                  </div>
-                </div>
+        </header>
+
+        <style>{getChatbotStyle("chatbox", chatbotSettings)}</style>
+        <div ref={scrollElRef} className="flex-1 overflow-y-auto">
+          {messagesQuery.isLoading ? (
+            <p>Loading...</p>
+          ) : messagesQuery.isError ? (
+            <p>{messagesQuery.error.message}</p>
+          ) : (
+            <div className="flex-1 space-y-10 p-4 pb-32">
+              {chatbotSettings.welcomeMessage && (
+                <BotMessageBubble
+                  name="BOT"
+                  message={chatbotSettings.welcomeMessage}
+                  date={conversationQuery.data.createdAt}
+                  theme={resolvedTheme === "dark" ? "dark" : "light"}
+                  preview
+                />
+              )}
+
+              {messagesQuery.data.map((message) => (
+                <Fragment key={message.id}>
+                  {message.role === "BOT" ? (
+                    <BotMessageBubble
+                      name="BOT"
+                      message={message.body}
+                      reaction={message.reaction}
+                      sources={(message.metadata as any)?.sources as string[]}
+                      date={message.createdAt}
+                      theme={resolvedTheme === "dark" ? "dark" : "light"}
+                      preview
+                    />
+                  ) : message.role === "USER" ? (
+                    <BotMessageBubble
+                      name="CUSTOMER"
+                      message={message.body}
+                      date={message.createdAt}
+                      theme={resolvedTheme === "dark" ? "dark" : "light"}
+                      preview
+                    />
+                  ) : null}
+                </Fragment>
               ))}
             </div>
-          </section>
-          <section>
-            <p className="mb-2 font-semibold">User</p>
-            <div className="space-y-1">
-              {[
-                {
-                  label: "Id",
-                  value: conversationQuery.data.user?.id || "Unknown",
-                },
-                {
-                  label: "Email",
-                  value: conversationQuery.data.user?.email || "Unknown",
-                },
-                {
-                  label: "Name",
-                  value: conversationQuery.data.user?.name || "Unknown",
-                },
-              ].map((item, i) => (
-                <div key={i} className="flex text-sm">
-                  <div className="w-1/3 flex-shrink-0 font-medium">
-                    {item.label}:
-                  </div>
-                  <div className="text-muted-foreground flex-1 break-all">
-                    {item.value}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-          <section>
-            <p className="mb-2 font-semibold">Address</p>
-            <div className="space-y-1">
-              {[
-                {
-                  label: "IP",
-                  value: ipInfo?.ip ?? "Unknown",
-                },
-                {
-                  label: "City",
-                  value: ipInfo?.city ?? "Unknown",
-                },
-                {
-                  label: "Region",
-                  value: ipInfo?.region ?? "Unknown",
-                },
-                {
-                  label: "Country",
-                  value: ipInfo?.country
-                    ? COUNTRIES.find(
-                        (country) => country.code === ipInfo.country,
-                      )?.name
-                    : "Unknown",
-                },
-                {
-                  label: "Postal",
-                  value: ipInfo?.postal ?? "Unknown",
-                },
-                {
-                  label: "Timezone",
-                  value: ipInfo?.timezone ?? "Unknown",
-                },
-                {
-                  label: "Location",
-                  value: ipInfo?.loc ?? "Unknown",
-                },
-              ].map((item, i) => (
-                <div key={i} className="flex text-sm">
-                  <div className="w-1/3 flex-shrink-0 font-medium">
-                    {item.label}:
-                  </div>
-                  <div className="text-muted-foreground flex-1 break-all">
-                    {item.value}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
+          )}
         </div>
       </div>
-    </>
+      {showDetails && (
+        <DetailsPanel
+          conversation={conversationQuery.data}
+          onClose={() => setShowDetails(false)}
+        />
+      )}
+    </div>
   );
 };
 
@@ -341,3 +274,127 @@ ConversationPage.getLayout = (page) => (
 );
 
 export default ConversationPage;
+
+const DetailsPanel = ({
+  conversation,
+  onClose,
+}: {
+  conversation: Conversation;
+  onClose: () => void;
+}) => {
+  const ipInfo = conversation.ipInfo as IpInfo | null;
+  const chatbotUser = trpc.chatbotUser.getUserById.useQuery(
+    { userId: conversation.userId ?? "" },
+    { enabled: !!conversation.userId },
+  );
+  const { toast } = useToast();
+
+  return (
+    <div className="flex w-96 flex-col border-l">
+      <header className="flex h-14 items-center border-b px-4">
+        <p className="flex-1 truncate">Conversation Details</p>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button variant="ghost" size="icon" onClick={onClose}>
+              <X size={20} />
+              <p className="sr-only">Close Panel</p>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" align="end">
+            Close Panel
+          </TooltipContent>
+        </Tooltip>
+      </header>
+      <div className="flex-1 overflow-y-auto pb-32">
+        {[
+          {
+            label: "Id",
+            value: conversation.id,
+          },
+          {
+            label: "Path",
+            value: conversation.url
+              ? new URL(conversation.url).pathname
+              : "Unknown",
+          },
+          {
+            label: "Status",
+            value: conversation.status ?? "Unknown",
+          },
+          {
+            label: "Started At",
+            value: conversation.createdAt.toLocaleString(),
+          },
+          ...(conversation.closedAt
+            ? [
+                {
+                  label: "Closed At",
+                  value: conversation.closedAt.toLocaleString(),
+                },
+              ]
+            : []),
+          {
+            label: "User Id",
+            value: chatbotUser.data?.id || "Unknown",
+          },
+          {
+            label: "User Email",
+            value: chatbotUser.data?.email || "Unknown",
+          },
+          {
+            label: "User Name",
+            value: chatbotUser.data?.name || "Unknown",
+          },
+          {
+            label: "IP Address",
+            value: ipInfo?.ip ?? "Unknown",
+          },
+          {
+            label: "City",
+            value: ipInfo?.city ?? "Unknown",
+          },
+          {
+            label: "Region",
+            value: ipInfo?.region ?? "Unknown",
+          },
+          {
+            label: "Country",
+            value:
+              COUNTRIES.find((country) => country.code === ipInfo?.country)
+                ?.name ?? "Unknown",
+          },
+          {
+            label: "Postal",
+            value: ipInfo?.postal ?? "Unknown",
+          },
+          {
+            label: "Timezone",
+            value: ipInfo?.timezone ?? "Unknown",
+          },
+          {
+            label: "Location",
+            value: ipInfo?.loc ?? "Unknown",
+          },
+        ].map((item) => (
+          <Tooltip key={item.label}>
+            <TooltipTrigger asChild>
+              <button
+                className="flex w-full border-b p-4"
+                onClick={() => {
+                  navigator.clipboard.writeText(item.value);
+                  toast({ title: `${item.label} copied to your clipboard.` });
+                }}
+              >
+                <p className="text-muted-foreground text-left">{item.label}</p>
+                <p className="flex-1 text-end">{item.value}</p>
+              </button>
+            </TooltipTrigger>
+            <TooltipContent align="center" side="left">
+              Copy {item.label}
+            </TooltipContent>
+          </Tooltip>
+        ))}
+      </div>
+    </div>
+  );
+};

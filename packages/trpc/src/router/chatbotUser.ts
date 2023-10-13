@@ -34,10 +34,19 @@ export const chatbotUserRouter = router({
         },
       });
     }),
-  getUser: publicProcedure
+  getUserById: publicProcedure
     .input(z.object({ userId: z.string() }))
-    .query(({ ctx, input }) => {
-      return ctx.db.chatbotUser.findUnique({ where: { id: input.userId } });
+    .query(async ({ ctx, input }) => {
+      const user = await ctx.db.chatbotUser.findUnique({
+        where: { id: input.userId },
+      });
+      if (!user) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Chatbot user not found!",
+        });
+      }
+      return user;
     }),
   update: publicProcedure
     .input(

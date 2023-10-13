@@ -19,7 +19,7 @@ import Link from "next/link";
 const ConversationsPage: NextPageWithLayout = () => {
   const { chatbot, user, startConversation, startConversationLoading } =
     useChatbotWidget();
-  const conversationsQuery = trpc.conversation.publicList.useQuery(
+  const conversationsQuery = trpc.conversation.public.publicList.useQuery(
     {
       chatbotId: chatbot.id || "",
       userId: user?.id || "",

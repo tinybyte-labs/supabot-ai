@@ -42,7 +42,7 @@ const ConversationPage: NextPageWithLayout = () => {
     () => (chatbot.settings ?? {}) as ChatbotSettings,
     [chatbot.settings],
   );
-  const conversationQuery = trpc.conversation.publicGetById.useQuery(
+  const conversationQuery = trpc.conversation.public.publicGetById.useQuery(
     { conversationId },
     { enabled: router.isReady },
   );
@@ -66,8 +66,8 @@ const ConversationPage: NextPageWithLayout = () => {
       });
     },
   });
-  const updateConversationMutation = trpc.conversation.publicUpdate.useMutation(
-    {
+  const updateConversationMutation =
+    trpc.conversation.public.publicUpdate.useMutation({
       onSuccess: () => {
         conversationQuery.refetch();
         toast({
@@ -83,8 +83,7 @@ const ConversationPage: NextPageWithLayout = () => {
           variant: "destructive",
         });
       },
-    },
-  );
+    });
   const sendMessageMutation = trpc.message.send.useMutation({
     onSuccess: ({ botMessage, userMessage }) => {
       utils.message.list.setData(

@@ -3,52 +3,9 @@ import { protectedProcedure, publicProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { IpInfo, getIpInfo } from "@acme/core";
 import { compareDesc } from "date-fns";
+import { hasUserAccessToChatbot } from "./utils";
 
-export const conversationRouter = router({
-  getById: protectedProcedure
-    .input(
-      z.object({
-        conversationId: z.string(),
-      }),
-    )
-    .query(async ({ ctx, input }) => {
-      const conversation = await ctx.db.conversation.findFirst({
-        where: {
-          id: input.conversationId,
-          chatbot: {
-            organization: {
-              members: { some: { userId: ctx.session.user.id } },
-            },
-          },
-        },
-        select: {
-          id: true,
-          title: true,
-          ipInfo: true,
-          url: true,
-          status: true,
-          createdAt: true,
-          updatedAt: true,
-          userId: true,
-          ipAddress: true,
-          closedAt: true,
-          user: {
-            select: {
-              id: true,
-              email: true,
-              name: true,
-            },
-          },
-        },
-      });
-      if (!conversation) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "Conversation not found!",
-        });
-      }
-      return conversation;
-    }),
+const publicConversationRouter = router({
   create: publicProcedure
     .input(
       z.object({
@@ -72,96 +29,7 @@ export const conversationRouter = router({
         },
       });
     }),
-  list: protectedProcedure
-    .input(
-      z.object({
-        chatbotId: z.string(),
-        status: z.enum(["OPEN", "CLOSED"]).optional(),
-      }),
-    )
-    .query(async ({ ctx, input }) => {
-      const chatbot = await ctx.db.chatbot.findUnique({
-        where: {
-          id: input.chatbotId,
-          organization: { members: { some: { userId: ctx.session.user.id } } },
-        },
-      });
-      if (!chatbot) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Chatbot not found!",
-        });
-      }
-      const conversations = await ctx.db.conversation.findMany({
-        where: {
-          chatbotId: chatbot.id,
-          ...(!!input.status ? { status: input.status } : {}),
-        },
-        select: {
-          id: true,
-          title: true,
-          updatedAt: true,
-          createdAt: true,
-          status: true,
-          messages: {
-            select: {
-              role: true,
-              body: true,
-              updatedAt: true,
-            },
-            orderBy: {
-              updatedAt: "desc",
-            },
-            take: 1,
-          },
-        },
-      });
-      return conversations
-        .filter((conversation) => conversation.messages.length > 0)
-        .sort((a, b) =>
-          compareDesc(a.messages[0].updatedAt, b.messages[0].updatedAt),
-        );
-    }),
-  update: protectedProcedure
-    .input(
-      z.object({
-        conversationId: z.string(),
-        data: z.object({
-          status: z.enum(["OPEN", "CLOSED"]).optional(),
-        }),
-      }),
-    )
-    .mutation(async (opts) => {
-      const conversation = await opts.ctx.db.conversation.findFirst({
-        where: {
-          id: opts.input.conversationId,
-          chatbot: {
-            organization: {
-              members: { some: { userId: opts.ctx.session.user.id } },
-            },
-          },
-        },
-      });
-      if (!conversation) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Conversation not found!",
-        });
-      }
-      return opts.ctx.db.conversation.update({
-        where: { id: opts.input.conversationId },
-        data: {
-          ...(opts.input.data.status
-            ? {
-                status: opts.input.data.status,
-                ...(opts.input.data.status === "CLOSED"
-                  ? { closedAt: new Date() }
-                  : {}),
-              }
-            : {}),
-        },
-      });
-    }),
+
   publicGetById: publicProcedure
     .input(
       z.object({
@@ -262,4 +130,106 @@ export const conversationRouter = router({
         },
       });
     }),
+});
+
+export const conversationRouter = router({
+  getConversationById: publicProcedure
+    .input(z.object({ conversationId: z.string() }))
+    .query(async (otps) => {
+      const conversation = await otps.ctx.db.conversation.findFirst({
+        where: { id: otps.input.conversationId },
+      });
+      if (!conversation) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Conversation not found!",
+        });
+      }
+      return conversation;
+    }),
+  getConversationsForChatbot: protectedProcedure
+    .input(
+      z.object({
+        chatbotId: z.string(),
+        status: z.enum(["OPEN", "CLOSED"]).optional(),
+      }),
+    )
+    .query(async (opts) => {
+      const { chatbot } = await hasUserAccessToChatbot(
+        opts.input.chatbotId,
+        opts.ctx,
+      );
+
+      const conversations = await opts.ctx.db.conversation.findMany({
+        where: {
+          chatbotId: chatbot.id,
+          ...(opts.input.status ? { status: opts.input.status } : {}),
+        },
+        select: {
+          id: true,
+          title: true,
+          updatedAt: true,
+          createdAt: true,
+          status: true,
+          messages: {
+            select: {
+              role: true,
+              body: true,
+              updatedAt: true,
+            },
+            orderBy: {
+              updatedAt: "desc",
+            },
+            take: 1,
+          },
+        },
+      });
+
+      return conversations
+        .filter((conversation) => conversation.messages.length > 0)
+        .sort((a, b) =>
+          compareDesc(a.messages[0].updatedAt, b.messages[0].updatedAt),
+        );
+    }),
+  updateConversation: protectedProcedure
+    .input(
+      z.object({
+        conversationId: z.string(),
+        data: z.object({
+          status: z.enum(["OPEN", "CLOSED"]).optional(),
+        }),
+      }),
+    )
+    .mutation(async (opts) => {
+      const conversation = await opts.ctx.db.conversation.findFirst({
+        where: {
+          id: opts.input.conversationId,
+          chatbot: {
+            organization: {
+              members: { some: { userId: opts.ctx.session.user.id } },
+            },
+          },
+        },
+      });
+      if (!conversation) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Conversation not found!",
+        });
+      }
+
+      await hasUserAccessToChatbot(conversation.chatbotId, opts.ctx);
+
+      const { status } = opts.input.data;
+      const updatedConversation = await opts.ctx.db.conversation.update({
+        where: { id: conversation.id },
+        data: {
+          ...(status ? { status: status } : {}),
+          ...(status === "CLOSED" ? { closedAt: new Date() } : {}),
+        },
+      });
+
+      return updatedConversation;
+    }),
+  public: publicConversationRouter,
 });

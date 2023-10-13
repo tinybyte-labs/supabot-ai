@@ -50,7 +50,7 @@ const ChatbotWidgetLayout = ({
     },
   );
 
-  const userQuery = trpc.chatbotUser.getUser.useQuery(
+  const userQuery = trpc.chatbotUser.getUserById.useQuery(
     { userId: userId || "" },
     {
       enabled: !!userId,
@@ -84,18 +84,20 @@ const ChatbotWidgetLayout = ({
     router.reload();
   };
 
-  const startConversationMutation = trpc.conversation.create.useMutation({
-    onSuccess: (data) => {
-      router.push(`/widgets/c/${chatbotId}/conversations/${data.id}`);
+  const startConversationMutation = trpc.conversation.public.create.useMutation(
+    {
+      onSuccess: (data) => {
+        router.push(`/widgets/c/${chatbotId}/conversations/${data.id}`);
+      },
+      onError: (error) => {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
     },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
+  );
 
   const startConversation = () =>
     startConversationMutation.mutate({

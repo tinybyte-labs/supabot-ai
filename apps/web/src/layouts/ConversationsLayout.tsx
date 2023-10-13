@@ -29,18 +29,19 @@ const ConversationsLayout = ({ children }: { children: ReactNode }) => {
   const { data: chatbot, isSuccess: isChatbotLoaded } = useChatbot();
   const { conversationId } = router.query as { conversationId: string };
   const [statusFilter, setStatusFilter] = useState("ALL");
-  const conversationsQuery = trpc.conversation.list.useQuery(
-    {
-      chatbotId: chatbot?.id || "",
-      status:
-        statusFilter === "OPEN"
-          ? "OPEN"
-          : statusFilter === "CLOSED"
-          ? "CLOSED"
-          : undefined,
-    },
-    { enabled: isChatbotLoaded },
-  );
+  const conversationsQuery =
+    trpc.conversation.getConversationsForChatbot.useQuery(
+      {
+        chatbotId: chatbot?.id || "",
+        status:
+          statusFilter === "OPEN"
+            ? "OPEN"
+            : statusFilter === "CLOSED"
+            ? "CLOSED"
+            : undefined,
+      },
+      { enabled: isChatbotLoaded },
+    );
 
   useEffect(() => {
     if (
