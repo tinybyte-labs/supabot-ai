@@ -1,4 +1,3 @@
-import BotMessageBubble from "@/components/BotMessageBubble";
 import ErrorBox from "@/components/ErrorBox";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,30 +15,25 @@ import { useToast } from "@/components/ui/use-toast";
 import { COUNTRIES } from "@/data/countries";
 import { useChatbot } from "@/hooks/useChatbot";
 import ConversationsLayout from "@/layouts/ConversationsLayout";
+import { cn } from "@/lib/utils";
 import { NextPageWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
 import { getChatbotStyle, type ChatbotSettings, type IpInfo } from "@acme/core";
 import { Conversation } from "@acme/db";
-import { formatDistanceToNow } from "date-fns";
 import {
+  Bot,
   Loader2,
   MoreVertical,
-  PanelRightClose,
   PanelRightOpen,
   RefreshCw,
-  Sidebar,
+  User,
   X,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/router";
-import {
-  Fragment,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const ConversationPage: NextPageWithLayout = () => {
   const [showDetails, setShowDetails] = useState(true);
@@ -221,39 +215,50 @@ const ConversationPage: NextPageWithLayout = () => {
           ) : messagesQuery.isError ? (
             <p>{messagesQuery.error.message}</p>
           ) : (
-            <div className="flex-1 space-y-10 p-4 pb-32">
-              {chatbotSettings.welcomeMessage && (
-                <BotMessageBubble
-                  name="BOT"
-                  message={chatbotSettings.welcomeMessage}
-                  date={conversationQuery.data.createdAt}
-                  theme={resolvedTheme === "dark" ? "dark" : "light"}
-                  preview
-                />
-              )}
-
+            <div className="flex-1 pb-32">
               {messagesQuery.data.map((message) => (
-                <Fragment key={message.id}>
-                  {message.role === "BOT" ? (
-                    <BotMessageBubble
-                      name="BOT"
-                      message={message.body}
-                      reaction={message.reaction}
-                      sources={(message.metadata as any)?.sources as string[]}
-                      date={message.createdAt}
-                      theme={resolvedTheme === "dark" ? "dark" : "light"}
-                      preview
-                    />
-                  ) : message.role === "USER" ? (
-                    <BotMessageBubble
-                      name="CUSTOMER"
-                      message={message.body}
-                      date={message.createdAt}
-                      theme={resolvedTheme === "dark" ? "dark" : "light"}
-                      preview
-                    />
-                  ) : null}
-                </Fragment>
+                <div
+                  key={message.id}
+                  className={cn("hover:bg-foreground/5 border-b")}
+                >
+                  <div className="container flex max-w-screen-md gap-4 py-6">
+                    <div className="bg-foreground/5 flex h-10 w-10 items-center justify-center rounded-md">
+                      {message.role === "BOT" ? <Bot /> : <User />}
+                    </div>
+                    <div className="flex-1 overflow-hidden">
+                      <p className="mb-2 text-sm">
+                        <b>{message.role}</b>
+                        <time
+                          dateTime={message.createdAt.toISOString()}
+                          className="text-muted-foreground"
+                        >
+                          {" • "}
+                          {message.createdAt.toLocaleString()}
+                        </time>
+                        {message.reaction && (
+                          <span className="text-muted-foreground">
+                            {" • "} User{" "}
+                            <b>
+                              {message.reaction === "LIKE"
+                                ? "liked"
+                                : "disliked"}
+                            </b>{" "}
+                            this message
+                          </span>
+                        )}
+                      </p>
+                      <ReactMarkdown
+                        className={cn(
+                          "prose dark:prose-invert text-foreground max-w-full flex-1 overflow-auto",
+                        )}
+                        remarkPlugins={[remarkGfm]}
+                        linkTarget="_blank"
+                      >
+                        {message.body}
+                      </ReactMarkdown>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           )}
@@ -290,7 +295,7 @@ const DetailsPanel = ({
   const { toast } = useToast();
 
   return (
-    <div className="flex w-96 flex-col border-l">
+    <div className="flex w-80 flex-col border-l">
       <header className="flex h-14 items-center border-b px-4">
         <p className="flex-1 truncate">Conversation Details</p>
         <Tooltip>
@@ -379,13 +384,15 @@ const DetailsPanel = ({
           <Tooltip key={item.label}>
             <TooltipTrigger asChild>
               <button
-                className="flex w-full border-b p-4"
+                className="flex w-full gap-4 border-b p-4 text-sm"
                 onClick={() => {
                   navigator.clipboard.writeText(item.value);
                   toast({ title: `${item.label} copied to your clipboard.` });
                 }}
               >
-                <p className="text-muted-foreground text-left">{item.label}</p>
+                <p className="text-muted-foreground whitespace-nowrap text-left">
+                  {item.label}
+                </p>
                 <p className="flex-1 text-end">{item.value}</p>
               </button>
             </TooltipTrigger>
