@@ -64,7 +64,7 @@ const ChatbotOverviewPage: NextPageWithLayout = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {statusQuery.data.linksCount.toLocaleString()}
+                {statusQuery.data.linkCount.toLocaleString()}
               </div>
               <Link
                 href={`/${org.slug}/chatbots/${chatbot.id}/links`}

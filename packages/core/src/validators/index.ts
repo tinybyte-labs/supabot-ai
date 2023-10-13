@@ -13,8 +13,8 @@ export const createOrgValidator = z.object({
     .max(32, "Slug must be at most 32 characters.")
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/g, "Invalid slug"),
 });
-
 export type CreateOrgDto = z.infer<typeof createOrgValidator>;
+
 export const updateOrgValidator = z.object({
   id: z.string(),
   name: z
@@ -41,7 +41,6 @@ export const createChatbotValidator = z.object({
     .min(2, "Name must be at least 2 characters.")
     .max(32, "Name must be at most 32 characters."),
 });
-
 export type CreateChatbotDto = z.infer<typeof createChatbotValidator>;
 
 export const chatbotSettingsSchema = z.object({
@@ -55,7 +54,6 @@ export const chatbotSettingsSchema = z.object({
   my: z.number().optional(),
   theme: z.enum(["light", "dark"]).default("light").optional(),
 });
-
 export type ChatbotSettings = z.infer<typeof chatbotSettingsSchema>;
 
 export const updateChatbotValidator = z.object({
@@ -65,9 +63,17 @@ export const updateChatbotValidator = z.object({
     .min(2, "Name must be at least 2 characters.")
     .max(32, "Name must be at most 32 characters.")
     .optional(),
-  settings: chatbotSettingsSchema.optional(),
+  image: z.string().url().nullable().optional(),
 });
 export type UpdateChatbotDto = z.infer<typeof updateChatbotValidator>;
+
+export const updateChatbotSettingsValidator = z.object({
+  id: z.string(),
+  settings: chatbotSettingsSchema,
+});
+export type UpdateChatbotSettingsDto = z.infer<
+  typeof updateChatbotSettingsValidator
+>;
 
 export const createQuickPromptValidator = z.object({
   chatbotId: z.string(),

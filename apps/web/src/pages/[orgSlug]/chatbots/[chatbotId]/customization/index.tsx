@@ -18,8 +18,8 @@ import ChatbotLayout from "@/layouts/ChatbotLayout";
 import { NextPageWithLayout } from "@/types/next";
 import {
   type ChatbotSettings,
-  updateChatbotValidator,
-  UpdateChatbotDto,
+  updateChatbotSettingsValidator,
+  UpdateChatbotSettingsDto,
 } from "@acme/core";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Chatbot } from "@acme/db";
@@ -73,8 +73,8 @@ export default ChatbotCustomizationPage;
 
 const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
   const settings = (chatbot.settings ?? {}) as ChatbotSettings;
-  const form = useForm<UpdateChatbotDto>({
-    resolver: zodResolver(updateChatbotValidator),
+  const form = useForm<UpdateChatbotSettingsDto>({
+    resolver: zodResolver(updateChatbotSettingsValidator),
     values: {
       id: chatbot.id,
       settings,
@@ -82,7 +82,7 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
   });
   const { toast } = useToast();
 
-  const updateChatbot = trpc.chatbot.updateChatbot.useMutation({
+  const updateChatbot = trpc.chatbot.updateChatbotSettings.useMutation({
     onSuccess: () => toast({ title: "Update success" }),
     onError: (error) =>
       toast({
@@ -91,7 +91,8 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
         variant: "destructive",
       }),
   });
-  const handleSubmit = (data: UpdateChatbotDto) => updateChatbot.mutate(data);
+  const handleSubmit = (data: UpdateChatbotSettingsDto) =>
+    updateChatbot.mutate(data);
 
   return (
     <div className="container">
