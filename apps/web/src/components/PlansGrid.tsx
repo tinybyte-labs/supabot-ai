@@ -8,7 +8,7 @@ import { Check, HelpCircle, Loader2 } from "lucide-react";
 import { Switch } from "./ui/switch";
 import { useState } from "react";
 import { Plan, PlanInterval } from "@/types/plan";
-import { getFeaturesForPlan, proPlans } from "@acme/plans";
+import { businessPlan, getFeaturesForPlan, proPlans } from "@acme/plans";
 
 const roundPricingRegex = /\.0+$|(\.[0-9]*[1-9])0+$/;
 
@@ -46,7 +46,7 @@ const PlansGrid = ({
 
         <div className="mt-16 grid grid-cols-1 rounded-2xl max-xl:gap-6 lg:grid-cols-2 xl:grid-cols-4">
           {proPlans.map((plan) => {
-            const popular = plan.id === "business";
+            const popular = plan.id === businessPlan.id;
             const price = plan.price[interval];
             const isCurrentPlan = price.priceId === currentPriceId;
             const features = getFeaturesForPlan(plan.id);
@@ -67,6 +67,7 @@ const PlansGrid = ({
                       {plan.description}
                     </p>
                     <p className="text-6xl font-semibold">
+                      $
                       {(interval === "monthly"
                         ? price.amount
                         : price.amount / 12

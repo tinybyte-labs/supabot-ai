@@ -17,11 +17,11 @@ export const freePlan: Plan = {
   price: {
     monthly: {
       amount: 0,
-      priceId: "free_monthly",
+      priceId: "",
     },
     yearly: {
       amount: 0,
-      priceId: "free_yearly",
+      priceId: "",
     },
   },
 };
@@ -43,11 +43,11 @@ export const starterPlan: Plan = {
   price: {
     monthly: {
       amount: 9,
-      priceId: process.env.NEXT_PUBLIC_STARTER_MONTHLY_PRICE_ID || "",
+      priceId: "price_1Nq8NiIQCdsqhd30uKLcDGCE",
     },
     yearly: {
       amount: 90,
-      priceId: process.env.NEXT_PUBLIC_STARTER_YEARLY_PRICE_ID || "",
+      priceId: "price_1Nq8NiIQCdsqhd30ntDovn8j",
     },
   },
 };
@@ -69,11 +69,11 @@ export const teamPlan: Plan = {
   price: {
     monthly: {
       amount: 29,
-      priceId: process.env.NEXT_PUBLIC_TEAM_MONTHLY_PRICE_ID || "",
+      priceId: "price_1Nq8QgIQCdsqhd30pyd0HPc5",
     },
     yearly: {
       amount: 290,
-      priceId: process.env.NEXT_PUBLIC_TEAM_YEARLY_PRICE_ID || "",
+      priceId: "price_1Nq8QgIQCdsqhd30Y3zKMKTN",
     },
   },
 };
@@ -95,11 +95,11 @@ export const businessPlan: Plan = {
   price: {
     monthly: {
       amount: 99,
-      priceId: process.env.NEXT_PUBLIC_BUSINESS_MONTHLY_PRICE_ID || "",
+      priceId: "price_1Nq8RBIQCdsqhd303LuTZ1C1",
     },
     yearly: {
       amount: 990,
-      priceId: process.env.NEXT_PUBLIC_BUSINESS_YEARLY_PRICE_ID || "",
+      priceId: "price_1Nq8RBIQCdsqhd30P21c7TN4",
     },
   },
 };
@@ -121,11 +121,11 @@ export const enterprisePlan: Plan = {
   price: {
     monthly: {
       amount: 699,
-      priceId: process.env.NEXT_PUBLIC_ENTERPRISE_MONTHLY_PRICE_ID || "",
+      priceId: "price_1Nq8RmIQCdsqhd30RKegxT1k",
     },
     yearly: {
       amount: 6990,
-      priceId: process.env.NEXT_PUBLIC_ENTERPRISE_YEARLY_PRICE_ID || "",
+      priceId: "price_1Nq8RmIQCdsqhd30aPmCKKFx",
     },
   },
 };
