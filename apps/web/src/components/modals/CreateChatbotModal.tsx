@@ -44,7 +44,9 @@ const CreateChatbotModal: ModalFn = ({ onOpenChange, open }) => {
   const createChatbot = trpc.chatbot.createChatbot.useMutation({
     onSuccess: (data, vars) => {
       toast({ title: "Chatbot created" });
-      utils.chatbot.list.invalidate({ orgSlug: vars.orgSlug });
+      utils.chatbot.getAllChatbotsForOrganization.invalidate({
+        orgSlug: vars.orgSlug,
+      });
       router.push(`/${vars.orgSlug}/chatbots/${data.id}`);
     },
     onError: (error) => {
