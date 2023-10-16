@@ -50,7 +50,29 @@ const Author = defineDocumentType(() => ({
   },
 }));
 
+export const PrivacyPage = defineDocumentType(() => ({
+  name: "PrivacyPage",
+  isSingleton: true,
+  contentType: "mdx",
+  filePathPattern: "legal/privacy.mdx",
+  fields: {
+    createdAt: { type: "date", required: true },
+    updatedAt: { type: "date", required: true },
+  },
+}));
+
+export const TermsPage = defineDocumentType(() => ({
+  name: "TermsPage",
+  isSingleton: true,
+  contentType: "mdx",
+  filePathPattern: "legal/terms.mdx",
+  fields: {
+    createdAt: { type: "date", required: true },
+    updatedAt: { type: "date", required: true },
+  },
+}));
+
 export default makeSource({
   contentDirPath: "content",
-  documentTypes: [BlogPost, Author],
+  documentTypes: [BlogPost, Author, PrivacyPage, TermsPage],
 });

@@ -35,6 +35,7 @@ export const PUBLIC_PATH_NAMES = new Set([
   "privacy",
   "terms",
   "abuse",
+  "legal",
   ...Object.keys(REDIRECTS),
 ]);
 
@@ -44,6 +45,9 @@ export const INVALID_ORG_SLUGS = new Set([
   "demo",
   "register",
   "signin",
+  "signup",
+  "sign-in",
+  "sign-up",
   "dashboard",
   "settings",
 ]);

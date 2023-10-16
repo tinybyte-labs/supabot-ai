@@ -5,13 +5,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import FeedbackForm from "./forms/FeedbackForm";
 import { useState } from "react";
 import Link from "next/link";
-import { usePlan } from "@/hooks/usePlan";
 import { useRouter } from "next/router";
 import { freePlan } from "@acme/plans";
+import { useOrganization } from "@/hooks/useOrganization";
 
 const AppBar = () => {
   const [feedbackPopoverOpen, setFeedbackPopoverOpen] = useState(false);
-  const plan = usePlan();
+  const orgQuery = useOrganization();
   const router = useRouter();
 
   return (
@@ -19,7 +19,7 @@ const AppBar = () => {
       <div className="flex h-14 items-center justify-end gap-2 px-4">
         <ToggleSidebarButton />
         <div className="flex-1"></div>
-        {plan.id === freePlan.id && (
+        {orgQuery.isSuccess && orgQuery.data.plan === freePlan.id && (
           <Button asChild>
             <Link href={`/${router.query.orgSlug}/plan-billing#plans`}>
               <Sparkles size={18} className="-ml-1 mr-2" />
