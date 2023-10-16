@@ -14,7 +14,7 @@ import {
 } from "openai-edge";
 import GPT3Tokenizer from "gpt3-tokenizer";
 import { TRPCError } from "@trpc/server";
-import { allPlans } from "@acme/plans";
+import { allPlans, freePlan } from "@acme/plans";
 import { PrismaClient } from "@acme/db";
 
 const tokenizer = new GPT3Tokenizer({ type: "gpt3" });
@@ -34,7 +34,7 @@ export const messageRouter = router({
         },
       });
     }),
-  send: publicProcedure
+  sendMessage: publicProcedure
     .input(
       z.object({
         conversationId: z.string(),
@@ -45,30 +45,7 @@ export const messageRouter = router({
     .mutation(async ({ ctx, input }) => {
       const conversation = await ctx.db.conversation.findUnique({
         where: { id: input.conversationId, status: "OPEN" },
-        select: {
-          status: true,
-          chatbot: {
-            select: {
-              id: true,
-              name: true,
-              organization: {
-                select: {
-                  id: true,
-                  billingCycleStartDay: true,
-                  plan: true,
-                },
-              },
-            },
-          },
-          messages: {
-            select: {
-              id: true,
-              body: true,
-              role: true,
-              reaction: true,
-            },
-          },
-        },
+        select: { status: true, chatbotId: true },
       });
       if (!conversation) {
         throw new TRPCError({
@@ -76,23 +53,41 @@ export const messageRouter = router({
           message: "Conversation not found!",
         });
       }
-      const plan = allPlans.find(
-        (plan) => plan.id === conversation.chatbot.organization.plan,
-      );
-      if (!plan) {
+
+      const chatbot = await ctx.db.chatbot.findUnique({
+        where: { id: conversation.chatbotId },
+        select: { organizationId: true, name: true },
+      });
+      if (!chatbot) {
         throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "Invalid subscription plan!",
+          code: "NOT_FOUND",
+          message: "Chatbot not found!",
         });
       }
-      if (plan.limits.messagesPerMonth !== "unlimited") {
+
+      const organization = await ctx.db.organization.findUnique({
+        where: { id: chatbot.organizationId },
+        select: { plan: true, billingCycleStartDay: true },
+      });
+      if (!organization) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Organizatoin not found!",
+        });
+      }
+      const plan =
+        allPlans.find((plan) => plan.id === organization.plan) ?? freePlan;
+
+      const messageLimit = plan.limits.messagesPerMonth;
+
+      if (messageLimit !== "unlimited") {
         const { firstDay, lastDay } = getFirstAndLastDay(
-          conversation.chatbot.organization.billingCycleStartDay,
+          organization.billingCycleStartDay,
         );
         const last30DaysMessageCount = await ctx.db.message.count({
           where: {
             conversation: {
-              chatbot: { organizationId: conversation.chatbot.organization.id },
+              chatbot: { organizationId: chatbot.organizationId },
             },
             createdAt: {
               gte: firstDay,
@@ -100,43 +95,57 @@ export const messageRouter = router({
             },
           },
         });
-        if (last30DaysMessageCount >= plan.limits.messagesPerMonth) {
+        if (last30DaysMessageCount >= messageLimit) {
           throw new TRPCError({
             code: "FORBIDDEN",
             message: "Messages per month limit reached",
           });
         }
+        // TODO: Send organization owner a email that their ai messages limit reached
       }
-      const moderatedQuery = await moderateText(input.message.trim());
-      const { message, sources } = await generateAiResponse({
-        messages: [
-          ...conversation.messages.map(
-            (message) =>
-              ({
-                role:
-                  message.role === "BOT"
-                    ? ChatCompletionRequestMessageRoleEnum.Assistant
-                    : ChatCompletionRequestMessageRoleEnum.User,
-                content: message.body,
-              }) satisfies ChatCompletionRequestMessage,
-          ),
-          {
-            role: ChatCompletionRequestMessageRoleEnum.User,
-            content: moderatedQuery,
+
+      const [moderatedQuery, last10Messagess, userMessage] = await Promise.all([
+        moderateText(input.message.trim()),
+        ctx.db.message.findMany({
+          where: { conversationId: input.conversationId },
+          orderBy: { createdAt: "desc" },
+          take: 10,
+        }),
+        ctx.db.message.create({
+          data: {
+            body: input.message,
+            role: "USER",
+            conversationId: input.conversationId,
+            ...(input.userId ? { userId: input.userId } : {}),
           },
-        ],
-        chatbotId: conversation.chatbot.id,
-        chatbotName: conversation.chatbot.name,
+        }),
+      ]);
+
+      const reversedMessages = last10Messagess.reverse();
+      const messages = [
+        ...reversedMessages.map(
+          (message) =>
+            ({
+              role:
+                message.role === "BOT"
+                  ? ChatCompletionRequestMessageRoleEnum.Assistant
+                  : ChatCompletionRequestMessageRoleEnum.User,
+              content: message.body,
+            }) satisfies ChatCompletionRequestMessage,
+        ),
+        {
+          role: ChatCompletionRequestMessageRoleEnum.User,
+          content: moderatedQuery,
+        },
+      ];
+
+      const { message, sources } = await generateAIResponse({
+        messages,
+        chatbotId: conversation.chatbotId,
+        chatbotName: chatbot.name,
         db: ctx.db,
       });
-      const userMessage = await ctx.db.message.create({
-        data: {
-          body: input.message,
-          role: "USER",
-          conversationId: input.conversationId,
-          ...(input.userId ? { userId: input.userId } : {}),
-        },
-      });
+
       const botMessage = await ctx.db.message.create({
         data: {
           body: message,
@@ -195,15 +204,15 @@ function getContextTextFromChunks(
   return { contextText, sources };
 }
 
-async function generateAiResponse({
+async function generateAIResponse({
   messages,
   chatbotId,
   chatbotName,
   db,
 }: {
+  messages: ChatCompletionRequestMessage[];
   chatbotId: string;
   chatbotName: string;
-  messages: ChatCompletionRequestMessage[];
   db: PrismaClient;
 }) {
   const lastMessage = messages[messages.length - 1];
@@ -236,15 +245,17 @@ async function generateAiResponse({
     limitedMessages.push(message);
   }
   const reversedMessages = limitedMessages.reverse();
+  const finalMessages: ChatCompletionRequestMessage[] = [
+    {
+      role: "system",
+      content: systemContent,
+    },
+    ...reversedMessages,
+  ];
+  // console.log({ finalMessages });
   const response = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
-    messages: [
-      {
-        role: "system",
-        content: systemContent,
-      },
-      ...reversedMessages,
-    ],
+    messages: finalMessages,
     temperature: 0,
     max_tokens: 512,
   });

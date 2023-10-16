@@ -84,7 +84,7 @@ const ConversationPage: NextPageWithLayout = () => {
         });
       },
     });
-  const sendMessageMutation = trpc.message.send.useMutation({
+  const sendMessageMutation = trpc.message.sendMessage.useMutation({
     onSuccess: ({ botMessage, userMessage }) => {
       utils.message.list.setData(
         { conversationId: userMessage.conversationId },
