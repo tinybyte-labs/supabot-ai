@@ -6,6 +6,8 @@ import { OpenAIStream, StreamingTextResponse } from "ai";
 import { db } from "@acme/db";
 import { NextResponse } from "next/server";
 
+export const maxDuration = 300;
+
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
 const tokenizer = new GPT3Tokenizer({ type: "gpt3" });
 
