@@ -1,12 +1,21 @@
 {
   "extends": "@acme/tsconfig/nextjs.json",
   "compilerOptions": {
-    "plugins": [{ "name": "next" }],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "contentlayer/generated": ["./.contentlayer/generated"]
-    }
+      "@/*": [
+        "./src/*"
+      ],
+      "contentlayer/generated": [
+        "./.contentlayer/generated"
+      ]
+    },
+    "strictNullChecks": true
   },
   "include": [
     "next-env.d.ts",
@@ -15,5 +24,7 @@
     ".next/types/**/*.ts",
     "next.config.mjs"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }

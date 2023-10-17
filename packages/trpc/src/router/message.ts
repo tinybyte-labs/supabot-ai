@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { publicProcedure, router } from "../trpc";
+import { Context, publicProcedure, router } from "../trpc";
 import {
   embedText,
   moderateText,
@@ -15,7 +15,6 @@ import {
 import GPT3Tokenizer from "gpt3-tokenizer";
 import { TRPCError } from "@trpc/server";
 import { allPlans, freePlan } from "@acme/plans";
-import { PrismaClient } from "@acme/db";
 
 const tokenizer = new GPT3Tokenizer({ type: "gpt3" });
 
@@ -43,6 +42,7 @@ export const messageRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      console.time("SEND MESSAGE");
       const conversation = await ctx.db.conversation.findUnique({
         where: { id: input.conversationId, status: "OPEN" },
         select: { status: true, chatbotId: true },
@@ -104,6 +104,8 @@ export const messageRouter = router({
         // TODO: Send organization owner a email that their ai messages limit reached
       }
 
+      console.timeLog("SEND MESSAGE", "Security check done");
+
       const [moderatedQuery, last10Messagess, userMessage] = await Promise.all([
         moderateText(input.message.trim()),
         ctx.db.message.findMany({
@@ -120,6 +122,7 @@ export const messageRouter = router({
           },
         }),
       ]);
+      console.timeLog("SEND MESSAGE", "Required db check done");
 
       const reversedMessages = last10Messagess.reverse();
       const messages = [
@@ -143,7 +146,7 @@ export const messageRouter = router({
         messages,
         chatbotId: conversation.chatbotId,
         chatbotName: chatbot.name,
-        db: ctx.db,
+        ctx,
       });
 
       const botMessage = await ctx.db.message.create({
@@ -156,7 +159,9 @@ export const messageRouter = router({
           },
         },
       });
+      console.timeLog("SEND MESSAGE", "Bot message inserted into db");
 
+      console.timeEnd("SEND MESSAGE");
       return { userMessage, botMessage };
     }),
   react: publicProcedure
@@ -208,20 +213,23 @@ async function generateAIResponse({
   messages,
   chatbotId,
   chatbotName,
-  db,
+  ctx,
 }: {
   messages: ChatCompletionRequestMessage[];
   chatbotId: string;
   chatbotName: string;
-  db: PrismaClient;
+  ctx: Context;
 }) {
   const lastMessage = messages[messages.length - 1];
   const embedding = await embedText(lastMessage.content || "");
+  console.timeLog("SEND MESSAGE", "Message embedding done");
+
   const docs = await getDocuments({
     chatbotId,
     embedding,
-    db,
+    db: ctx.db,
   });
+  console.timeLog("SEND MESSAGE", "Got docs from db");
   const { contextText, sources } = getContextTextFromChunks(
     docs.map((doc) => ({ content: doc.content, source: doc.source })),
   );
@@ -252,13 +260,14 @@ async function generateAIResponse({
     },
     ...reversedMessages,
   ];
-  // console.log({ finalMessages });
+
   const response = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
     messages: finalMessages,
     temperature: 0,
     max_tokens: 512,
   });
+  console.timeLog("SEND MESSAGE", "OpenAI Chat Completion done");
   const data = (await response.json()) as ResponseTypes["createChatCompletion"];
   return {
     message: data.choices[0]?.message?.content || "",
