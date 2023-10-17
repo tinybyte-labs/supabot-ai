@@ -122,7 +122,6 @@ const bodySchema = z.object({
 
 export async function POST(req: Request) {
   const { prompt: message, conversationId, userId } = await req.json();
-  console.log({ message });
 
   const conversation = await db.conversation.findUnique({
     where: { id: conversationId, status: "OPEN" },
@@ -199,13 +198,13 @@ export async function POST(req: Request) {
     chatbot.name,
   ).replaceAll("{{CONTEXT}}", contextText);
 
-  const last10Messages = (
-    await db.message.findMany({
-      where: { conversationId },
-      orderBy: { createdAt: "desc" },
-      take: 10,
-    })
-  ).toReversed();
+  const last10Messages = await db.message.findMany({
+    where: { conversationId },
+    orderBy: { createdAt: "desc" },
+    take: 10,
+  });
+
+  last10Messages.reverse();
 
   let dummyPrompt = `${systemContent}\nUSER:${moderatedQuery}`;
   let tokenCount = 0;
@@ -226,19 +225,18 @@ export async function POST(req: Request) {
     });
   }
 
+  messages.reverse();
   messages = [
     {
       content: systemContent,
       role: "system",
     },
-    ...messages.toReversed(),
+    ...messages,
     {
       role: "user",
       content: moderatedQuery,
     },
   ];
-
-  console.log({ messages });
 
   await db.message.create({
     data: {
