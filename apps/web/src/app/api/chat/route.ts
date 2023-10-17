@@ -260,7 +260,8 @@ export async function POST(req: Request) {
 
   const stream = OpenAIStream(response, {
     async onCompletion(completion) {
-      await db.message.create({
+      console.log({ completion });
+      const msg = await db.message.create({
         data: {
           conversationId,
           userId,
@@ -271,6 +272,7 @@ export async function POST(req: Request) {
           },
         },
       });
+      console.log("Bot messages inserted", msg);
     },
   });
 
