@@ -30,7 +30,7 @@ export async function embedTextArray(texts: string[]) {
 
 export async function moderateText(input: string) {
   const moderationResponse = await openai.createModeration({ input });
-
+  console.timeLog("SEND MESSAGE", "Message moderation done");
   if (!moderationResponse.ok) {
     throw new Response("Failed to create moderation", { status: 400 });
   }

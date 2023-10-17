@@ -64,7 +64,7 @@ export async function getDocuments({
   embedding,
   db,
   limit = 5,
-  threshold = 0.5,
+  threshold = 0.8,
 }: {
   chatbotId: string;
   embedding: number[];
