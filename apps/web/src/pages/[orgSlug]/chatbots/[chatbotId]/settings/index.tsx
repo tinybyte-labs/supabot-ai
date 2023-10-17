@@ -19,7 +19,6 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import ChatbotSettingsLayout from "@/layouts/ChatbotSettingsLayout";
 import { NextPageWithLayout } from "@/types/next";
-import { updateChatbotValidator } from "@acme/core";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
@@ -29,6 +28,10 @@ import { APP_NAME } from "@/utils/constants";
 import { trpc } from "@/utils/trpc";
 import { useChatbot } from "@/hooks/useChatbot";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  UpdateChatbotDto,
+  updateChatbotValidator,
+} from "@acme/core/validators";
 
 const ChatbotSettingsPage: NextPageWithLayout = () => {
   return (
@@ -70,7 +73,7 @@ const ChatbotIdCard = () => {
 const UpdateNameFrom = () => {
   const { data: chatbot, isSuccess: isChatbotLoaded } = useChatbot();
 
-  const form = useForm<z.infer<typeof updateChatbotValidator>>({
+  const form = useForm<UpdateChatbotDto>({
     resolver: zodResolver(updateChatbotValidator),
     values: {
       name: "",
@@ -94,8 +97,7 @@ const UpdateNameFrom = () => {
     },
   });
 
-  const handleSubmit = (data: z.infer<typeof updateChatbotValidator>) =>
-    updateChatbot.mutate(data);
+  const handleSubmit = (data: UpdateChatbotDto) => updateChatbot.mutate(data);
 
   useEffect(() => {
     if (chatbot) {

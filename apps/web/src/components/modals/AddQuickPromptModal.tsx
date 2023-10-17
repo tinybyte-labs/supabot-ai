@@ -20,7 +20,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../ui/input";
 import { useToast } from "../ui/use-toast";
-import { CreateQuickPromptDto, createQuickPromptValidator } from "@acme/core";
 import { Loader2 } from "lucide-react";
 import { Textarea } from "../ui/textarea";
 import { useEffect } from "react";
@@ -28,6 +27,10 @@ import { APP_NAME } from "@/utils/constants";
 import { Checkbox } from "../ui/checkbox";
 import { trpc } from "@/utils/trpc";
 import { useChatbot } from "@/hooks/useChatbot";
+import {
+  CreateQuickPromptDto,
+  createQuickPromptValidator,
+} from "@acme/core/validators";
 
 const AddQuickPromptModal: ModalFn = ({ onOpenChange, open }) => {
   const { data: chatbot, isSuccess: isChatbotLoaded } = useChatbot();

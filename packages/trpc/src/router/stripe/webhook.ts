@@ -1,6 +1,6 @@
+import { planFromPriceId } from "@acme/core/utils/plan-from-price-id";
 import { stripe } from "../../stripe";
 import { publicProcedure, router } from "../../trpc";
-import { planFromPriceId } from "@acme/core";
 import { freePlan } from "@acme/plans";
 import { TRPCError } from "@trpc/server";
 import Stripe from "stripe";

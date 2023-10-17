@@ -18,7 +18,9 @@ import ConversationsLayout from "@/layouts/ConversationsLayout";
 import { cn } from "@/lib/utils";
 import { NextPageWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
-import { getChatbotStyle, type ChatbotSettings, type IpInfo } from "@acme/core";
+import { getChatbotStyle } from "@acme/core/utils/get-chatbot-style";
+import { IpInfo } from "@acme/core/utils/ipinfo";
+import { ChatbotSettings } from "@acme/core/validators";
 import { Conversation } from "@acme/db";
 import {
   Bot,

@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { protectedProcedure, router } from "../trpc";
-import { getFirstAndLastDay } from "@acme/core";
 import { z } from "zod";
+import { getFirstAndLastDay } from "@acme/core/utils/get-first-and-last-day";
 
 export const subscriptionRouter = router({
   usage: protectedProcedure

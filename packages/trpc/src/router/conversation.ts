@@ -1,9 +1,9 @@
 import { z } from "zod";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
-import { IpInfo, getIpInfo } from "@acme/core";
 import { compareDesc } from "date-fns";
 import { hasUserAccessToChatbot } from "./utils";
+import { IpInfo, getIpInfo } from "@acme/core/utils/ipinfo";
 
 const publicConversationRouter = router({
   create: publicProcedure

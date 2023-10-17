@@ -4,10 +4,10 @@ import { Message } from "@acme/db";
 import { ThumbsDown, ThumbsUp } from "lucide-react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
-import type { ChatbotSettings } from "@acme/core";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import remarkGfm from "remark-gfm";
+import { ChatbotSettings } from "@acme/core/validators";
 
 const BotMessageBubble = ({
   message,

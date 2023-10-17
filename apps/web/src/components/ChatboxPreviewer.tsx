@@ -6,9 +6,10 @@ import { APP_NAME, DOMAIN } from "@/utils/constants";
 import ChatboxInputBar from "./ChatboxInputBar";
 import { useState } from "react";
 import ChatboxWatermark from "./ChatboxWatermark";
-import { type ChatbotSettings, getHSLFromColor } from "@acme/core";
 import { cn } from "@/lib/utils";
 import ChatboxHeader from "./ChatboxHeader";
+import { getHSLFromColor } from "@acme/core/utils/get-hsl-from-color";
+import { ChatbotSettings } from "@acme/core/validators";
 
 export type ChatboxPreviewerProps = {
   title: string;

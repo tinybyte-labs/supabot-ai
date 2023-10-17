@@ -1,11 +1,14 @@
 import { z } from "zod";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
-import { contactSchema } from "@acme/core";
-import { fetchUrlsFromSitemap, fetchUrlsFromWebsite } from "@acme/core";
 import { Context } from "../trpc";
 import { allPlans, freePlan } from "@acme/plans";
 import { OrganizationMembershipRole } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
+import {
+  fetchUrlsFromSitemap,
+  fetchUrlsFromWebsite,
+} from "@acme/core/utils/fetch-urls";
+import { contactSchema } from "@acme/core/validators";
 
 export const utilsRouter = router({
   getLinksFromWebsite: protectedProcedure

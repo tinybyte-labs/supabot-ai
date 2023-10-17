@@ -1,15 +1,9 @@
 import { z } from "zod";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { db } from "@acme/db";
-import {
-  buildMessages,
-  canSendMessage,
-  embedText,
-  getContextFromDocs,
-  getDocuments,
-  moderateText,
-  openai,
-} from "./utils";
+import { buildMessages, canSendMessage, getContextFromDocs } from "./utils";
+import { getDocuments } from "@acme/core/utils/vector-store";
+import { embedText, moderateText, openai } from "@acme/core/utils/openai";
 
 export const maxDuration = 300;
 
@@ -27,7 +21,7 @@ export async function POST(req: Request) {
   const { chatbot } = await canSendMessage(conversationId);
   const message = await moderateText(prompt.trim());
   const embedding = await embedText(message);
-  const docs = await getDocuments(chatbot.id, embedding);
+  const docs = await getDocuments(chatbot.id, embedding, db);
   const { context, sources } = getContextFromDocs(docs);
   const messages = await buildMessages({
     conversationId,

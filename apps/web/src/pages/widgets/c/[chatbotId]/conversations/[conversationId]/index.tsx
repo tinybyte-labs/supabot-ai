@@ -14,21 +14,14 @@ import ChatbotWidgetLayout, {
 } from "@/layouts/ChatbotWidgetLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { trpc } from "@/utils/trpc";
-import type { ChatbotSettings } from "@acme/core";
 import { ArrowLeft, Loader2, RefreshCw, SendHorizonal } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import {
-  Fragment,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import { useCompletion } from "ai/react";
 import TextareaAutosize from "react-textarea-autosize";
 import { Message } from "@acme/db";
+import { ChatbotSettings } from "@acme/core/validators";
 
 const ConversationPage: NextPageWithLayout = () => {
   const router = useRouter();
@@ -40,30 +33,75 @@ const ConversationPage: NextPageWithLayout = () => {
   const utils = trpc.useContext();
   const scrollElRef = useRef<HTMLDivElement | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const chatbotSettings = (chatbot.settings ?? {}) as ChatbotSettings;
+  const [isScrolledToBottom, setIsScrolledToBottom] = useState(false);
+  const [autoScroll, setAutoScroll] = useState(true);
 
-  const chatbotSettings: ChatbotSettings = useMemo(
-    () => (chatbot.settings ?? {}) as ChatbotSettings,
-    [chatbot.settings],
+  const messagesQuery = trpc.message.list.useQuery(
+    { conversationId },
+    { enabled: router.isReady },
   );
+
+  const scrollToBottom = useCallback(() => {
+    if (!scrollElRef.current) return;
+    if (!autoScroll) return;
+    scrollElRef.current.scrollTo({
+      top: scrollElRef.current.scrollHeight,
+      behavior: isScrolledToBottom ? "smooth" : "instant",
+    });
+    if (messagesQuery.isSuccess && !isScrolledToBottom) {
+      setIsScrolledToBottom(true);
+    }
+  }, [autoScroll, isScrolledToBottom, messagesQuery.isSuccess]);
+
+  const { completion, complete } = useCompletion({
+    api: `/api/chat`,
+    body: {
+      conversationId,
+      userId: user?.id,
+    },
+    async onError(error) {
+      toast({
+        title: "Error",
+        description: error.message ?? "Something went wrong!",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      await messagesQuery.refetch();
+    },
+    async onFinish(_, comp) {
+      utils.message.list.setData({ conversationId }, (data) => [
+        ...(data || []),
+        {
+          id: "bot-msg",
+          role: "BOT",
+          body: comp,
+          conversationId,
+          userId: user?.id ?? null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          metadata: null,
+          reaction: null,
+        },
+      ]);
+      setIsLoading(false);
+      await messagesQuery.refetch();
+    },
+  });
 
   const conversationQuery = trpc.conversation.public.publicGetById.useQuery(
     { conversationId },
     { enabled: router.isReady },
   );
 
-  const messagesQuery = trpc.message.list.useQuery(
-    { conversationId: conversationQuery.data?.id || "" },
-    { enabled: conversationQuery.isSuccess },
-  );
-
   const quickPromptsQuery = trpc.quickPrompt.list.useQuery(
-    { chatbotId: chatbot.id },
-    { enabled: messagesQuery.isSuccess },
+    { chatbotId },
+    { enabled: router.isReady },
   );
 
   const reactOnMessageMutation = trpc.message.react.useMutation({
     onSuccess: () => {
-      toast({ title: "Thank you for the feedback" });
+      toast({ title: "Thank you for your feedback" });
     },
     onError: (error) => {
       toast({
@@ -73,25 +111,6 @@ const ConversationPage: NextPageWithLayout = () => {
       });
     },
   });
-
-  const updateConversationMutation =
-    trpc.conversation.public.publicUpdate.useMutation({
-      onSuccess: () => {
-        conversationQuery.refetch();
-        toast({
-          title: "Success",
-          description: "This conversation has been successfully closed",
-        });
-        router.push(`/widgets/c/${chatbotId}/conversations`);
-      },
-      onError: (error) => {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
-      },
-    });
 
   const handleMessageReact = useCallback(
     async (message: Message, reaction: Message["reaction"]) => {
@@ -137,95 +156,40 @@ const ConversationPage: NextPageWithLayout = () => {
     ],
   );
 
-  const handleScrollToBottom = useCallback(
-    (behavior: ScrollBehavior = "smooth") => {
-      scrollElRef.current?.scrollTo({
-        top: scrollElRef.current.scrollHeight,
-        behavior,
-      });
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [scrollElRef.current],
-  );
-
-  const { completion, complete } = useCompletion({
-    api: `/api/chat`,
-    body: {
-      conversationId,
-      userId: user?.id,
-    },
-    onError(error) {
-      toast({
-        title: "Error",
-        description: error.message ?? "Something went wrong!",
-        variant: "destructive",
-      });
-      messagesQuery.refetch();
-      setIsLoading(false);
-    },
-    onFinish(_, comp) {
-      utils.message.list.setData({ conversationId }, (data) => [
-        ...(data || []),
-        {
-          id: "bot-msg",
-          role: "BOT",
-          body: comp,
-          conversationId,
-          userId: user?.id ?? null,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          metadata: null,
-          reaction: null,
-        },
-      ]);
-      messagesQuery.refetch();
-      setIsLoading(false);
-      setTimeout(() => handleScrollToBottom(), 100);
-    },
-  });
-
   const handleSubmit = useCallback(async () => {
-    if (isLoading) {
+    if (isLoading || conversationQuery.data?.status !== "OPEN") {
       return;
     }
 
-    if (!conversationQuery.isSuccess) {
-      return;
-    }
-    if (conversationQuery.data.status === "CLOSED") return;
-    if (!input) {
+    const message = input.trim();
+    if (message.length === 0) {
       toast({ title: "Please enter your message", variant: "destructive" });
       return;
     }
+
     setIsLoading(true);
-    utils.message.list.setData(
-      { conversationId: conversationQuery.data.id },
-      (data) => [
-        ...(data || []),
-        {
-          id: "optimestic-id",
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          role: "USER",
-          body: input,
-          userId: user?.id || null,
-          conversationId: conversationQuery.data.id,
-          reaction: null,
-          metadata: null,
-        },
-      ],
-    );
-
     setInput("");
-    setTimeout(() => handleScrollToBottom(), 100);
 
-    complete(input);
+    utils.message.list.setData({ conversationId }, (data) => [
+      ...(data || []),
+      {
+        id: "optimestic-id",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        role: "USER",
+        body: message,
+        userId: user?.id || null,
+        conversationId,
+        reaction: null,
+        metadata: null,
+      },
+    ]);
+
+    complete(message);
   }, [
     complete,
-    conversationQuery.data?.id,
+    conversationId,
     conversationQuery.data?.status,
-    conversationQuery.isSuccess,
-    handleScrollToBottom,
     input,
     isLoading,
     toast,
@@ -233,27 +197,28 @@ const ConversationPage: NextPageWithLayout = () => {
     utils.message.list,
   ]);
 
-  const handleCloseConversation = () => {
-    if (conversationQuery.data?.status === "CLOSED") return;
-    updateConversationMutation.mutate({
-      chatbotId,
-      conversationId,
-      userId: user?.id,
-      data: {
-        status: "CLOSED",
-      },
-    });
-  };
+  useEffect(() => {
+    if (!scrollElRef.current) return;
+    const el = scrollElRef.current;
+    const handleWheel = () => {
+      if (el.scrollTop === el.scrollHeight - el.clientHeight && !autoScroll) {
+        setAutoScroll(true);
+      }
+      if (el.scrollTop !== el.scrollHeight - el.clientHeight && autoScroll) {
+        setAutoScroll(false);
+      }
+    };
+    el.addEventListener("wheel", handleWheel);
+    return () => {
+      el.removeEventListener("wheel", handleWheel);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoScroll, scrollElRef.current]);
 
   useEffect(() => {
-    handleScrollToBottom("instant");
-  }, [handleScrollToBottom]);
-
-  useEffect(() => {
-    if (completion) {
-      handleScrollToBottom();
-    }
-  }, [completion, handleScrollToBottom]);
+    if (!autoScroll) return;
+    scrollToBottom();
+  }, [autoScroll, completion, messagesQuery.data?.length, scrollToBottom]);
 
   if (conversationQuery.isLoading) {
     return (
@@ -268,7 +233,7 @@ const ConversationPage: NextPageWithLayout = () => {
   }
 
   return (
-    <div className="flex h-full w-full flex-1 flex-col overflow-hidden">
+    <div className="flex flex-1 flex-col overflow-hidden">
       <ChatboxHeader
         title={conversationQuery.data.title || chatbot.name}
         leading={
@@ -285,121 +250,121 @@ const ConversationPage: NextPageWithLayout = () => {
           </Tooltip>
         }
         trailing={
-          <>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => {
-                    conversationQuery.refetch();
-                    messagesQuery.refetch();
-                  }}
-                  disabled={
-                    conversationQuery.isRefetching || messagesQuery.isRefetching
-                  }
-                >
-                  <p className="sr-only">Refresh Conversation</p>
-                  {conversationQuery.isRefetching ||
-                  messagesQuery.isRefetching ? (
-                    <Loader2 size={22} className="animate-spin" />
-                  ) : (
-                    <RefreshCw size={22} />
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Refresh Conversation</TooltipContent>
-            </Tooltip>
-          </>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => {
+                  conversationQuery.refetch();
+                  messagesQuery.refetch();
+                }}
+                disabled={
+                  conversationQuery.isRefetching || messagesQuery.isRefetching
+                }
+              >
+                <p className="sr-only">Refresh Conversation</p>
+                {conversationQuery.isRefetching ||
+                messagesQuery.isRefetching ? (
+                  <Loader2 size={22} className="animate-spin" />
+                ) : (
+                  <RefreshCw size={22} />
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Refresh Conversation</TooltipContent>
+          </Tooltip>
         }
       />
 
-      <div className="relative flex-1 overflow-y-auto" ref={scrollElRef}>
-        <div className="space-y-6 p-4">
-          {messagesQuery.isLoading ? (
-            <p>Loading messages...</p>
-          ) : messagesQuery.isError ? (
-            <p>Messages Error: {messagesQuery.error.message}</p>
-          ) : (
-            <>
-              {chatbotSettings.welcomeMessage && (
+      {messagesQuery.isLoading ? (
+        <div className="flex flex-1 items-center justify-center">
+          <Loader2 className="animate-spin" size={24} />
+        </div>
+      ) : messagesQuery.isError ? (
+        <div className="flex-1 p-4">
+          <p>Messages Error: {messagesQuery.error.message}</p>
+        </div>
+      ) : (
+        <div className="relative flex-1 overflow-y-auto" ref={scrollElRef}>
+          <div className="space-y-6 p-4">
+            {chatbotSettings.welcomeMessage && (
+              <BotMessageBubble
+                name="BOT"
+                message={chatbotSettings.welcomeMessage}
+                date={conversationQuery.data.createdAt}
+                theme={chatbotSettings.theme}
+              />
+            )}
+
+            {messagesQuery.data.map((message) => {
+              return (
+                <Fragment key={message.id}>
+                  {message.role === "BOT" ? (
+                    <BotMessageBubble
+                      name="BOT"
+                      message={message.body}
+                      onReact={(value) => handleMessageReact(message, value)}
+                      reaction={message.reaction}
+                      sources={(message.metadata as any)?.sources}
+                      date={message.createdAt}
+                      theme={chatbotSettings.theme}
+                    />
+                  ) : (
+                    <UserMessageBubble
+                      name="YOU"
+                      message={message.body}
+                      date={message.createdAt}
+                    />
+                  )}
+                </Fragment>
+              );
+            })}
+
+            {isLoading ? (
+              completion ? (
                 <BotMessageBubble
-                  name="BOT"
-                  message={chatbotSettings.welcomeMessage}
-                  date={conversationQuery.data.createdAt}
+                  message={completion}
                   theme={chatbotSettings.theme}
+                  date={new Date()}
+                  name="BOT"
                 />
-              )}
-
-              {messagesQuery.data.map((message, i) => {
-                return (
-                  <Fragment key={message.id}>
-                    {message.role === "BOT" ? (
-                      <BotMessageBubble
-                        name="BOT"
-                        message={message.body}
-                        onReact={(value) => handleMessageReact(message, value)}
-                        reaction={message.reaction}
-                        sources={(message.metadata as any)?.sources}
-                        date={message.createdAt}
-                        theme={chatbotSettings.theme}
-                      />
-                    ) : message.role === "USER" ? (
-                      <UserMessageBubble
-                        name="YOU"
-                        message={message.body}
-                        date={message.createdAt}
-                      />
-                    ) : null}
-                  </Fragment>
-                );
-              })}
-
-              {isLoading ? (
-                completion ? (
-                  <BotMessageBubble
-                    message={completion}
-                    theme={chatbotSettings.theme}
-                    date={new Date()}
-                    name="BOT"
-                  />
-                ) : (
-                  <div className="flex items-start">
-                    <div className="bg-secondary text-secondary-foreground flex items-center gap-1 rounded-xl rounded-tl-sm p-4">
-                      <Skeleton className="bg-foreground/20 h-2 w-2 rounded-full"></Skeleton>
-                      <Skeleton className="bg-foreground/20 h-2 w-2 rounded-full delay-300"></Skeleton>
-                      <Skeleton className="bg-foreground/20 h-2 w-2 rounded-full delay-700"></Skeleton>
-                    </div>
+              ) : (
+                <div className="flex items-start">
+                  <div className="bg-secondary text-secondary-foreground flex items-center gap-1 rounded-xl rounded-tl-sm p-4">
+                    <Skeleton className="bg-foreground/20 h-2 w-2 rounded-full"></Skeleton>
+                    <Skeleton className="bg-foreground/20 h-2 w-2 rounded-full delay-300"></Skeleton>
+                    <Skeleton className="bg-foreground/20 h-2 w-2 rounded-full delay-700"></Skeleton>
                   </div>
+                </div>
+              )
+            ) : null}
+          </div>
+
+          {!isLoading && quickPromptsQuery.isSuccess && (
+            <div className="flex flex-wrap justify-end gap-2 p-4">
+              {quickPromptsQuery.data
+                .filter(
+                  (p) =>
+                    p.isFollowUpPrompt !== (messagesQuery.data?.length === 0),
                 )
-              ) : null}
-            </>
+                .map((prompt) => (
+                  <Button
+                    key={prompt.id}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setInput(prompt.prompt);
+                      handleSubmit();
+                    }}
+                  >
+                    {prompt.title}
+                  </Button>
+                ))}
+            </div>
           )}
         </div>
-
-        {!isLoading && quickPromptsQuery.isSuccess && (
-          <div className="flex flex-wrap justify-end gap-2 p-4">
-            {quickPromptsQuery.data
-              .filter(
-                (p) =>
-                  p.isFollowUpPrompt !== (messagesQuery.data?.length === 0),
-              )
-              .map((prompt) => (
-                <Button
-                  key={prompt.id}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setInput(prompt.prompt);
-                    handleSubmit();
-                  }}
-                >
-                  {prompt.title}
-                </Button>
-              ))}
-          </div>
-        )}
-      </div>
+      )}
 
       {conversationQuery.data.status === "OPEN" ? (
         <div className="bg-card text-card-foreground border-t backdrop-blur-lg">

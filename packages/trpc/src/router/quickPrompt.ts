@@ -4,7 +4,7 @@ import { TRPCError } from "@trpc/server";
 import {
   createQuickPromptValidator,
   updateQuickPromptValidator,
-} from "@acme/core";
+} from "@acme/core/validators";
 
 export const quickPromptRouter = router({
   list: publicProcedure

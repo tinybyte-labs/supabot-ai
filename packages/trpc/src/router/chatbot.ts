@@ -1,12 +1,13 @@
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import * as z from "zod";
-import {
-  defaultChatbotSettings,
-  updateChatbotSettingsValidator,
-} from "@acme/core";
-import { createChatbotValidator, updateChatbotValidator } from "@acme/core";
 import { hasUserAccessToChatbot, hasUserAccessToOrganization } from "./utils";
+import {
+  createChatbotValidator,
+  updateChatbotSettingsValidator,
+  updateChatbotValidator,
+} from "@acme/core/validators";
+import { defaultChatbotSettings } from "@acme/core/utils/default-chatbot-settings";
 
 export const chatbotRouter = router({
   getAllChatbotsForOrganization: protectedProcedure

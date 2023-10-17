@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "../trpc";
-import { createOrgValidator, updateOrgValidator } from "@acme/core";
 import { TRPCError } from "@trpc/server";
+import { createOrgValidator, updateOrgValidator } from "@acme/core/validators";
 
 export const organizationRouter = router({
   getById: protectedProcedure

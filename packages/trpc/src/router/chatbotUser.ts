@@ -1,7 +1,7 @@
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { chatbotUserLogInValidator } from "@acme/core";
+import { chatbotUserLogInValidator } from "@acme/core/validators";
 
 export const chatbotUserRouter = router({
   logIn: publicProcedure

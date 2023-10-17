@@ -14,7 +14,7 @@ import { useToast } from "@/components/ui/use-toast";
 import MarketingLayout from "@/layouts/MarketingLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { APP_NAME, SUPPORT_EMAIL } from "@/utils/constants";
-import { contactSchema } from "@acme/core";
+import { contactSchema } from "@acme/core/validators";
 import { trpc } from "@/utils/trpc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, Copy } from "lucide-react";

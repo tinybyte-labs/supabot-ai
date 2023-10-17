@@ -1,7 +1,7 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { verifySignature } from "@upstash/qstash/nextjs";
-import { trainLink } from "@acme/core";
 import { db } from "@acme/db";
+import { trainLink } from "@acme/core/utils/train-link";
 
 /*
 This function will get called from qstash when a user adds a new link to a project;

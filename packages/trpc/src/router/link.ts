@@ -2,8 +2,8 @@ import { TRPCError } from "@trpc/server";
 import { qstash } from "@acme/upstash";
 import { protectedProcedure, router } from "../trpc";
 import * as z from "zod";
-import { trainLink } from "@acme/core";
 import { hasUserAccessToChatbot } from "./utils";
+import { trainLink } from "@acme/core/utils/train-link";
 
 export const linkRouter = router({
   getLinksForChatbot: protectedProcedure

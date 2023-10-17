@@ -27,7 +27,7 @@ import DashboardLayout from "@/layouts/DashboardLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { DOMAIN } from "@/utils/constants";
 import { trpc } from "@/utils/trpc";
-import { UpdateOrgDto, updateOrgValidator } from "@acme/core";
+import { UpdateOrgDto, updateOrgValidator } from "@acme/core/validators";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/router";
 import { useEffect } from "react";

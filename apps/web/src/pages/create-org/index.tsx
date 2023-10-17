@@ -3,7 +3,6 @@ import { APP_NAME, DOMAIN, INVALID_ORG_SLUGS } from "@/utils/constants";
 import { NextPageWithLayout } from "@/types/next";
 import AuthLayout from "@/layouts/AuthLayout";
 import { useForm } from "react-hook-form";
-import { CreateOrgDto, createOrgValidator } from "@acme/core";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
@@ -21,6 +20,7 @@ import { useRouter } from "next/router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useEffect } from "react";
 import slugify from "slugify";
+import { CreateOrgDto, createOrgValidator } from "@acme/core/validators";
 
 const CreateOrgPage: NextPageWithLayout = () => {
   const { toast } = useToast();

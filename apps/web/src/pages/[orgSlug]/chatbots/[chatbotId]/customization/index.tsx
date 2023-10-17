@@ -16,11 +16,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import ChatbotLayout from "@/layouts/ChatbotLayout";
 import { NextPageWithLayout } from "@/types/next";
-import {
-  type ChatbotSettings,
-  updateChatbotSettingsValidator,
-  UpdateChatbotSettingsDto,
-} from "@acme/core";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Chatbot } from "@acme/db";
 import { ExternalLink, Loader2 } from "lucide-react";
@@ -33,9 +28,14 @@ import {
   PopoverTrigger,
 } from "@radix-ui/react-popover";
 import ColorPicker from "@/components/ColorPicker";
-import { defaultChatbotSettings } from "@acme/core";
 import { trpc } from "@/utils/trpc";
 import { useChatbot } from "@/hooks/useChatbot";
+import {
+  ChatbotSettings,
+  UpdateChatbotSettingsDto,
+  updateChatbotSettingsValidator,
+} from "@acme/core/validators";
+import { defaultChatbotSettings } from "@acme/core/utils/default-chatbot-settings";
 
 const ChatbotCustomizationPage: NextPageWithLayout = () => {
   const { data: chatbot, isSuccess: isChatbotLoaded } = useChatbot();

@@ -1,6 +1,6 @@
-import { defaultChatbotSettings } from "@acme/core";
 import { BASE_DOMAIN } from "@/utils/constants";
-import type { ChatbotSettings } from "@acme/core";
+import { defaultChatbotSettings } from "@acme/core/utils/default-chatbot-settings";
+import { ChatbotSettings } from "@acme/core/validators";
 import { db } from "@acme/db";
 import { NextApiRequest, NextApiResponse } from "next";
 

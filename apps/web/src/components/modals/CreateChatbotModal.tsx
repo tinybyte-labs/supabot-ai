@@ -20,12 +20,15 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../ui/input";
 import { useToast } from "../ui/use-toast";
-import { CreateChatbotDto, createChatbotValidator } from "@acme/core";
 import { useEffect } from "react";
 import { trpc } from "@/utils/trpc";
 import { useRouter } from "next/router";
 import { Loader2 } from "lucide-react";
 import { useOrganization } from "@/hooks/useOrganization";
+import {
+  CreateChatbotDto,
+  createChatbotValidator,
+} from "@acme/core/validators";
 
 const CreateChatbotModal: ModalFn = ({ onOpenChange, open }) => {
   const router = useRouter();

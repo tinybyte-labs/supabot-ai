@@ -59,19 +59,13 @@ export async function addDocuments({
   return addVectors({ vectors, docs, chatbotId, linkId, db });
 }
 
-export async function getDocuments({
-  chatbotId,
-  embedding,
-  db,
+export async function getDocuments(
+  chatbotId: string,
+  embedding: number[],
+  db: PrismaClient,
   limit = 5,
   threshold = 0.8,
-}: {
-  chatbotId: string;
-  embedding: number[];
-  db: PrismaClient;
-  threshold?: number;
-  limit?: number;
-}) {
+) {
   const documents = await db.$queryRaw`
     SELECT 
       "Document"."id",

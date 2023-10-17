@@ -1,5 +1,6 @@
-import { defaultChatbotSettings } from "@acme/core";
-import { type ChatbotSettings, getHSLFromColor } from "@acme/core";
+import { defaultChatbotSettings } from "@acme/core/utils/default-chatbot-settings";
+import { getHSLFromColor } from "@acme/core/utils/get-hsl-from-color";
+import { ChatbotSettings } from "@acme/core/validators";
 
 export const getChatbotStyle = (
   className: string,
