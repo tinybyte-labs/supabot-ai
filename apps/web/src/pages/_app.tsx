@@ -74,6 +74,13 @@ function App({
                   });
                 `}
             </Script>
+
+            <Script
+              strategy="lazyOnload"
+              defer
+              data-domain="supabotai.com"
+              src="https://plausible.io/js/script.js"
+            ></Script>
             {getLayout(<Component {...pageProps} />)}
           </div>
         </TooltipProvider>
