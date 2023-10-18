@@ -16,6 +16,7 @@ import { Elements } from "@stripe/react-stripe-js";
 import { stripePromise } from "@/lib/stripe";
 import { trpc } from "@/utils/trpc";
 import { SessionProvider } from "next-auth/react";
+import PlausibleProvider from "next-plausible";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -53,19 +54,20 @@ function App({
   }, [closeSidebar, router.events, sidebarOpen]);
 
   return (
-    <Elements stripe={stripePromise}>
-      <SessionProvider session={session}>
-        <TooltipProvider>
-          <div className={cn(inter.className, "antialiased")}>
-            <Head>
-              <title>{APP_NAME}</title>
-            </Head>
-            <Script
-              strategy="lazyOnload"
-              src={`https://www.googletagmanager.com/gtag/js?id=${gtag.MEASUREMENT_ID}`}
-            />
-            <Script id="google-analytics" strategy="lazyOnload">
-              {`
+    <PlausibleProvider domain="supabotai.com">
+      <Elements stripe={stripePromise}>
+        <SessionProvider session={session}>
+          <TooltipProvider>
+            <div className={cn(inter.className, "antialiased")}>
+              <Head>
+                <title>{APP_NAME}</title>
+              </Head>
+              <Script
+                strategy="lazyOnload"
+                src={`https://www.googletagmanager.com/gtag/js?id=${gtag.MEASUREMENT_ID}`}
+              />
+              <Script id="google-analytics" strategy="lazyOnload">
+                {`
                   window.dataLayer = window.dataLayer || [];
                   function gtag(){dataLayer.push(arguments);}
                   gtag('js', new Date());
@@ -73,20 +75,14 @@ function App({
                   page_path: window.location.pathname,
                   });
                 `}
-            </Script>
-
-            <Script
-              strategy="lazyOnload"
-              defer
-              data-domain="supabotai.com"
-              src="https://plausible.io/js/script.js"
-            ></Script>
-            {getLayout(<Component {...pageProps} />)}
-          </div>
-        </TooltipProvider>
-        <Toaster />
-      </SessionProvider>
-    </Elements>
+              </Script>
+              {getLayout(<Component {...pageProps} />)}
+            </div>
+          </TooltipProvider>
+          <Toaster />
+        </SessionProvider>
+      </Elements>
+    </PlausibleProvider>
   );
 }
 

@@ -62,6 +62,7 @@
     "next": "13.4.19",
     "next-auth": "^4.23.2",
     "next-contentlayer": "^0.3.4",
+    "next-plausible": "^3.11.2",
     "next-themes": "^0.2.1",
     "openai": "^4.12.1",
     "react": "18.2.0",
