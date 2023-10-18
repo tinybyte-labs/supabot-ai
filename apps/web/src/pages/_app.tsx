@@ -15,6 +15,7 @@ import { stripePromise } from "@/lib/stripe";
 import { trpc } from "@/utils/trpc";
 import { SessionProvider } from "next-auth/react";
 import PlausibleProvider from "next-plausible";
+import { APP_DESC } from "@/utils/constants/strings";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -50,6 +51,7 @@ function App({
             <div className={cn(inter.className, "antialiased")}>
               <Head>
                 <title>{APP_NAME}</title>
+                <meta name="description" content={APP_DESC} />
               </Head>
               {getLayout(<Component {...pageProps} />)}
             </div>
