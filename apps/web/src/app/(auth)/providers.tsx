@@ -3,13 +3,9 @@
 import { ThemeProvider } from "next-themes";
 import { ReactNode } from "react";
 
-export default function MarketingProviders({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function AuthProviders({ children }: { children: ReactNode }) {
   return (
-    <ThemeProvider forcedTheme="dark" attribute="class">
+    <ThemeProvider enableSystem attribute="class">
       {children}
     </ThemeProvider>
   );

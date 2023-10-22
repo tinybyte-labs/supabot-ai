@@ -43,6 +43,7 @@
     "@trpc/client": "^10.38.4",
     "@trpc/next": "^10.38.0",
     "@trpc/react-query": "^10.38.0",
+    "@trpc/server": "^10.38.0",
     "@upstash/qstash": "^0.3.6",
     "@vercel/og": "^0.5.11",
     "ai": "^2.2.15",

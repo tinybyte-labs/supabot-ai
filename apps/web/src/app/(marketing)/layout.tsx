@@ -1,18 +1,13 @@
-import "@/styles/globals.css";
-
 import { ReactNode } from "react";
 import DevWarningBar from "@/components/DevWarningBar";
 import MarketingHeader from "@/components/MarketingHeader";
 import MarketingFooter from "@/components/MarketingFooter";
 import ChatbotWidgetScript from "@/components/ChatbotWidgetScript";
 import MarketingProviders from "./providers";
-import { getServerSession } from "next-auth";
 
-const MarketingLayout = async ({ children }: { children: ReactNode }) => {
-  const session = await getServerSession();
-
+export default function MarketingLayout({ children }: { children: ReactNode }) {
   return (
-    <MarketingProviders session={session}>
+    <MarketingProviders>
       <div
         className="flex min-h-screen flex-col"
         style={{
@@ -30,6 +25,4 @@ const MarketingLayout = async ({ children }: { children: ReactNode }) => {
       </div>
     </MarketingProviders>
   );
-};
-
-export default MarketingLayout;
+}

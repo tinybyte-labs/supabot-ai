@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "./ui/button";
 import { ChevronLeft } from "lucide-react";
 import LoggedInUser from "./LoggedInUser";
@@ -5,7 +7,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 
 const AuthHeader = () => {
-  const { status, data } = useSession();
+  const { status } = useSession();
 
   if (status === "loading") {
     return <div className="h-24" />;
