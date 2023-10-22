@@ -11,9 +11,9 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <main>
+    <>
       <PageHeader title="Get in touch" />
-      <div className="container flex items-start justify-between gap-8 py-16">
+      <main className="container flex items-start justify-between gap-8 py-16">
         <ContactForm />
 
         <div className="w-80">
@@ -30,7 +30,7 @@ export default function ContactPage() {
             </div>
           </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </>
   );
 }
