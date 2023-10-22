@@ -1,3 +1,4 @@
+"use client";
 import { Button, ButtonLoader } from "@/components/ui/button";
 import {
   Dialog,
