@@ -1,30 +1,28 @@
 import PageHeader from "@/components/PageHeader";
-import MarketingLayout from "@/layouts/MarketingLayout";
-import { NextPageWithLayout } from "@/types/next";
 import { APP_NAME } from "@/utils/constants";
-import { GetStaticProps } from "next";
-import Head from "next/head";
-import {
-  allAuthors,
-  allBlogPosts,
-  Author,
-  BlogPost,
-} from "contentlayer/generated";
-import { compareDesc, parseISO } from "date-fns";
-import Link from "next/link";
+import { allAuthors, allBlogPosts } from "contentlayer/generated";
+import { compareDesc, format, parseISO } from "date-fns";
+import { Metadata } from "next";
 import Image from "next/image";
-import { format } from "date-fns";
+import Link from "next/link";
 
-type Props = {
-  posts: (Omit<BlogPost, "author"> & { author: Author | undefined })[];
+export const metadata: Metadata = {
+  title: `Blog - ${APP_NAME}`,
 };
 
-const BlogPage: NextPageWithLayout<Props> = ({ posts }) => {
+export default async function BlogPage() {
+  const posts = allBlogPosts
+    .filter((b) => !(process.env.NODE_ENV === "production" && b.draft))
+    .sort((a, b) =>
+      compareDesc(new Date(a.publishedAt), new Date(b.publishedAt)),
+    )
+    .map((post) => ({
+      ...post,
+      author: allAuthors.find((author) => post.author === author.username),
+    }));
+
   return (
     <>
-      <Head>
-        <title>{`Blog - ${APP_NAME}`}</title>
-      </Head>
       <PageHeader title="Blog" subtitle="Comming soon" />
       <main className="container py-16">
         <div className="grid gap-8 md:grid-cols-2">
@@ -43,7 +41,7 @@ const BlogPage: NextPageWithLayout<Props> = ({ posts }) => {
               />
               <div className="border-t p-6">
                 <h1 className="text-xl font-bold">{post.title}</h1>
-                <p className="mt-1 text-muted-foreground">{post.description}</p>
+                <p className="text-muted-foreground mt-1">{post.description}</p>
 
                 <div className="mt-4">
                   {post.author && (
@@ -57,7 +55,7 @@ const BlogPage: NextPageWithLayout<Props> = ({ posts }) => {
                   )}
                   <time
                     dateTime={post.publishedAt}
-                    className="inline text-sm text-muted-foreground"
+                    className="text-muted-foreground inline text-sm"
                   >
                     {format(parseISO(post.publishedAt), "LLL d, yyyy")}
                   </time>
@@ -69,26 +67,4 @@ const BlogPage: NextPageWithLayout<Props> = ({ posts }) => {
       </main>
     </>
   );
-};
-
-BlogPage.getLayout = (page) => <MarketingLayout>{page}</MarketingLayout>;
-
-export default BlogPage;
-
-export const getStaticProps: GetStaticProps<Props> = () => {
-  const blogPosts = allBlogPosts
-    .filter((b) => !(process.env.NODE_ENV === "production" && b.draft))
-    .sort((a, b) =>
-      compareDesc(new Date(a.publishedAt), new Date(b.publishedAt)),
-    )
-    .map((post) => ({
-      ...post,
-      author: allAuthors.find((author) => post.author === author.username),
-    }));
-
-  return {
-    props: {
-      posts: blogPosts,
-    },
-  };
-};
+}
