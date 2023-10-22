@@ -1,3 +1,5 @@
+"use client";
+
 import { APP_NAME } from "@/utils/constants";
 import { Bot, LineChart, Palette } from "lucide-react";
 import { useState } from "react";
