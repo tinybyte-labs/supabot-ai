@@ -13,7 +13,7 @@ import { Check, Copy } from "lucide-react";
 
 const QuickInstallationCard = ({ chatbotId }: { chatbotId: string }) => {
   const [copied, setCopied] = useState(false);
-  const scriptCode = `<!-- ${APP_NAME} -->\n<script async src="${BASE_DOMAIN}/api/widget/js?id=${chatbotId}"></script>`;
+  const scriptCode = `<!-- ${APP_NAME} -->\n<script async src="${BASE_DOMAIN}/widgets/chatbox.js?id=${chatbotId}"></script>`;
 
   const handleCopy = () => {
     if (copied) return;
@@ -37,7 +37,7 @@ const QuickInstallationCard = ({ chatbotId }: { chatbotId: string }) => {
       </CardHeader>
       <CardContent>
         <div className="codeblock">
-          <pre className="overflow-auto whitespace-pre-wrap rounded-md bg-muted p-4">
+          <pre className="bg-muted overflow-auto whitespace-pre-wrap rounded-md p-4">
             <code>{scriptCode}</code>
           </pre>
         </div>

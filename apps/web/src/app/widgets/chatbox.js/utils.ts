@@ -1,32 +1,30 @@
 import { WIDGETS_DOMAIN } from "@/utils/constants";
-import { ChatbotSettings } from "@acme/core/validators";
 import { Chatbot } from "@acme/db";
+import Handlebars from "handlebars";
+import { minify } from "terser";
 
-export const getScriptTemplate = (chatbot: Chatbot) => {
-  const settings = (chatbot.settings ?? {}) as ChatbotSettings;
+export const getScript = async (chatbot: Chatbot) => {
+  const code = template({ chatbot });
+  var result = await minify(code);
 
-  return `
+  return result.code ?? "";
+};
+
+const template = Handlebars.compile(
+  `
 !(function() {
   function initialize() {
-    const xm = ${settings.mx ?? 18};
-    const ym = ${settings.my ?? 18};
-    const p = "${settings?.position ?? "right"}";
+    const xm = {{chatbot.settings.mx}};
+    const ym = {{chatbot.settings.my}};
+    const p = "{{chatbot.settings.position}}";
     const style = document.createElement("style");
     style.id = "sb-style";
     style.innerHTML = \`
       :root {
-        --sb-primary: ${settings.primaryColor};
-        --sb-primary-foreground: ${settings.primaryForegroundColor};
-        ${
-          settings.theme === "dark"
-            ? `
-        --sb-background: #09090b;
-        --sb-foreground: #ffffff;
-        `
-            : `
+        --sb-primary: {{chatbot.settings.primaryColor}};
+        --sb-primary-foreground: {{chatbot.settings.primaryForegroundColor}};
         --sb-background: #ffffff;
         --sb-foreground: #09090b;
-        `
         }
       }
     \`
@@ -60,7 +58,7 @@ export const getScriptTemplate = (chatbot: Chatbot) => {
 
     const iframe = document.createElement("iframe");
     iframe.id = "sb-iframe";
-    iframe.src = "${WIDGETS_DOMAIN}/c/${chatbot.id}";
+    iframe.src = "${WIDGETS_DOMAIN}/c/{{chatbot.id}}";
     iframe.style.position = "fixed";
     iframe.style.transition = "opacity 0.3s ease, transform 0.3s ease";
     iframe.style.width = "100%";
@@ -131,48 +129,44 @@ export const getScriptTemplate = (chatbot: Chatbot) => {
     } else {
       hideChatbox();
 
+      const greetingText = "{{chatbot.settings.greetingText}}";
+      if(greetingText) {
+        msgBox = document.createElement("div");
+        msgBox.id = "sb-msg-box";
+        msgBox.innerText = greetingText;
+        msgBox.style.padding = "12px";
+        msgBox.style.backgroundColor = "var(--sb-background)";
+        msgBox.style.color = "var(--sb-foreground)";
+        msgBox.style.fontWeight = "600";
+        msgBox.style.boxShadow = "0px 8px 32px -5px rgba(0, 0, 0, 0.15), 0 0px 1px 1px rgba(0, 0, 0, 0.1)";
+        msgBox.style.borderRadius = "6px";
+        msgBox.style.position = "fixed";
+        msgBox.style.zIndex = 99;
+        msgBox.style.bottom = \`\${64 + Number(ym) * 2}px\`;
+        if (p === "left") {
+          msgBox.style.left = xm + "px";
+          msgBox.style.transformOrigin = "left bottom";
+        } else {
+          msgBox.style.right = xm + "px";
+          msgBox.style.transformOrigin = "right bottom";
+        }
+        msgBox.style.transition = "all .3s ease 0s";
+        msgBox.style.transform = "scale(.5)";
+        msgBox.style.opacity = 0;
+        msgBox.style.fontFamily =
+          'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"';
 
-    ${
-      settings.greetingText
-        ? `
-      msgBox = document.createElement("div");
-      msgBox.id = "sb-msg-box";
-      msgBox.innerText = "${settings.greetingText}";
-      msgBox.style.padding = "12px";
-      msgBox.style.backgroundColor = "var(--sb-background)";
-      msgBox.style.color = "var(--sb-foreground)";
-      msgBox.style.fontWeight = "600";
-      msgBox.style.boxShadow = "0px 8px 32px -5px rgba(0, 0, 0, 0.15), 0 0px 1px 1px rgba(0, 0, 0, 0.1)";
-      msgBox.style.borderRadius = "6px";
-      msgBox.style.position = "fixed";
-      msgBox.style.zIndex = 99;
-      msgBox.style.bottom = \`\${64 + Number(ym) * 2}px\`;
-      if (p === "left") {
-        msgBox.style.left = xm + "px";
-        msgBox.style.transformOrigin = "left bottom";
-      } else {
-        msgBox.style.right = xm + "px";
-        msgBox.style.transformOrigin = "right bottom";
+        document.body.append(msgBox);
+
+        setTimeout(() => {
+          msgBox.style.transform = "scale(1)";
+          msgBox.style.opacity = 1;
+        }, 600);
+
+        setTimeout(() => {
+          closeMessageBox();
+        }, 5000);
       }
-      msgBox.style.transition = "all .3s ease 0s";
-      msgBox.style.transform = "scale(.5)";
-      msgBox.style.opacity = 0;
-      msgBox.style.fontFamily =
-        'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"';
-
-      document.body.append(msgBox);
-
-      setTimeout(() => {
-        msgBox.style.transform = "scale(1)";
-        msgBox.style.opacity = 1;
-      }, 600);
-
-      setTimeout(() => {
-        closeMessageBox();
-      }, 5000);
-    `
-        : ""
-    }
     }
 
     btn.onclick = () => {
@@ -216,5 +210,5 @@ export const getScriptTemplate = (chatbot: Chatbot) => {
     window.addEventListener('load', initialize);
   }
 })();
-`.trim();
-};
+`,
+);

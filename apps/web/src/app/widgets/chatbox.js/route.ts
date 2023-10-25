@@ -1,10 +1,7 @@
 import { db } from "@acme/db";
 import { NextRequest, NextResponse } from "next/server";
-import { getScriptTemplate } from "./script-template";
+import { getScript } from "./utils";
 
-const pugDoc = `
-console.log("{myName}")
-`;
 export const GET = async (req: NextRequest) => {
   const chatbotId = req.nextUrl.searchParams.get("id") as string;
   if (!chatbotId) {
@@ -16,9 +13,9 @@ export const GET = async (req: NextRequest) => {
     throw new NextResponse("Chatbot not found!", { status: 404 });
   }
 
-  const template = getScriptTemplate(chatbot);
+  const script = await getScript(chatbot);
 
-  return new NextResponse(template, {
+  return new NextResponse(script, {
     headers: {
       "Content-Type": "application/javascript; charset=utf-8",
     },
