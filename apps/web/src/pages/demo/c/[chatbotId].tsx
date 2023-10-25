@@ -14,7 +14,7 @@ const ChatbotDemoPage = () => {
     <>
       <Script
         strategy="lazyOnload"
-        src={`${BASE_DOMAIN}/api/widget/js?id=${chatbotId}`}
+        src={`${BASE_DOMAIN}/widgets/chatbox.js?id=${chatbotId}`}
       ></Script>
     </>
   );

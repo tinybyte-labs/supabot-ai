@@ -6,7 +6,7 @@ const ChatbotWidgetScript = () => {
     <Script
       async
       strategy="lazyOnload"
-      src={`${BASE_DOMAIN}/api/widget/js?id=${process.env.NEXT_PUBLIC_CHATBOT_ID}`}
+      src={`${BASE_DOMAIN}/widgets/chatbox.js?id=${process.env.NEXT_PUBLIC_CHATBOT_ID}`}
     ></Script>
   );
 };

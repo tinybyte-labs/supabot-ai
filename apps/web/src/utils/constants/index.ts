@@ -12,6 +12,11 @@ export const BASE_DOMAIN =
     ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
     : "http://localhost:3000";
 
+export const WIDGETS_DOMAIN =
+  process.env.NEXT_PUBLIC_VERCEL_ENV === "production"
+    ? `https://widgets.${DOMAIN}`
+    : "http://localhost:3002";
+
 export const REDIRECTS: Record<string, string> = {
   discord: "https://discord.gg/muz5fkkS",
   twitter: "https://twitter.com/SupaBotAI",
