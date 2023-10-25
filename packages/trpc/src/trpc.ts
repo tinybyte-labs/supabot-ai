@@ -1,14 +1,16 @@
 import { TRPCError, initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { inferAsyncReturnType } from "@trpc/server";
-import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
-import requestIp from "request-ip";
 import { db } from "@acme/db";
-import { getSession, type Session } from "@acme/auth";
+import { authOptions, type Session } from "@acme/auth";
+import { getServerSession } from "next-auth";
+import { type NextRequest } from "next/server";
+import { INTERNALS } from "next/dist/server/web/spec-extension/request";
 
 interface AuthContext {
   session: Session | null;
-  clientIp: string | null;
+  clientIp?: string | null;
+  headers: Headers;
 }
 
 export const createContextInner = async (opts: AuthContext) => {
@@ -19,10 +21,13 @@ export const createContextInner = async (opts: AuthContext) => {
   };
 };
 
-export const createContext = async (opts: CreateNextContextOptions) => {
-  const session = await getSession(opts.req, opts.res);
-  const clientIp = requestIp.getClientIp(opts.req);
-  return await createContextInner({ clientIp, session });
+export const createContext = async (opts: { req: NextRequest }) => {
+  const session = await getServerSession(authOptions);
+  return await createContextInner({
+    clientIp: opts.req[INTERNALS]?.ip,
+    session,
+    headers: opts.req.headers,
+  });
 };
 
 export type Context = inferAsyncReturnType<typeof createContext>;

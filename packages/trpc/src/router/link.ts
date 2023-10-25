@@ -3,7 +3,6 @@ import { qstash } from "@acme/upstash";
 import { protectedProcedure, router } from "../trpc";
 import * as z from "zod";
 import { hasUserAccessToChatbot } from "./utils";
-import { trainLink } from "@acme/core/utils/train-link";
 
 export const linkRouter = router({
   getLinksForChatbot: protectedProcedure
@@ -51,16 +50,12 @@ export const linkRouter = router({
         data: { url: opts.input.url, chatbotId: chatbot.id },
       });
 
-      if (process.env.NODE_ENV === "development") {
-        await trainLink(newLink.id, opts.ctx.db);
-      } else {
-        await qstash.publishJSON({
-          body: {
-            linkId: newLink.id,
-          },
-          topic: "train-link",
-        });
-      }
+      await qstash.publishJSON({
+        body: {
+          linkId: newLink.id,
+        },
+        topic: "train-link",
+      });
 
       return newLink;
     }),
@@ -89,16 +84,12 @@ export const linkRouter = router({
         data: { status: "QUEUED", error: null, lastTrainedAt: null },
       });
 
-      if (process.env.NODE_ENV === "development") {
-        await trainLink(updatedLink.id, opts.ctx.db);
-      } else {
-        await qstash.publishJSON({
-          body: {
-            linkId: updatedLink.id,
-          },
-          topic: "train-link",
-        });
-      }
+      await qstash.publishJSON({
+        body: {
+          linkId: updatedLink.id,
+        },
+        topic: "train-link",
+      });
 
       return updatedLink;
     }),

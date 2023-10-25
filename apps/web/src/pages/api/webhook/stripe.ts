@@ -2,7 +2,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import Cors from "micro-cors";
 import type Stripe from "stripe";
 import { buffer } from "micro";
-import { createContext, appRouter, stripe } from "@acme/trpc";
+import { stripe } from "@acme/trpc";
+import { api } from "@/trpc/server";
 
 const cors = Cors({
   allowMethods: ["POST", "HEAD"],
@@ -36,15 +37,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     // Successfully constructed event
     console.log("✅ Success:", event.type);
 
-    const ctx = await createContext({ req, res });
-    const caller = appRouter.createCaller(ctx);
-
     switch (event.type) {
       case "checkout.session.completed":
-        caller.stripe.webhooks.checkoutSessionCompleted({ event });
+        await api.stripe.webhooks.checkoutSessionCompleted.mutate({ event });
         break;
       case "customer.subscription.deleted":
-        caller.stripe.webhooks.customerSubscriptionDeleted({ event });
+        await api.stripe.webhooks.customerSubscriptionDeleted.mutate({ event });
         break;
       default:
         console.log("Unhandled Stripe Event", {

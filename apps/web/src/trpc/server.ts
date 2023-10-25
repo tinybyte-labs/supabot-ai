@@ -1,4 +1,4 @@
-import { AppRouter } from "@acme/trpc";
+import { AppRouter } from "@acme/trpc/src/router";
 import {
   createTRPCProxyClient,
   loggerLink,
