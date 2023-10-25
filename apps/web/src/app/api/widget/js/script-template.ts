@@ -1,54 +1,22 @@
 import { BASE_DOMAIN } from "@/utils/constants";
-import { defaultChatbotSettings } from "@acme/core/utils/default-chatbot-settings";
 import { ChatbotSettings } from "@acme/core/validators";
-import { db } from "@acme/db";
-import { NextApiRequest, NextApiResponse } from "next";
+import { Chatbot } from "@acme/db";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.setHeader("Access-Control-Allow-Origin", "*"); // replace this your actual origin
-  res.setHeader("Access-Control-Allow-Methods", "GET,DELETE,PATCH,POST,PUT");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
-  );
-
-  // specific logic for the preflight request
-  if (req.method === "OPTIONS") {
-    res.status(200).end();
-    return;
-  }
-
-  const chatbotId = req.query.id as string;
-  if (!chatbotId) {
-    throw res.status(400).send("id query params is required");
-  }
-  const chatbot = await db.chatbot.findUnique({ where: { id: chatbotId } });
-  if (!chatbot) {
-    throw res.status(404).send("Chatbot not found!");
-  }
+export const getScriptTemplate = (chatbot: Chatbot) => {
   const settings = (chatbot.settings ?? {}) as ChatbotSettings;
 
-  const SCRIPT_TEMPLATE = `
+  return `
 !(function() {
   function initialize() {
     const xm = ${settings.mx ?? 18};
     const ym = ${settings.my ?? 18};
-    const p = "${(chatbot.settings as ChatbotSettings)?.position ?? "right"}";
+    const p = "${settings?.position ?? "right"}";
     const style = document.createElement("style");
     style.id = "sb-style";
     style.innerHTML = \`
       :root {
-        --sb-primary: ${
-          settings.primaryColor ?? defaultChatbotSettings.primaryColor
-        };
-        --sb-primary-foreground: ${
-          settings.primaryForegroundColor ??
-          defaultChatbotSettings.primaryForegroundColor
-        };
+        --sb-primary: ${settings.primaryColor};
+        --sb-primary-foreground: ${settings.primaryForegroundColor};
         ${
           settings.theme === "dark"
             ? `
@@ -244,7 +212,4 @@ export default async function handler(
   }
 })();
 `.trim();
-
-  res.setHeader("Content-Type", "application/javascript; charset=utf-8");
-  return res.send(SCRIPT_TEMPLATE);
-}
+};
