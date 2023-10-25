@@ -1,5 +1,7 @@
+"use client";
+
 import PlansGrid from "@/components/PlansGrid";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 const SubscriptionPlans = () => {
   const router = useRouter();

@@ -3,13 +3,13 @@ import StatCard from "@/components/StatCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useOrganization } from "@/hooks/useOrganization";
 import { usePlan } from "@/hooks/usePlan";
-import { trpc } from "@/utils/trpc";
+import { api } from "@/trpc/client";
 import { Users, Bot, Link2, Infinity, FileText } from "lucide-react";
 
 const Usage = () => {
   const { data: currentOrg, isSuccess: isOrgLoaded } = useOrganization();
   const plan = usePlan();
-  const usage = trpc.subscription.usage.useQuery(
+  const usageQuery = api.organization.usage.useQuery(
     { orgSlug: currentOrg?.slug || "" },
     { enabled: isOrgLoaded },
   );
@@ -17,14 +17,14 @@ const Usage = () => {
   return (
     <section className="space-y-8" id="usage">
       <SecondaryPageHeader title="Your current limits and usage" />
-      {usage.isLoading ? (
+      {usageQuery.isLoading ? (
         <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
           {new Array(5).fill(1).map((_, i) => (
             <Skeleton className="h-[110px]" key={i} />
           ))}
         </div>
-      ) : usage.isError ? (
-        <p>Error: {usage.error.message}</p>
+      ) : usageQuery.isError ? (
+        <p>Error: {usageQuery.error.message}</p>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
           <StatCard
@@ -32,7 +32,7 @@ const Usage = () => {
             icon={<Users size={20} />}
             value={
               <>
-                {usage.data.teamMembers.toLocaleString()} /{" "}
+                {usageQuery.data.teamMembers.toLocaleString()} /{" "}
                 {plan.limits.teamMembers === "unlimited" ? (
                   <Infinity className="inline" size={32} />
                 ) : (
@@ -46,7 +46,7 @@ const Usage = () => {
             icon={<Bot size={20} />}
             value={
               <>
-                {usage.data.chatbots.toLocaleString()} /{" "}
+                {usageQuery.data.chatbots.toLocaleString()} /{" "}
                 {plan.limits.chatbots === "unlimited" ? (
                   <Infinity className="inline" size={32} />
                 ) : (
@@ -60,7 +60,7 @@ const Usage = () => {
             icon={<Bot size={20} />}
             value={
               <>
-                {usage.data.messagesPerMonth.toLocaleString()} /{" "}
+                {usageQuery.data.messagesPerMonth.toLocaleString()} /{" "}
                 {plan.limits.messagesPerMonth === "unlimited" ? (
                   <Infinity className="inline" size={32} />
                 ) : (
@@ -74,7 +74,7 @@ const Usage = () => {
             icon={<Link2 size={20} />}
             value={
               <>
-                {usage.data.links.toLocaleString()} /{" "}
+                {usageQuery.data.links.toLocaleString()} /{" "}
                 {plan.limits.links === "unlimited" ? (
                   <Infinity className="inline" size={32} />
                 ) : (
@@ -88,7 +88,7 @@ const Usage = () => {
             icon={<FileText size={20} />}
             value={
               <>
-                {usage.data.documents.toLocaleString()} /{" "}
+                {usageQuery.data.documents.toLocaleString()} /{" "}
                 {plan.limits.documents === "unlimited" ? (
                   <Infinity className="inline" size={32} />
                 ) : (

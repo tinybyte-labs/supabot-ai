@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { LogOut, Plus, Settings, HelpCircleIcon } from "lucide-react";
 import Link from "next/link";
@@ -13,13 +15,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { signOut, useSession } from "next-auth/react";
-import { trpc } from "@/utils/trpc";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
+import { api } from "@/trpc/client";
 
 const LoggedInUser = () => {
   const { status, data: session } = useSession();
   const [open, setOpen] = useState(false);
-  const orgListQuery = trpc.organization.getAll.useQuery();
+  const orgListQuery = api.organization.getAll.useQuery();
   const router = useRouter();
 
   if (status !== "authenticated") {

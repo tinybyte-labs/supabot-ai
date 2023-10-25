@@ -1,3 +1,5 @@
+"use client";
+
 import ChatboxPreviewer from "@/components/ChatboxPreviewer";
 import DashboardPageHeader from "@/components/DashboardPageHeader";
 import { Button, ButtonLoader } from "@/components/ui/button";

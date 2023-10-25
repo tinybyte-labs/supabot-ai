@@ -1,5 +1,6 @@
+"use client";
+
 import Link from "next/link";
-import { Skeleton } from "./ui/skeleton";
 import FullLogo from "./FullLogo";
 import { APP_NAME } from "@/utils/constants";
 import { Button } from "./ui/button";
@@ -7,7 +8,7 @@ import { ArrowRight, Menu, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import Logo from "./Logo";
-import { useRouter } from "next/router";
+import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 const menu = [
@@ -32,11 +33,12 @@ const menu = [
     href: "/help",
   },
 ];
+
 export default function MarketingHeader() {
   const { status } = useSession();
   const [showMenu, setShowMenu] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const router = useRouter();
+  const pathname = usePathname();
 
   const handleScroll = useCallback(() => {
     const y = window.scrollY;
@@ -135,9 +137,7 @@ export default function MarketingHeader() {
         <div className="flex h-[calc(100vh-4rem)] flex-col overflow-y-auto p-6 md:hidden">
           <nav className="flex flex-col gap-1">
             {menu.map((item, i) => {
-              const isActive = router.asPath
-                .split("?")[0]
-                .startsWith(item.href);
+              const isActive = pathname?.split("?")[0].startsWith(item.href);
 
               return (
                 <Button

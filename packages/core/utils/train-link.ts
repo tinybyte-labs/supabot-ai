@@ -2,8 +2,6 @@ import TurndownService from "turndown";
 import { addDocuments } from "./vector-store";
 import { PrismaClient } from "@acme/db";
 
-const turndownService = new TurndownService();
-
 export const splitDocumentIntoChunks = (
   text: string,
   chunkSize: number,
@@ -34,6 +32,7 @@ export const splitDocumentIntoChunks = (
 };
 
 export const getDocumentsFromWeb = async (url: URL) => {
+  const turndownService = new TurndownService();
   const res = await fetch(url);
   const htmlText = await res.text();
   const rawText = turndownService.turndown(htmlText);
