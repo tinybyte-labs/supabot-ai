@@ -1,14 +1,18 @@
 "use client";
 
-export default function CloseChatboxButton() {
+import { useParams, useRouter } from "next/navigation";
+
+export default function BackButton() {
+  const router = useRouter();
+  const { chatbotId } = useParams();
   return (
     <button
-      className="hover:opacity-80"
       onClick={() => {
-        window.parent.postMessage("CLOSE_CHATBOX", "*");
+        router.back();
+        localStorage.removeItem(`${chatbotId}.opened-conversation`);
       }}
     >
-      <div className="sr-only">Close Chatbox</div>
+      <div className="sr-only">Go Back</div>
       <svg
         width="28"
         height="28"
@@ -17,7 +21,7 @@ export default function CloseChatboxButton() {
         xmlns="http://www.w3.org/2000/svg"
       >
         <path
-          d="M17 7L7 17M7 7L17 17"
+          d="M20 12H4M4 12L10 18M4 12L10 6"
           stroke="currentColor"
           stroke-width="2"
           stroke-linecap="round"

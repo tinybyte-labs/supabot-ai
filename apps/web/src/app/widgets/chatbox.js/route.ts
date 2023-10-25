@@ -2,6 +2,9 @@ import { db } from "@acme/db";
 import { NextRequest, NextResponse } from "next/server";
 import { getScriptTemplate } from "./script-template";
 
+const pugDoc = `
+console.log("{myName}")
+`;
 export const GET = async (req: NextRequest) => {
   const chatbotId = req.nextUrl.searchParams.get("id") as string;
   if (!chatbotId) {

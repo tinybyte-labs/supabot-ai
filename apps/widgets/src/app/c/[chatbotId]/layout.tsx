@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ReactNode } from "react";
 import { chatbotSettingsSchema } from "@acme/core/validators";
 import Link from "next/link";
+import { ChatbotProvider } from "@/providers/ChatbotProvider";
 
 export default async function ChatbotLayout({
   children,
@@ -12,6 +13,7 @@ export default async function ChatbotLayout({
   params: { chatbotId: string };
 }) {
   const chatbot = await db.chatbot.findUnique({ where: { id: chatbotId } });
+
   if (!chatbot) {
     notFound();
   }
@@ -19,7 +21,7 @@ export default async function ChatbotLayout({
   const settings = chatbotSettingsSchema.parse(chatbot.settings);
 
   return (
-    <>
+    <ChatbotProvider chatbot={chatbot}>
       <style>
         {`
       :root {
@@ -31,8 +33,8 @@ export default async function ChatbotLayout({
       <div className="flex flex-1 flex-col overflow-hidden bg-[var(--primary-bg)]">
         {children}
       </div>
-      <div className="flex h-8 flex-shrink-0 items-center justify-center border-t border-slate-200">
-        <p className="text-center text-slate-400">
+      <div className="flex h-8 flex-shrink-0 items-center justify-center border-t border-slate-200 bg-white">
+        <p className="text-center text-sm text-slate-400">
           Powered by{" "}
           <Link
             href="https://supabotai.com"
@@ -42,6 +44,6 @@ export default async function ChatbotLayout({
           </Link>
         </p>
       </div>
-    </>
+    </ChatbotProvider>
   );
 }

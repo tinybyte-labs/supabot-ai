@@ -1,4 +1,4 @@
-import { BASE_DOMAIN, WIDGETS_DOMAIN } from "@/utils/constants";
+import { WIDGETS_DOMAIN } from "@/utils/constants";
 import { ChatbotSettings } from "@acme/core/validators";
 import { Chatbot } from "@acme/db";
 
@@ -20,12 +20,10 @@ export const getScriptTemplate = (chatbot: Chatbot) => {
         ${
           settings.theme === "dark"
             ? `
-        --sb-border: #27272a;
         --sb-background: #09090b;
         --sb-foreground: #ffffff;
         `
             : `
-        --sb-border: #E4E4E7;
         --sb-background: #ffffff;
         --sb-foreground: #09090b;
         `
@@ -70,11 +68,10 @@ export const getScriptTemplate = (chatbot: Chatbot) => {
     iframe.style.maxWidth = "420px";
     iframe.style.maxHeight = "720px";
     iframe.style.borderRadius = "16px";
-    iframe.style.boxShadow = "rgba(0, 0, 0, 0.15) 0px 8px 32px";
+    iframe.style.boxShadow = "0px 8px 32px -5px rgba(0, 0, 0, 0.15), 0 0px 1px 1px rgba(0, 0, 0, 0.1)";
     iframe.style.zIndex = 100;
     iframe.style.backgroundColor = "var(--sb-background)";
     iframe.style.color = "var(--sb-foreground)";
-    iframe.style.border = "1px solid var(--sb-border)";
     iframe.style.boxSizing = "border-box";
     iframe.style.zIndex = 110;
     iframe.style.bottom = \`\${64 + Number(ym) * 2}px\`;
@@ -94,6 +91,47 @@ export const getScriptTemplate = (chatbot: Chatbot) => {
       msgBox.style.pointerEvents = "none";
     };
     
+
+    document.head.append(style);
+    document.body.append(btn);
+    document.body.append(iframe);
+
+    setTimeout(() => {
+      btn.style.transform = "scale(1)";
+      btn.style.opacity = 1;
+    }, 100);
+
+    let chatboxOpen = false;
+
+    const showChatbox = () => {
+      localStorage.setItem("chatbox-open", "open")
+      btn.innerHTML = \`<svg width="512" height="512" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style='width: 32px; height: 32px;'>
+      <path fill="currentColor" d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326a.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275a.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018a.751.751 0 0 1-.018-1.042L6.94 8L3.72 4.78a.75.75 0 0 1 0-1.06Z"/>
+  </svg>\`;
+      iframe.style.opacity = 1;
+      iframe.style.pointerEvents = "auto";
+      iframe.style.transform = "scale(1)";
+      chatboxOpen = true;
+    };
+
+    const hideChatbox = () => {
+      localStorage.removeItem("chatbox-open")
+      btn.innerHTML = \`<svg width="512" height="512" viewBox="0 0 15 15" xmlns="http://www.w3.org/2000/svg" style='width: 32px; height: 32px;'>
+      <path fill="currentColor" d="M1.5 0C.671 0 0 .67 0 1.5v8.993c0 .83.671 1.5 1.5 1.5h3.732l1.852 2.775a.5.5 0 0 0 .832 0l1.851-2.775H13.5c.829 0 1.5-.67 1.5-1.5V1.5c0-.83-.671-1.5-1.5-1.5h-12Z"/>
+  </svg>\`;
+      iframe.style.opacity = 0;
+      iframe.style.pointerEvents = "none";
+      iframe.style.transform = "scale(0)";
+      chatboxOpen = false;
+    };
+    const defaultOpen = localStorage.getItem("chatbox-open");
+
+    if(defaultOpen) {
+      showChatbox();
+    } else {
+      hideChatbox();
+
+
     ${
       settings.greetingText
         ? `
@@ -103,9 +141,8 @@ export const getScriptTemplate = (chatbot: Chatbot) => {
       msgBox.style.padding = "12px";
       msgBox.style.backgroundColor = "var(--sb-background)";
       msgBox.style.color = "var(--sb-foreground)";
-      msgBox.style.border = "1px solid var(--sb-border)";
       msgBox.style.fontWeight = "600";
-      msgBox.style.boxShadow = "rgba(0, 0, 0, 0.15) 0px 8px 32px";
+      msgBox.style.boxShadow = "0px 8px 32px -5px rgba(0, 0, 0, 0.15), 0 0px 1px 1px rgba(0, 0, 0, 0.1)";
       msgBox.style.borderRadius = "6px";
       msgBox.style.position = "fixed";
       msgBox.style.zIndex = 99;
@@ -136,39 +173,7 @@ export const getScriptTemplate = (chatbot: Chatbot) => {
     `
         : ""
     }
-
-    document.head.append(style);
-    document.body.append(btn);
-    document.body.append(iframe);
-
-    setTimeout(() => {
-      btn.style.transform = "scale(1)";
-      btn.style.opacity = 1;
-    }, 100);
-
-    let chatboxOpen = false;
-
-    const showChatbox = () => {
-      btn.innerHTML = \`<svg width="512" height="512" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style='width: 32px; height: 32px;'>
-      <path fill="currentColor" d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326a.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275a.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018a.751.751 0 0 1-.018-1.042L6.94 8L3.72 4.78a.75.75 0 0 1 0-1.06Z"/>
-  </svg>\`;
-      iframe.style.opacity = 1;
-      iframe.style.pointerEvents = "auto";
-      iframe.style.transform = "scale(1)";
-      chatboxOpen = true;
-    };
-
-    const hideChatbox = () => {
-      btn.innerHTML = \`<svg width="512" height="512" viewBox="0 0 15 15" xmlns="http://www.w3.org/2000/svg" style='width: 32px; height: 32px;'>
-      <path fill="currentColor" d="M1.5 0C.671 0 0 .67 0 1.5v8.993c0 .83.671 1.5 1.5 1.5h3.732l1.852 2.775a.5.5 0 0 0 .832 0l1.851-2.775H13.5c.829 0 1.5-.67 1.5-1.5V1.5c0-.83-.671-1.5-1.5-1.5h-12Z"/>
-  </svg>\`;
-      iframe.style.opacity = 0;
-      iframe.style.pointerEvents = "none";
-      iframe.style.transform = "scale(0)";
-      chatboxOpen = false;
-    };
-
-    hideChatbox();
+    }
 
     btn.onclick = () => {
       if (!chatboxOpen) {

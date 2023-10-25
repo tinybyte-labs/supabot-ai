@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/cn";
+import { TRPCReactProvider } from "@/utils/trpc/client";
+import { headers } from "next/headers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,8 +18,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={cn(inter.className, "flex min-h-screen flex-col")}>
-        {children}
+      <body
+        className={cn(
+          inter.className,
+          "flex h-screen flex-col overflow-hidden antialiased",
+        )}
+      >
+        <TRPCReactProvider headers={headers()}>{children}</TRPCReactProvider>
       </body>
     </html>
   );

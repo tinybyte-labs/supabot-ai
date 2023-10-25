@@ -210,7 +210,6 @@ model Conversation {
   chatbotId String
   userId    String?
   url       String?
-  // fileds from ipinfo.io
   ipAddress String?
   ipInfo    Json?
 

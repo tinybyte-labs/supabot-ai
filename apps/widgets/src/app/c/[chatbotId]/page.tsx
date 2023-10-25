@@ -1,6 +1,7 @@
 import CloseChatboxButton from "@/components/CloseChatboxButton";
 import StartConversationForm from "./StartConversationForm";
 import { db } from "@acme/db";
+import BodyContainer from "@/components/BodyContainer";
 
 export default async function Page({
   params: { chatbotId },
@@ -22,11 +23,11 @@ export default async function Page({
         <p className="text-3xl font-bold">{chatbot.name}</p>
         <p className="mt-2 text-lg">Hi there 👋, How can we help?</p>
       </div>
-      <div className="flex flex-1 flex-col rounded-t-2xl bg-white">
+      <BodyContainer>
         <div className="p-6">
           <StartConversationForm />
         </div>
-      </div>
+      </BodyContainer>
     </>
   );
 }
