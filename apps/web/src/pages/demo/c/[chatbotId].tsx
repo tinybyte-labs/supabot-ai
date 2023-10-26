@@ -1,4 +1,4 @@
-import { BASE_DOMAIN } from "@/utils/constants";
+import { BASE_URL } from "@/utils/constants";
 import { useRouter } from "next/router";
 import Script from "next/script";
 
@@ -14,7 +14,7 @@ const ChatbotDemoPage = () => {
     <>
       <Script
         strategy="lazyOnload"
-        src={`${BASE_DOMAIN}/api/widget/js?id=${chatbotId}`}
+        src={`${BASE_URL}/widgets/chatbox.js?id=${chatbotId}`}
       ></Script>
     </>
   );

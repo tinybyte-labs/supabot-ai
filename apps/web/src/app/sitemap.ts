@@ -1,8 +1,8 @@
 import type { MetadataRoute } from "next";
 import { allBlogPosts } from "contentlayer/generated";
-import { BASE_DOMAIN } from "@/utils/constants";
+import { BASE_URL } from "@/utils/constants";
 
-const addPathToBaseURL = (path: string) => `${BASE_DOMAIN}${path}`;
+const addPathToBaseURL = (path: string) => `${BASE_URL}${path}`;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const blogs = allBlogPosts.map((post) => ({

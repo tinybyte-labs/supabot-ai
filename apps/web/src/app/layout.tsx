@@ -8,16 +8,14 @@ import { ReactNode } from "react";
 import { TRPCReactProvider } from "@/trpc/client";
 import { headers } from "next/headers";
 import { Inter } from "next/font/google";
+import { cn } from "@/lib/utils";
 
 export const metadata = {
   title: APP_NAME,
   description: APP_DESC,
 };
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-sans",
-});
+const inter = Inter({ subsets: ["latin"] });
 
 export default async function RootLayout({
   children,
@@ -27,7 +25,7 @@ export default async function RootLayout({
   const session = await getServerSession();
   return (
     <html lang="en">
-      <body className={`font-sans ${inter.variable}`}>
+      <body className={cn(inter.className)}>
         <TRPCReactProvider headers={headers()}>
           <RootProviders sesssion={session}>{children}</RootProviders>
         </TRPCReactProvider>

@@ -1,0 +1,47 @@
+{
+  "name": "@acme/widgets",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3002",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@acme/core": "workspace:*",
+    "@acme/db": "workspace:*",
+    "@acme/plans": "workspace:*",
+    "@hookform/resolvers": "^3.3.0",
+    "@tailwindcss/typography": "^0.5.9",
+    "@tanstack/react-query": "^4.32.6",
+    "@trpc/client": "^10.37.1",
+    "@trpc/react-query": "^10.37.1",
+    "@trpc/server": "^10.37.1",
+    "ai": "^2.2.15",
+    "clsx": "^2.0.0",
+    "date-fns": "^2.30.0",
+    "gpt3-tokenizer": "^1.1.5",
+    "next": "13.5.6",
+    "openai": "^4.12.1",
+    "react": "^18",
+    "react-dom": "^18",
+    "react-hook-form": "^7.45.4",
+    "react-markdown": "^8.0.7",
+    "remark-gfm": "^3.0.1",
+    "superjson": "^1.13.1",
+    "tailwind-merge": "^1.14.0",
+    "zod": "^3.22.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "autoprefixer": "^10",
+    "eslint": "^8",
+    "eslint-config-next": "13.5.6",
+    "postcss": "^8",
+    "tailwindcss": "^3",
+    "typescript": "^5"
+  }
+}

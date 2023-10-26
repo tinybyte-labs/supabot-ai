@@ -1,15 +1,15 @@
-import { APP_NAME, BASE_DOMAIN } from "@/utils/constants";
+import { APP_NAME, BASE_URL } from "@/utils/constants";
 import Link from "next/link";
 
 const ChatboxWatermark = () => {
   return (
-    <div className="flex items-center justify-center border-t bg-card p-2">
-      <p className="text-sm text-muted-foreground">
+    <div className="bg-card flex items-center justify-center border-t p-2">
+      <p className="text-muted-foreground text-sm">
         Powered by{" "}
         <Link
-          href={BASE_DOMAIN}
+          href={BASE_URL}
           target="_blank"
-          className="font-medium text-foreground underline-offset-4 hover:underline"
+          className="text-foreground font-medium underline-offset-4 hover:underline"
         >
           {APP_NAME}
         </Link>
