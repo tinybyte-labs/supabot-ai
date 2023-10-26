@@ -225,7 +225,6 @@ const template = Handlebars.compile(
       hovering = false;
     };
     window.addEventListener('message', function(event) {
-      console.log(event)
       if(event.data === "CLOSE_CHATBOX") {
         closeChatbox();
       }

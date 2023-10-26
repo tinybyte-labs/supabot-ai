@@ -106,7 +106,6 @@ export default function ConversatonProvider({
   );
 
   const scrollToBottom = useCallback(() => {
-    console.log("CALLING");
     if (scrollRef.current) {
       setAutoScroll(true);
       scrollRef.current.scrollTo({
