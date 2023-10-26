@@ -33,6 +33,7 @@ export default function MessageInputForm() {
         type="text"
         className="h-[52px] w-full rounded-xl bg-slate-100 pl-4 pr-14 placeholder-slate-400"
         placeholder={settings.placeholderText}
+        autoFocus
         {...form.register("message")}
       />
       <button
