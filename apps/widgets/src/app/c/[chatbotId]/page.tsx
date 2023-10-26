@@ -24,7 +24,7 @@ export default async function Page({
         <p className="mt-2 text-lg">Hi there 👋, How can we help?</p>
       </div>
       <BodyContainer>
-        <div className="p-6">
+        <div className="flex-1 overflow-y-auto p-6">
           <StartConversationForm />
         </div>
       </BodyContainer>
