@@ -55,16 +55,19 @@ const MarketingFooter = () => {
                 icon: <GithubIcon fontSize={18} />,
                 href: "/github",
                 label: "Github",
+                external: true,
               },
               {
                 icon: <DiscordIcon fontSize={18} />,
                 href: "/discord",
                 label: "Discord",
+                external: true,
               },
               {
                 icon: <TwitterIcon fontSize={18} />,
                 href: "/twitter",
                 label: "Twitter",
+                external: true,
               },
             ]}
           />

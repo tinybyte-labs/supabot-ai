@@ -54,6 +54,7 @@ export default function MarketingHeader() {
   }, [setShowMenu]);
 
   useEffect(() => {
+    handleScroll();
     window.addEventListener("scroll", handleScroll);
 
     return () => {

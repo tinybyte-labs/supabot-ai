@@ -1,6 +1,5 @@
 "use client";
 
-import ChatboxPreviewer from "@/components/ChatboxPreviewer";
 import DashboardPageHeader from "@/components/DashboardPageHeader";
 import { Button, ButtonLoader } from "@/components/ui/button";
 import {
@@ -242,7 +241,7 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
                 )}
               />
 
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="settings.theme"
                 render={({ field }) => (
@@ -262,7 +261,7 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
 
               <Button type="submit" disabled={updateChatbot.isLoading}>
                 {updateChatbot.isLoading && <ButtonLoader />}
@@ -286,7 +285,7 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
           </Form>
         </div>
 
-        <div
+        {/* <div
           className="bg-secondary flex flex-col rounded-2xl p-10 max-xl:hidden xl:flex-1"
           style={{
             alignItems:
@@ -319,7 +318,7 @@ const Editor = ({ chatbot }: { chatbot: Chatbot }) => {
               />
             </svg>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
