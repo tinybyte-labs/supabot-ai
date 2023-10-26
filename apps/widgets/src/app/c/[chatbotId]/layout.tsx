@@ -4,6 +4,7 @@ import { ReactNode } from "react";
 import { chatbotSettingsSchema } from "@acme/core/validators";
 import Link from "next/link";
 import { ChatbotProvider } from "@/providers/ChatbotProvider";
+import NavigationEvents from "./NavigationEvents";
 
 export default async function ChatbotLayout({
   children,
@@ -22,6 +23,7 @@ export default async function ChatbotLayout({
 
   return (
     <ChatbotProvider chatbot={chatbot}>
+      <NavigationEvents />
       <style>
         {`
       :root {

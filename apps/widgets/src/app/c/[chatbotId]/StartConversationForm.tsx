@@ -26,7 +26,6 @@ export default function StartConversationForm() {
 
   const startConvMutation = api.conversation.startConversation.useMutation({
     onSuccess(data) {
-      localStorage.setItem(`${chatbot.id}.opened-conversation`, data.id);
       router.push(`/c/${data.chatbotId}/conversations/${data.id}`);
     },
   });
@@ -43,14 +42,6 @@ export default function StartConversationForm() {
   );
 
   useEffect(() => {
-    const openedConv = localStorage.getItem(
-      `${chatbot.id}.opened-conversation`,
-    );
-    if (openedConv) {
-      router.push(`/c/${chatbot.id}/conversations/${openedConv}`);
-      return;
-    }
-
     const userStr = localStorage.getItem(`${chatbot.id}.user`);
     if (userStr) {
       try {

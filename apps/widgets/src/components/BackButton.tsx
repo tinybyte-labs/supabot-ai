@@ -8,8 +8,11 @@ export default function BackButton() {
   return (
     <button
       onClick={() => {
-        router.back();
-        localStorage.removeItem(`${chatbotId}.opened-conversation`);
+        if (window.history.state && window.history.state.idx > 0) {
+          router.back();
+        } else {
+          router.push(`/c/${chatbotId}`);
+        }
       }}
     >
       <div className="sr-only">Go Back</div>

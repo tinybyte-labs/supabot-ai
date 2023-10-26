@@ -70,9 +70,11 @@ const template = Handlebars.compile(
     btn.style.transform = "scale(0)";
     btn.style.opacity = 0;
 
+    const chatboxPath = localStorage.getItem("chatbox-path");
+
     // Iframe/Chatbox window styling
     iframe.id = "sb-chatbox";
-    iframe.src = "{{widgetsBaseUrl}}/c/{{chatbot.id}}";
+    iframe.src = chatboxPath ? "{{widgetsBaseUrl}}" + chatboxPath : "{{widgetsBaseUrl}}/c/{{chatbot.id}}";
     iframe.style.position = "fixed";
     iframe.style.transition = "opacity 0.3s ease, transform 0.3s ease";
     iframe.style.width = "100%";
@@ -213,8 +215,12 @@ const template = Handlebars.compile(
       hovering = false;
     };
     window.addEventListener('message', function(event) {
+      console.log(event)
       if(event.data === "CLOSE_CHATBOX") {
         closeChatbox();
+      }
+      if(event.data?.source === "page-navigation") {
+        localStorage.setItem("chatbox-path", event.data.payload?.pathname ?? "");
       }
     });
   }

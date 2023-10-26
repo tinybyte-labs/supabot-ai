@@ -10,7 +10,7 @@ const CloseChatboxButton = () => {
           size="icon"
           variant="ghost"
           onClick={() => {
-            window.parent.postMessage("CLOSE_CHATBOX");
+            window.parent.postMessage("CLOSE_CHATBOX", "*");
           }}
         >
           <div className="sr-only">Minimize Chatbox</div>
