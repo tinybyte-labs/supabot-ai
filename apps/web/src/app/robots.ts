@@ -1,4 +1,4 @@
-import { BASE_DOMAIN } from "@/utils/constants";
+import { BASE_URL } from "@/utils/constants";
 import type { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {
@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
     },
-    sitemap: `${BASE_DOMAIN}/sitemap.xml`,
+    sitemap: `${BASE_URL}/sitemap.xml`,
   };
 }

@@ -1,12 +1,11 @@
-import { WIDGETS_DOMAIN } from "@/utils/constants";
+import { WIDGETS_BASE_URL } from "@/utils/constants";
 import { Chatbot } from "@acme/db";
 import Handlebars from "handlebars";
 import { minify } from "terser";
 
 export const getScript = async (chatbot: Chatbot) => {
-  const code = template({ chatbot });
-  var result = await minify(code);
-
+  const code = template({ chatbot, widgetsBaseUrl: WIDGETS_BASE_URL });
+  var result = await minify(code, { sourceMap: false });
   return result.code ?? "";
 };
 
@@ -14,24 +13,38 @@ const template = Handlebars.compile(
   `
 !(function() {
   function initialize() {
-    const xm = {{chatbot.settings.mx}};
-    const ym = {{chatbot.settings.my}};
-    const p = "{{chatbot.settings.position}}";
-    const style = document.createElement("style");
-    style.id = "sb-style";
-    style.innerHTML = \`
-      :root {
-        --sb-primary: {{chatbot.settings.primaryColor}};
-        --sb-primary-foreground: {{chatbot.settings.primaryForegroundColor}};
-        --sb-background: #ffffff;
-        --sb-foreground: #09090b;
-        }
-      }
-    \`
+    const mx = {{chatbot.settings.mx}} || 0;
+    const my = {{chatbot.settings.my}} || 0;
+    const position = "{{chatbot.settings.position}}" || "right";
+
+    const chatbotIcon = \`<svg width="512" height="512" viewBox="0 0 15 15" xmlns="http://www.w3.org/2000/svg" style='width: 32px; height: 32px;'><path fill="currentColor" d="M1.5 0C.671 0 0 .67 0 1.5v8.993c0 .83.671 1.5 1.5 1.5h3.732l1.852 2.775a.5.5 0 0 0 .832 0l1.851-2.775H13.5c.829 0 1.5-.67 1.5-1.5V1.5c0-.83-.671-1.5-1.5-1.5h-12Z"/></svg>\`;
+
+    const xIcon = \`<svg width="512" height="512" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style='width: 32px; height: 32px;'><path fill="currentColor" d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326a.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275a.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018a.751.751 0 0 1-.018-1.042L6.94 8L3.72 4.78a.75.75 0 0 1 0-1.06Z"/></svg>\`;
+
+    const fontFamily = \`ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"\`;
+
     const btn = document.createElement("button");
+    const iframe = document.createElement("iframe");
+    const greetingBox = document.createElement("div");
+
+    // Dom cleanup
+    const oldBtn = document.getElementById("sb-btn");
+    if(oldBtn) {
+      oldBtn.remove();
+    }
+    const oldChatBox = document.getElementById("sb-chatbox");
+    if(oldChatBox) {
+      oldChatBox.remove();
+    }
+    const oldGreetingBox = document.getElementById("sb-greeting-box");
+    if(oldGreetingBox) {
+      oldGreetingBox.remove();
+    }
+
+    // Chatbot button styling
     btn.id = "sb-btn";
-    btn.style.backgroundColor = "var(--sb-primary)";
-    btn.style.color = "var(--sb-primary-foreground)";
+    btn.style.backgroundColor = "{{chatbot.settings.primaryColor}}";
+    btn.style.color = "{{chatbot.settings.primaryForegroundColor}}";
     btn.style.position = "fixed";
     btn.style.display = "flex";
     btn.style.alignItems = "center";
@@ -47,18 +60,19 @@ const template = Handlebars.compile(
     btn.style.boxSizing = "border-box";
     btn.style.boxShadow = "rgba(0, 0, 0, 0.15) 0px 4px 8px";
     btn.style.zIndex = 90;
+    btn.style.bottom = my + "px";
+    if (position === "left") {
+      btn.style.left = mx + "px";
+    } else {
+      btn.style.right = mx + "px";
+    }
+    btn.style.pointerEvents = "none";
     btn.style.transform = "scale(0)";
     btn.style.opacity = 0;
-    if (p === "left") {
-      btn.style.left = xm + "px";
-    } else {
-      btn.style.right = xm + "px";
-    }
-    btn.style.bottom = ym + "px";
 
-    const iframe = document.createElement("iframe");
-    iframe.id = "sb-iframe";
-    iframe.src = "${WIDGETS_DOMAIN}/c/{{chatbot.id}}";
+    // Iframe/Chatbox window styling
+    iframe.id = "sb-chatbox";
+    iframe.src = "{{widgetsBaseUrl}}/c/{{chatbot.id}}";
     iframe.style.position = "fixed";
     iframe.style.transition = "opacity 0.3s ease, transform 0.3s ease";
     iframe.style.width = "100%";
@@ -68,113 +82,114 @@ const template = Handlebars.compile(
     iframe.style.borderRadius = "16px";
     iframe.style.boxShadow = "0px 8px 32px -5px rgba(0, 0, 0, 0.15), 0 0px 1px 1px rgba(0, 0, 0, 0.1)";
     iframe.style.zIndex = 100;
-    iframe.style.backgroundColor = "var(--sb-background)";
-    iframe.style.color = "var(--sb-foreground)";
+    iframe.style.backgroundColor = "#ffffff";
+    iframe.style.color = "#000000";
     iframe.style.boxSizing = "border-box";
     iframe.style.zIndex = 110;
-    iframe.style.bottom = \`\${64 + Number(ym) * 2}px\`;
-    if (p == "left") {
+    iframe.style.bottom = (64 + my * 2) + "px";
+    if (position == "left") {
       iframe.style.transformOrigin = "left bottom";
-      iframe.style.left = xm + "px";
+      iframe.style.left = mx + "px";
     } else {
       iframe.style.transformOrigin = "right bottom";
-      iframe.style.right = xm + "px";
+      iframe.style.right = mx + "px";
     }
 
-    let msgBox;
-    const closeMessageBox = () => {
-      if(!msgBox) return;
-      msgBox.style.opacity = 0;
-      msgBox.style.transform = "scale(.5)";
-      msgBox.style.pointerEvents = "none";
-    };
+    const greetingText = "{{chatbot.settings.greetingText}}";
+    if(greetingText) {
+      // Greeting Box styling
+      greetingBox.id = "sb-greeting-box";
+      greetingBox.innerText = greetingText;
+      greetingBox.style.padding = "12px";
+      greetingBox.style.backgroundColor = "#ffffff";
+      greetingBox.style.color = "#000000";
+      greetingBox.style.fontWeight = "600";
+      greetingBox.style.boxShadow = "0px 8px 32px -5px rgba(0, 0, 0, 0.15), 0 0px 1px 1px rgba(0, 0, 0, 0.1)";
+      greetingBox.style.borderRadius = "6px";
+      greetingBox.style.position = "fixed";
+      greetingBox.style.zIndex = 99;
+      greetingBox.style.bottom = (64 + my * 2) + "px";
+      if (position === "left") {
+        greetingBox.style.left = mx + "px";
+        greetingBox.style.transformOrigin = "left bottom";
+      } else {
+        greetingBox.style.right = mx + "px";
+        greetingBox.style.transformOrigin = "right bottom";
+      }
+      greetingBox.style.fontFamily = fontFamily;
+      greetingBox.style.transition = "all .3s ease 0s";
+      greetingBox.style.transform = "scale(.5)";
+      greetingBox.style.opacity = 0;
+    }
     
-
-    document.head.append(style);
     document.body.append(btn);
     document.body.append(iframe);
+    document.body.append(greetingBox);
 
-    setTimeout(() => {
-      btn.style.transform = "scale(1)";
+    let chatboxOpen = localStorage.getItem("chatbox-open") === "true";
+
+    const applyChatboxOpenState = () => {
+      btn.innerHTML = xIcon;
+      btn.style.pointerEvents = "auto";
       btn.style.opacity = 1;
-    }, 100);
+      btn.style.transform = "scale(1)";
 
-    let chatboxOpen = false;
-
-    const showChatbox = () => {
-      localStorage.setItem("chatbox-open", "open")
-      btn.innerHTML = \`<svg width="512" height="512" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style='width: 32px; height: 32px;'>
-      <path fill="currentColor" d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.749.749 0 0 1 1.275.326a.749.749 0 0 1-.215.734L9.06 8l3.22 3.22a.749.749 0 0 1-.326 1.275a.749.749 0 0 1-.734-.215L8 9.06l-3.22 3.22a.751.751 0 0 1-1.042-.018a.751.751 0 0 1-.018-1.042L6.94 8L3.72 4.78a.75.75 0 0 1 0-1.06Z"/>
-  </svg>\`;
-      iframe.style.opacity = 1;
       iframe.style.pointerEvents = "auto";
+      iframe.style.opacity = 1;
       iframe.style.transform = "scale(1)";
-      chatboxOpen = true;
-    };
 
-    const hideChatbox = () => {
-      localStorage.removeItem("chatbox-open")
-      btn.innerHTML = \`<svg width="512" height="512" viewBox="0 0 15 15" xmlns="http://www.w3.org/2000/svg" style='width: 32px; height: 32px;'>
-      <path fill="currentColor" d="M1.5 0C.671 0 0 .67 0 1.5v8.993c0 .83.671 1.5 1.5 1.5h3.732l1.852 2.775a.5.5 0 0 0 .832 0l1.851-2.775H13.5c.829 0 1.5-.67 1.5-1.5V1.5c0-.83-.671-1.5-1.5-1.5h-12Z"/>
-  </svg>\`;
+      greetingBox.style.opacity = 0;
+      greetingBox.style.transform = "scale(.5)";
+      greetingBox.style.pointerEvents = "none";
+    }
+    
+    const applyChatboxCloseState = () => {
+      btn.innerHTML = chatbotIcon;
       iframe.style.opacity = 0;
       iframe.style.pointerEvents = "none";
       iframe.style.transform = "scale(0)";
+    }
+    
+    const openChatbox = () => {
+      localStorage.setItem("chatbox-open", "true")
+      applyChatboxOpenState()
+      chatboxOpen = true;
+    };
+    
+    const closeChatbox = () => {
+      localStorage.setItem("chatbox-open", "false")
+      applyChatboxCloseState()
       chatboxOpen = false;
     };
-    const defaultOpen = localStorage.getItem("chatbox-open");
 
-    if(defaultOpen) {
-      showChatbox();
+    if(chatboxOpen) {
+      applyChatboxOpenState();
     } else {
-      hideChatbox();
+      applyChatboxCloseState();
 
-      const greetingText = "{{chatbot.settings.greetingText}}";
-      if(greetingText) {
-        msgBox = document.createElement("div");
-        msgBox.id = "sb-msg-box";
-        msgBox.innerText = greetingText;
-        msgBox.style.padding = "12px";
-        msgBox.style.backgroundColor = "var(--sb-background)";
-        msgBox.style.color = "var(--sb-foreground)";
-        msgBox.style.fontWeight = "600";
-        msgBox.style.boxShadow = "0px 8px 32px -5px rgba(0, 0, 0, 0.15), 0 0px 1px 1px rgba(0, 0, 0, 0.1)";
-        msgBox.style.borderRadius = "6px";
-        msgBox.style.position = "fixed";
-        msgBox.style.zIndex = 99;
-        msgBox.style.bottom = \`\${64 + Number(ym) * 2}px\`;
-        if (p === "left") {
-          msgBox.style.left = xm + "px";
-          msgBox.style.transformOrigin = "left bottom";
-        } else {
-          msgBox.style.right = xm + "px";
-          msgBox.style.transformOrigin = "right bottom";
-        }
-        msgBox.style.transition = "all .3s ease 0s";
-        msgBox.style.transform = "scale(.5)";
-        msgBox.style.opacity = 0;
-        msgBox.style.fontFamily =
-          'ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"';
+      setTimeout(() => {
+        btn.style.pointerEvents = "auto";
+        btn.style.opacity = 1;
+        btn.style.transform = "scale(1)";
+      }, 100);
 
-        document.body.append(msgBox);
+      setTimeout(() => {
+        greetingBox.style.transform = "scale(1)";
+        greetingBox.style.opacity = 1;
+      }, 600);
 
-        setTimeout(() => {
-          msgBox.style.transform = "scale(1)";
-          msgBox.style.opacity = 1;
-        }, 600);
-
-        setTimeout(() => {
-          closeMessageBox();
-        }, 5000);
-      }
+      setTimeout(() => {
+        greetingBox.style.opacity = 0;
+        greetingBox.style.transform = "scale(.5)";
+        greetingBox.style.pointerEvents = "none";
+      }, 5000);
     }
 
     btn.onclick = () => {
-      if (!chatboxOpen) {
-        showChatbox();
-        closeMessageBox();
+      if (chatboxOpen) {
+        closeChatbox();
       } else {
-        hideChatbox();
+        openChatbox();
       }
     };
 
@@ -199,14 +214,14 @@ const template = Handlebars.compile(
     };
     window.addEventListener('message', function(event) {
       if(event.data === "CLOSE_CHATBOX") {
-        hideChatbox();
+        closeChatbox();
       }
     });
   }
 
   if(document.readyState === 'complete') {
     initialize();
-  }else {
+  } else {
     window.addEventListener('load', initialize);
   }
 })();

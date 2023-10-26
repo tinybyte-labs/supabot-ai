@@ -1,4 +1,4 @@
-import { BASE_DOMAIN } from "@/utils/constants";
+import { BASE_URL } from "@/utils/constants";
 import Script from "next/script";
 
 const ChatbotWidgetScript = () => {
@@ -6,7 +6,7 @@ const ChatbotWidgetScript = () => {
     <Script
       async
       strategy="lazyOnload"
-      src={`${BASE_DOMAIN}/widgets/chatbox.js?id=${process.env.NEXT_PUBLIC_CHATBOT_ID}`}
+      src={`${BASE_URL}/widgets/chatbox.js?id=${process.env.NEXT_PUBLIC_CHATBOT_ID}`}
     ></Script>
   );
 };

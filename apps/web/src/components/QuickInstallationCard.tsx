@@ -1,4 +1,4 @@
-import { APP_NAME, BASE_DOMAIN } from "@/utils/constants";
+import { APP_NAME, BASE_URL } from "@/utils/constants";
 import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import {
@@ -13,7 +13,7 @@ import { Check, Copy } from "lucide-react";
 
 const QuickInstallationCard = ({ chatbotId }: { chatbotId: string }) => {
   const [copied, setCopied] = useState(false);
-  const scriptCode = `<!-- ${APP_NAME} -->\n<script async src="${BASE_DOMAIN}/widgets/chatbox.js?id=${chatbotId}"></script>`;
+  const scriptCode = `<!-- ${APP_NAME} -->\n<script async src="${BASE_URL}/widgets/chatbox.js?id=${chatbotId}"></script>`;
 
   const handleCopy = () => {
     if (copied) return;
