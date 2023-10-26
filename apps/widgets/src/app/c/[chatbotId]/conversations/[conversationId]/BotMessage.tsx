@@ -20,8 +20,8 @@ export default function BotMessage({
   sources?: string[];
 }) {
   return (
-    <div className="flex w-full items-start gap-2 overflow-hidden px-4">
-      <div className="h-8 w-8 overflow-hidden rounded-md bg-slate-200">
+    <div className="flex w-full items-start gap-2 px-4">
+      <div className="h-8 w-8 flex-shrink-0 overflow-hidden rounded-md bg-slate-200">
         <Image
           src={avatar ?? "/images/bot-avatar.png"}
           width={128}
@@ -35,12 +35,12 @@ export default function BotMessage({
           {name}
           {date ? ` • ${date.toLocaleTimeString()}` : ``}
         </p>
-        <div className="flex items-start gap-2">
-          <div className="rounded-xl rounded-tl-sm bg-slate-100">
+        <div className="flex w-full flex-1 items-start gap-2 pr-8">
+          <div className="relative max-w-full rounded-xl rounded-tl-sm bg-slate-100">
             <div className="p-4">
               {typeof children === "string" ? (
                 <ReactMarkdown
-                  className="prose max-w-full overflow-auto"
+                  className="prose max-w-none"
                   remarkPlugins={[remarkGfm]}
                   linkTarget="_blank"
                 >
@@ -50,10 +50,9 @@ export default function BotMessage({
                 children
               )}
             </div>
-          </div>
-          <div className="w-10 flex-shrink-0">
+
             {messageId && (
-              <button className="flex-shrink-0 text-slate-400">
+              <button className="absolute -right-0 top-0 flex-shrink-0 translate-x-8 text-slate-400">
                 <svg
                   width="24"
                   height="24"
