@@ -8,7 +8,7 @@ export default function UserMessage({ message }: { message: Message }) {
       </p>
       <div className="pl-8">
         <div className="rounded-xl rounded-tr-sm bg-[var(--primary-bg)] p-4 text-[var(--primary-fg)]">
-          <p className="leading-normal">{message.body}</p>
+          <p className="break-all leading-normal">{message.body}</p>
         </div>
       </div>
     </div>
