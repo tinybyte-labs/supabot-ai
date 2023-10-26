@@ -70,7 +70,7 @@ const template = Handlebars.compile(
     btn.style.transform = "scale(0)";
     btn.style.opacity = 0;
 
-    const chatboxPath = localStorage.getItem("chatbox-path");
+    const chatboxPath = localStorage.getItem("{{chatbot.id}}.chatbox-path");
 
     // Iframe/Chatbox window styling
     iframe.id = "sb-chatbox";
@@ -220,7 +220,7 @@ const template = Handlebars.compile(
         closeChatbox();
       }
       if(event.data?.source === "page-navigation") {
-        localStorage.setItem("chatbox-path", event.data.payload?.pathname ?? "");
+        localStorage.setItem("{{chatbot.id}}.chatbox-path", event.data.payload?.pathname ?? "");
       }
     });
   }
