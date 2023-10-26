@@ -27,6 +27,8 @@ const template = Handlebars.compile(
     const iframe = document.createElement("iframe");
     const greetingBox = document.createElement("div");
 
+    const isMobile = window.innerWidth <= 512;
+
     // Dom cleanup
     const oldBtn = document.getElementById("sb-btn");
     if(oldBtn) {
@@ -77,24 +79,32 @@ const template = Handlebars.compile(
     iframe.src = chatboxPath ? "{{widgetsBaseUrl}}" + chatboxPath : "{{widgetsBaseUrl}}/c/{{chatbot.id}}";
     iframe.style.position = "fixed";
     iframe.style.transition = "opacity 0.3s ease, transform 0.3s ease";
-    iframe.style.width = "100%";
-    iframe.style.height = "calc(100vh - 8rem)";
-    iframe.style.maxWidth = "420px";
-    iframe.style.maxHeight = "720px";
-    iframe.style.borderRadius = "16px";
-    iframe.style.boxShadow = "0px 8px 32px -5px rgba(0, 0, 0, 0.15), 0 0px 1px 1px rgba(0, 0, 0, 0.1)";
     iframe.style.zIndex = 100;
     iframe.style.backgroundColor = "#ffffff";
     iframe.style.color = "#000000";
     iframe.style.boxSizing = "border-box";
     iframe.style.zIndex = 110;
-    iframe.style.bottom = (64 + my * 2) + "px";
-    if (position == "left") {
-      iframe.style.transformOrigin = "left bottom";
-      iframe.style.left = mx + "px";
+    if(isMobile) {
+      iframe.style.top = 0;
+      iframe.style.left = 0;
+      iframe.style.right = 0;
+      iframe.style.bottom = 0;
+      iframe.style.width = "100%";
+      iframe.style.height = "100%";
     } else {
-      iframe.style.transformOrigin = "right bottom";
-      iframe.style.right = mx + "px";
+      iframe.style.height = "calc(100vh - 8rem)";
+      iframe.style.width = "420px";
+      iframe.style.maxHeight = "720px";
+      iframe.style.borderRadius = "16px";
+      iframe.style.boxShadow = "0px 8px 32px -5px rgba(0, 0, 0, 0.15), 0 0px 1px 1px rgba(0, 0, 0, 0.1)";
+      iframe.style.bottom = (64 + my * 2) + "px";
+      if (position == "left") {
+        iframe.style.transformOrigin = "left bottom";
+        iframe.style.left = mx + "px";
+      } else {
+        iframe.style.transformOrigin = "right bottom";
+        iframe.style.right = mx + "px";
+      }
     }
 
     const greetingText = "{{chatbot.settings.greetingText}}";
@@ -149,7 +159,7 @@ const template = Handlebars.compile(
       btn.innerHTML = chatbotIcon;
       iframe.style.opacity = 0;
       iframe.style.pointerEvents = "none";
-      iframe.style.transform = "scale(0)";
+      iframe.style.transform = isMobile ? "scale(.95)" : "scale(0)";
     }
     
     const openChatbox = () => {
