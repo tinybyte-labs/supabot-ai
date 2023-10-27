@@ -23,94 +23,138 @@ const template = Handlebars.compile(
 
     const fontFamily = \`ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"\`;
 
-    const btn = document.createElement("button");
-    const iframe = document.createElement("iframe");
+    const domCleanUp = () => {
+      document.getElementById("sb-btn")?.remove();
+      document.getElementById("sb-chatbox")?.remove();
+      document.getElementById("sb-greeting-box")?.remove();
+      document.getElementById("sb-styles")?.remove();
+    }
+    domCleanUp();
+
+    const btnEl = document.createElement("button");
+    const chatboxEl = document.createElement("iframe");
     const greetingBox = document.createElement("div");
+    const overlayEl = document.createElement("div");
+    const styleEl = document.createElement("style");
 
-    const isMobile = window.innerWidth <= 512;
+    styleEl.id = "sb-styles"
+    styleEl.innerHTML = \`
+      .chatbox-open.fullscreen-chatbox {
+        overflow: hidden;
+      }
+      #sb-btn {
+        background-color: {{chatbot.settings.primaryColor}};
+        color: {{chatbot.settings.primaryForegroundColor}};
+        position: fixed;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9999px;
+        width: 64px;
+        height: 64px;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        transition: transform 0.25s ease 0s;
+        user-select: none;
+        box-sizing: border-box;
+        box-shadow: rgba(0, 0, 0, 0.15) 0px 4px 8px;
+        z-index: 90;
+        bottom: \${my}px;
+        right: \${mx}px;
+      }
+      .chatbox-position-left #sb-btn {
+        left: \${mx}px;
+        right: none;
+      }
+      #sb-btn:hover {
+        transform: scale(1.1);
+      }
+      #sb-btn:active {
+        transform: scale(0.9);
+      }
+      .chatbox-open.fullscreen-chatbox #sb-btn {
+        display: none;
+      }
+      #sb-chatbox {
+        display: none;
+        border: none;
+        position: fixed;
+        z-index: 999;
+        box-sizing: border-box;
+        height: calc(100vh - 8rem);
+        width: 100%;
+        max-width: 420px;
+        max-height: 720px;
+        border-radius: 16px;
+        box-shadow: 0px 8px 32px -5px rgba(0, 0, 0, 0.15), 0 0px 1px 1px rgba(0, 0, 0, 0.1);
+        bottom: \${64 + my * 2}px;
+        right: \${mx}px;
+      }
+      .chatbox-open #sb-chatbox {
+        pointer-events: auto;
+        display: block;
+      }
+      .chatbox-position-left #sb-chatbox {
+        left: \${mx}px;
+        right: none;
+      }
+      .chatbox-open.fullscreen-chatbox #sb-chatbox {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: calc(100vw - 4rem);
+        height: calc(100vh - 8rem);
+        max-width: 960px;
+        max-height: 100%;
+      }
+      #sb-overlay {
+        display: none;
+      }
+      .chatbox-open.fullscreen-chatbox #sb-overlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0,0,0,0.2);
+        z-index: 990;
+      }
+      @media only screen and (max-width: 640px) {
+        #sb-overlay {
+          display: none !important;
+        }
+        .chatbox-open {
+          overflow: hidden !important;
+        }
+        #sb-chatbox {
+          inset: 0 !important;
+          transform: none !important;
+          width: 100% !important;
+          height: 100% !important;
+          border-radius: 0 !important;
+          max-height: 100% !important;
+          max-width: 100% !important;
+          box-shadow: none !important;
+        }
+      }
+    \`
 
-    // Dom cleanup
-    const oldBtn = document.getElementById("sb-btn");
-    if(oldBtn) {
-      oldBtn.remove();
-    }
-    const oldChatBox = document.getElementById("sb-chatbox");
-    if(oldChatBox) {
-      oldChatBox.remove();
-    }
-    const oldGreetingBox = document.getElementById("sb-greeting-box");
-    if(oldGreetingBox) {
-      oldGreetingBox.remove();
-    }
+    document.documentElement.classList.add(\`chatbox-position-\${position}\`)
 
-    // Chatbot button styling
-    btn.id = "sb-btn";
-    btn.style.backgroundColor = "{{chatbot.settings.primaryColor}}";
-    btn.style.color = "{{chatbot.settings.primaryForegroundColor}}";
-    btn.style.position = "fixed";
-    btn.style.display = "flex";
-    btn.style.alignItems = "center";
-    btn.style.justifyContent = "center";
-    btn.style.borderRadius = "32px";
-    btn.style.width = "64px";
-    btn.style.height = "64px";
-    btn.style.border = "none";
-    btn.style.outline = "none";
-    btn.style.cursor = "pointer";
-    btn.style.transition = "all 0.25s ease 0s";
-    btn.style.userSelect = "none";
-    btn.style.boxSizing = "border-box";
-    btn.style.boxShadow = "rgba(0, 0, 0, 0.15) 0px 4px 8px";
-    btn.style.zIndex = 90;
-    btn.style.bottom = my + "px";
-    if (position === "left") {
-      btn.style.left = mx + "px";
-    } else {
-      btn.style.right = mx + "px";
-    }
-    btn.style.pointerEvents = "none";
-    btn.style.transform = "scale(0)";
-    btn.style.opacity = 0;
+    btnEl.id = "sb-btn";
+    btnEl.innerHTML = chatbotIcon;
 
     const chatboxPath = localStorage.getItem("{{chatbot.id}}.chatbox-path");
 
-    // Iframe/Chatbox window styling
-    iframe.id = "sb-chatbox";
-    iframe.src = chatboxPath ? "{{widgetsBaseUrl}}" + chatboxPath : "{{widgetsBaseUrl}}/c/{{chatbot.id}}";
-    iframe.style.position = "fixed";
-    iframe.style.transition = "opacity 0.3s ease, transform 0.3s ease";
-    iframe.style.zIndex = 100;
-    iframe.style.backgroundColor = "#ffffff";
-    iframe.style.color = "#000000";
-    iframe.style.boxSizing = "border-box";
-    iframe.style.zIndex = 110;
-    if(isMobile) {
-      iframe.style.top = 0;
-      iframe.style.left = 0;
-      iframe.style.right = 0;
-      iframe.style.bottom = 0;
-      iframe.style.width = "100%";
-      iframe.style.height = "100%";
-    } else {
-      iframe.style.height = "calc(100vh - 8rem)";
-      iframe.style.width = "420px";
-      iframe.style.maxHeight = "720px";
-      iframe.style.borderRadius = "16px";
-      iframe.style.boxShadow = "0px 8px 32px -5px rgba(0, 0, 0, 0.15), 0 0px 1px 1px rgba(0, 0, 0, 0.1)";
-      iframe.style.bottom = (64 + my * 2) + "px";
-      if (position == "left") {
-        iframe.style.transformOrigin = "left bottom";
-        iframe.style.left = mx + "px";
-      } else {
-        iframe.style.transformOrigin = "right bottom";
-        iframe.style.right = mx + "px";
-      }
-    }
+    chatboxEl.id = "sb-chatbox";
+    chatboxEl.src = chatboxPath ? "{{widgetsBaseUrl}}" + chatboxPath : "{{widgetsBaseUrl}}/c/{{chatbot.id}}";
+
+    overlayEl.id = "sb-overlay";
 
     const greetingText = "{{chatbot.settings.greetingText}}";
+    greetingBox.id = "sb-greeting-box";
+
     if(greetingText) {
       // Greeting Box styling
-      greetingBox.id = "sb-greeting-box";
       greetingBox.innerText = greetingText;
       greetingBox.style.padding = "12px";
       greetingBox.style.backgroundColor = "#ffffff";
@@ -134,70 +178,46 @@ const template = Handlebars.compile(
       greetingBox.style.opacity = 0;
     }
     
-    document.body.append(btn);
-    document.body.append(iframe);
-    document.body.append(greetingBox);
-
     let chatboxOpen = localStorage.getItem("chatbox-open") === "true";
-
-    const applyChatboxOpenState = () => {
-      btn.innerHTML = xIcon;
-      btn.style.pointerEvents = "auto";
-      btn.style.opacity = 1;
-      btn.style.transform = "scale(1)";
-
-      iframe.style.pointerEvents = "auto";
-      iframe.style.opacity = 1;
-      iframe.style.transform = "scale(1)";
-
-      greetingBox.style.opacity = 0;
-      greetingBox.style.transform = "scale(.5)";
-      greetingBox.style.pointerEvents = "none";
+    
+    const enterFullScreen = () => {
+      chatboxEl.classList.add("full-screen");
+      document.documentElement.classList.add("fullscreen-chatbox");
     }
     
-    const applyChatboxCloseState = () => {
-      btn.innerHTML = chatbotIcon;
-      iframe.style.opacity = 0;
-      iframe.style.pointerEvents = "none";
-      iframe.style.transform = isMobile ? "scale(.95)" : "scale(0)";
+    const existFullScreen = () => {
+      document.documentElement.classList.remove("fullscreen-chatbox");
+    }
+
+    const addOpenClasses = () => {
+      btnEl.innerHTML = xIcon;
+      document.documentElement.classList.add("chatbox-open");
+    }
+
+    const removeOpenClasses = () => {
+      document.documentElement.classList.remove("chatbox-open");
+      btnEl.innerHTML = chatbotIcon;
     }
     
     const openChatbox = () => {
       localStorage.setItem("chatbox-open", "true")
-      applyChatboxOpenState()
       chatboxOpen = true;
+      addOpenClasses();
     };
     
     const closeChatbox = () => {
       localStorage.setItem("chatbox-open", "false")
-      applyChatboxCloseState()
       chatboxOpen = false;
+      removeOpenClasses()
     };
 
     if(chatboxOpen) {
-      applyChatboxOpenState();
+      addOpenClasses();
     } else {
-      applyChatboxCloseState();
-
-      setTimeout(() => {
-        btn.style.pointerEvents = "auto";
-        btn.style.opacity = 1;
-        btn.style.transform = "scale(1)";
-      }, 100);
-
-      setTimeout(() => {
-        greetingBox.style.transform = "scale(1)";
-        greetingBox.style.opacity = 1;
-      }, 600);
-
-      setTimeout(() => {
-        greetingBox.style.opacity = 0;
-        greetingBox.style.transform = "scale(.5)";
-        greetingBox.style.pointerEvents = "none";
-      }, 5000);
+      removeOpenClasses();
     }
 
-    btn.onclick = () => {
+    btnEl.onclick = () => {
       if (chatboxOpen) {
         closeChatbox();
       } else {
@@ -205,28 +225,21 @@ const template = Handlebars.compile(
       }
     };
 
-    let hovering = false;
-    btn.onmousedown = () => {
-      btn.style.transform = "scale(0.9)";
-    };
-    btn.onmouseup = () => {
-      if (hovering) {
-        btn.style.transform = "scale(1.1)";
-      } else {
-        btn.style.transform = "scale(1)";
-      }
-    };
-    btn.onmouseover = () => {
-      btn.style.transform = "scale(1.1)";
-      hovering = true;
-    };
-    btn.onmouseleave = () => {
-      btn.style.transform = "scale(1)";
-      hovering = false;
-    };
+    document.head.append(styleEl);
+    document.body.append(btnEl);
+    document.body.append(greetingBox);
+    document.body.append(overlayEl);
+    document.body.append(chatboxEl);
+
     window.addEventListener('message', function(event) {
       if(event.data === "CLOSE_CHATBOX") {
         closeChatbox();
+      }
+      if(event.data === "ENTER_FULLSCREEN_CHATBOX") {
+        enterFullScreen();
+      }
+      if(event.data === "EXIT_FULLSCREEN_CHATBOX") {
+        existFullScreen();
       }
       if(event.data?.source === "page-navigation") {
         localStorage.setItem("{{chatbot.id}}.chatbox-path", event.data.payload?.pathname ?? "");

@@ -58,7 +58,8 @@ export default function StartConversationForm() {
         <input
           type="text"
           placeholder="Enter your name"
-          className="h-[52px] w-full rounded-xl bg-slate-100 px-4 placeholder-slate-400"
+          className="h-[52px] w-full rounded-xl bg-slate-100 px-4 placeholder-slate-400 outline-none ring-[var(--primary-bg)] focus:ring-2"
+          autoComplete="name"
           {...form.register("name")}
         />
         {form.formState.errors.name && (
@@ -71,7 +72,8 @@ export default function StartConversationForm() {
         <input
           type="email"
           placeholder="Enter your name"
-          className="mt-3 h-[52px] w-full rounded-xl bg-slate-100 px-4 placeholder-slate-400"
+          className="mt-3 h-[52px] w-full rounded-xl bg-slate-100 px-4 placeholder-slate-400 outline-none ring-[var(--primary-bg)] focus:ring-2"
+          autoComplete="email"
           {...form.register("email")}
         />
         {form.formState.errors.email && (
@@ -82,7 +84,7 @@ export default function StartConversationForm() {
       </fieldset>
       <button
         type="submit"
-        className="relative mt-6 flex h-[52px] w-full items-center justify-center rounded-xl bg-[var(--primary-bg)] px-4 text-center font-medium text-[var(--primary-fg)] hover:opacity-95 disabled:opacity-50"
+        className="relative mt-6 flex h-[52px] w-full items-center justify-center rounded-xl bg-[var(--primary-bg)] px-4 text-center font-medium text-[var(--primary-fg)] outline-none ring-[var(--primary-bg)] ring-offset-1 ring-offset-white hover:opacity-95 focus:ring-2 disabled:opacity-50"
         disabled={startConvMutation.isLoading}
       >
         {startConvMutation.isLoading ? (

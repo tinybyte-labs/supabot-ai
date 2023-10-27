@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useChatbot } from "@/providers/ChatbotProvider";
 import { useConversation } from "@/providers/ConversatonProvider";
+import { useEffect, useRef } from "react";
 
 const schema = z.object({
   message: z.string().min(1, "Please enter your message").max(500),
@@ -14,12 +15,17 @@ type FormType = z.infer<typeof schema>;
 export default function MessageInputForm() {
   const { settings } = useChatbot();
   const { sendMessage, isSending } = useConversation();
+
   const form = useForm<FormType>({
     resolver: zodResolver(schema),
     defaultValues: {
       message: "",
     },
   });
+
+  useEffect(() => {
+    form.setFocus("message");
+  }, [form]);
 
   return (
     <form
@@ -31,14 +37,13 @@ export default function MessageInputForm() {
     >
       <input
         type="text"
-        className="h-[52px] w-full rounded-xl bg-slate-100 pl-4 pr-14 placeholder-slate-400"
+        className="h-[52px] w-full rounded-xl bg-slate-100 pl-4 pr-14 placeholder-slate-400 outline-none ring-[var(--primary-bg)] focus:ring-2"
         placeholder={settings.placeholderText}
-        autoFocus
         {...form.register("message")}
       />
       <button
         type="submit"
-        className="absolute right-1 top-1 flex h-[44px] w-[44px] items-center justify-center rounded-lg bg-[var(--primary-bg)] text-[var(--primary-fg)] disabled:opacity-50"
+        className="absolute right-1 top-1 flex h-[44px] w-[44px] items-center justify-center rounded-lg bg-[var(--primary-bg)] text-[var(--primary-fg)] outline-none ring-[var(--primary-bg)] ring-offset-1 ring-offset-slate-100 focus:ring-2 disabled:opacity-50"
         disabled={isSending}
       >
         {isSending ? (

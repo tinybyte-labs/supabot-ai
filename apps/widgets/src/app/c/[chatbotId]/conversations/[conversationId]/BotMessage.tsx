@@ -36,7 +36,7 @@ export default function BotMessage({
           {date ? ` • ${date.toLocaleTimeString()}` : ``}
         </p>
         <div className="flex w-full flex-1 items-start gap-2 pr-8">
-          <div className="relative max-w-full rounded-xl rounded-tl-sm bg-slate-100">
+          <div className="relative max-w-2xl rounded-xl rounded-tl-sm bg-slate-100">
             <div className="p-4">
               {typeof children === "string" ? (
                 <ReactMarkdown

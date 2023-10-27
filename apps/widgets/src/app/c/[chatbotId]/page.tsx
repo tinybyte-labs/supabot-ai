@@ -1,30 +1,15 @@
-import CloseChatboxButton from "@/components/CloseChatboxButton";
 import StartConversationForm from "./StartConversationForm";
-import { db } from "@acme/db";
 import BodyContainer from "@/components/BodyContainer";
+import BaseHeader from "@/components/BaseHeader";
+import WelcomeMessage from "./WelcomeMessage";
 
-export default async function Page({
-  params: { chatbotId },
-}: {
-  params: { chatbotId: string };
-}) {
-  const chatbot = await db.chatbot.findUniqueOrThrow({
-    where: { id: chatbotId },
-    select: { name: true },
-  });
-
+export default async function Page() {
   return (
     <>
-      <div className="flex items-center p-6 text-[var(--primary-fg)]">
-        <div className="flex-1"></div>
-        <CloseChatboxButton />
-      </div>
-      <div className="p-6 text-[var(--primary-fg)]">
-        <p className="text-3xl font-bold">{chatbot.name}</p>
-        <p className="mt-2 text-lg">Hi there 👋, How can we help?</p>
-      </div>
+      <BaseHeader />
+      <WelcomeMessage />
       <BodyContainer>
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto px-6 py-6 sm:container sm:mx-auto sm:max-w-screen-sm sm:py-16">
           <StartConversationForm />
         </div>
       </BodyContainer>
