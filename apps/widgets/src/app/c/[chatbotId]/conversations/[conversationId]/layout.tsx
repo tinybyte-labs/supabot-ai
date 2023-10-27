@@ -2,6 +2,8 @@ import { db } from "@acme/db";
 import { notFound } from "next/navigation";
 import { ReactNode } from "react";
 import ConversatonProvider from "@/providers/ConversatonProvider";
+import Header from "./Header";
+import BodyContainer from "@/components/BodyContainer";
 
 export default async function ConversationLayout({
   children,
@@ -18,7 +20,8 @@ export default async function ConversationLayout({
   }
   return (
     <ConversatonProvider conversation={conversation}>
-      {children}
+      <Header />
+      <BodyContainer>{children}</BodyContainer>
     </ConversatonProvider>
   );
 }
