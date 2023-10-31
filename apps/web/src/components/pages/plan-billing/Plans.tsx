@@ -96,8 +96,8 @@ export const PlansGrid = ({ interval }: { interval: PlanInterval }) => {
     <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-4">
       {proPlans.map((plan) => {
         const popular = plan.id === businessPlan.id;
-        const active = plan.id === currentPlan.id;
         const price = plan.price[interval];
+        const active = currentOrg?.priceId === price.priceId;
         return (
           <Card
             className={cn("flex flex-col", {
