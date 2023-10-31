@@ -2,7 +2,7 @@ version: "3.8"
 services:
   postgres:
     container_name: supabot-ai-db
-    image: postgres:15-alpine
+    image: ankane/pgvector
     ports:
       - "5432:5432"
     environment:
