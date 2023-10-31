@@ -4,7 +4,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useOrganization } from "@/hooks/useOrganization";
 import { usePlan } from "@/hooks/usePlan";
 import { trpc } from "@/utils/trpc";
-import { ArrowRight } from "lucide-react";
+import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -50,7 +50,7 @@ const CurrentPlan = () => {
         <Button asChild variant="secondary">
           <Link href={`/${router.query.orgSlug}/plan-billing#plans`}>
             View plans and upgrade
-            <ArrowRight size={20} className="-mr-1 ml-2" />
+            <ArrowRightIcon size={20} className="-mr-1 ml-2" />
           </Link>
         </Button>
         <Button
@@ -60,7 +60,7 @@ const CurrentPlan = () => {
         >
           {isLoading && <ButtonLoader />}
           Customer Portal
-          <ArrowRight size={20} className="-mr-1 ml-2" />
+          <ArrowRightIcon size={20} className="-mr-1 ml-2" />
         </Button>
       </div>
     </section>

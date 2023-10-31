@@ -28,7 +28,13 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
-import { Loader2, MoreHorizontal, Plus, RotateCw, Trash2 } from "lucide-react";
+import {
+  Loader2Icon,
+  MoreHorizontalIcon,
+  PlusIcon,
+  RotateCwIcon,
+  Trash2Icon,
+} from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 
 const columns: ColumnDef<QuickPrompt>[] = [
@@ -170,9 +176,9 @@ const QuickPromptsPage: NextPageWithLayout = () => {
               onClick={onDeleteMany}
             >
               {deleteMany.isLoading ? (
-                <Loader2 size={18} className="-ml-1 mr-2 animate-spin" />
+                <Loader2Icon size={18} className="-ml-1 mr-2 animate-spin" />
               ) : (
-                <Trash2 size={18} className="-ml-1 mr-2" />
+                <Trash2Icon size={18} className="-ml-1 mr-2" />
               )}
               Delete Prompt(s)
             </Button>
@@ -185,14 +191,14 @@ const QuickPromptsPage: NextPageWithLayout = () => {
               onClick={() => quickPromptsQuery.refetch()}
             >
               {quickPromptsQuery.isRefetching ? (
-                <Loader2 size={18} className="-ml-1 mr-2 animate-spin" />
+                <Loader2Icon size={18} className="-ml-1 mr-2 animate-spin" />
               ) : (
-                <RotateCw size={18} className="-ml-1 mr-2" />
+                <RotateCwIcon size={18} className="-ml-1 mr-2" />
               )}
               Refresh
             </Button>
             <Button disabled={isBusey} onClick={openModal}>
-              <Plus size={18} className="-ml-1 mr-2" />
+              <PlusIcon size={18} className="-ml-1 mr-2" />
               Add Prompt
             </Button>
           </>
@@ -202,7 +208,7 @@ const QuickPromptsPage: NextPageWithLayout = () => {
       <div className="container">
         {quickPromptsQuery.isLoading ? (
           <div className="flex items-center justify-center rounded-lg border py-32">
-            <Loader2 size={24} className="animate-spin" />
+            <Loader2Icon size={24} className="animate-spin" />
           </div>
         ) : (
           <DataTable table={table} />
@@ -242,7 +248,7 @@ const ActionButton = ({ quickPrompt }: { quickPrompt: QuickPrompt }) => {
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
             <span className="sr-only">Open menu</span>
-            <MoreHorizontal className="h-4 w-4" />
+            <MoreHorizontalIcon className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">

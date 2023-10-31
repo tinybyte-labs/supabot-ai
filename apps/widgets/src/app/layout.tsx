@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/cn";
 import { TRPCReactProvider } from "@/utils/trpc/client";
 import { headers } from "next/headers";
+import { ReactNode } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -11,11 +12,7 @@ export const metadata: Metadata = {
   title: "SupaBot AI",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body

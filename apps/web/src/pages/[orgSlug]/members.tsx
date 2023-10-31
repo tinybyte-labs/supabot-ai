@@ -1,7 +1,6 @@
 import DashboardPageHeader from "@/components/DashboardPageHeader";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import { NextPageWithLayout } from "@/types/next";
-import React from "react";
 
 const MembersPage: NextPageWithLayout = () => {
   return (

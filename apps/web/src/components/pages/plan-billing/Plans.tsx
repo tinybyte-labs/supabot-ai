@@ -14,7 +14,7 @@ import {
   proPlans,
 } from "@acme/plans";
 import { useStripe } from "@stripe/react-stripe-js";
-import { Check, Loader2 } from "lucide-react";
+import { CheckIcon, Loader2Icon } from "lucide-react";
 import { useState } from "react";
 
 const Plans = () => {
@@ -115,7 +115,7 @@ export const PlansGrid = ({ interval }: { interval: PlanInterval }) => {
               <ul className="mt-6 space-y-2">
                 {getFeaturesForPlan(plan.id).map((item) => (
                   <li key={item.text}>
-                    <Check className="mr-2 inline-block" size={20} />
+                    <CheckIcon className="mr-2 inline-block" size={20} />
                     <span className="text-sm leading-5">{item.text}</span>
                   </li>
                 ))}
@@ -129,7 +129,7 @@ export const PlansGrid = ({ interval }: { interval: PlanInterval }) => {
                 onClick={() => handleUpgrade(price.priceId)}
               >
                 {loadingPriceId === price.priceId ? (
-                  <Loader2 size={18} className="animate-spin" />
+                  <Loader2Icon size={18} className="animate-spin" />
                 ) : active ? (
                   "Current Plan"
                 ) : (

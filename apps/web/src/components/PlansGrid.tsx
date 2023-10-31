@@ -4,7 +4,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Check, HelpCircle, Loader2 } from "lucide-react";
+import { CheckIcon, HelpCircleIcon, Loader2Icon } from "lucide-react";
 import { Switch } from "./ui/switch";
 import { useState } from "react";
 import { Plan, PlanInterval } from "@/types/plan";
@@ -86,7 +86,7 @@ const PlansGrid = ({
                     {features.map((feature, i) => {
                       return (
                         <div key={i}>
-                          <Check
+                          <CheckIcon
                             size={20}
                             className="text-primary mr-4 inline"
                           />
@@ -95,7 +95,7 @@ const PlansGrid = ({
                             {!!feature.explanation && (
                               <Tooltip delayDuration={100}>
                                 <TooltipTrigger>
-                                  <HelpCircle
+                                  <HelpCircleIcon
                                     size={20}
                                     className="text-muted-foreground ml-2 inline"
                                   />
@@ -119,7 +119,7 @@ const PlansGrid = ({
                       onClick={() => onPlanClick?.(price.priceId)}
                     >
                       {loading ? (
-                        <Loader2 size={20} className="animate-spin" />
+                        <Loader2Icon size={20} className="animate-spin" />
                       ) : isCurrentPlan ? (
                         "Current Plan"
                       ) : buttonLabel ? (

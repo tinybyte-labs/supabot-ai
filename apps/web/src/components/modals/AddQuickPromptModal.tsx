@@ -20,7 +20,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../ui/input";
 import { useToast } from "../ui/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2Icon } from "lucide-react";
 import { Textarea } from "../ui/textarea";
 import { useEffect } from "react";
 import { APP_NAME } from "@/utils/constants";
@@ -152,7 +152,7 @@ const AddQuickPromptModal: ModalFn = ({ onOpenChange, open }) => {
             <DialogFooter>
               <Button type="submit" disabled={addQuickPrompt.isLoading}>
                 {addQuickPrompt.isLoading && (
-                  <Loader2
+                  <Loader2Icon
                     size={18}
                     className="-ml-1 mr-2 h-4 w-4 animate-spin"
                   />

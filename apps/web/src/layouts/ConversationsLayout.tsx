@@ -1,6 +1,11 @@
 import { ReactNode, useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { Filter, Loader2, MessagesSquare, RefreshCw } from "lucide-react";
+import {
+  FilterIcon,
+  Loader2Icon,
+  MessagesSquareIcon,
+  RefreshCwIcon,
+} from "lucide-react";
 import SideBarNav from "@/components/SideBarNav";
 import { formatDistanceToNow } from "date-fns";
 import ChatbotLayout from "./ChatbotLayout";
@@ -74,7 +79,7 @@ const ConversationsLayout = ({ children }: { children: ReactNode }) => {
                   <DropdownMenuTrigger asChild>
                     <TooltipTrigger asChild>
                       <Button size="icon" variant="ghost">
-                        <Filter size={20} />
+                        <FilterIcon size={20} />
                       </Button>
                     </TooltipTrigger>
                   </DropdownMenuTrigger>
@@ -109,9 +114,9 @@ const ConversationsLayout = ({ children }: { children: ReactNode }) => {
                   >
                     <p className="sr-only">Refresh</p>
                     {conversationsQuery.isRefetching ? (
-                      <Loader2 size={20} className="animate-spin" />
+                      <Loader2Icon size={20} className="animate-spin" />
                     ) : (
-                      <RefreshCw size={20} />
+                      <RefreshCwIcon size={20} />
                     )}
                   </Button>
                 </TooltipTrigger>
@@ -164,7 +169,7 @@ const ConversationsLayout = ({ children }: { children: ReactNode }) => {
                               addSuffix: true,
                             },
                           )}`,
-                          icon: <MessagesSquare size={22} />,
+                          icon: <MessagesSquareIcon size={22} />,
                         };
                       }),
                     },

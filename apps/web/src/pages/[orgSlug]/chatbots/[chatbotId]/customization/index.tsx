@@ -19,7 +19,7 @@ import ChatbotLayout from "@/layouts/ChatbotLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Chatbot } from "@acme/db";
-import { ExternalLink, Loader2 } from "lucide-react";
+import { ExternalLinkIcon, Loader2Icon } from "lucide-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import {
@@ -44,7 +44,7 @@ const ChatbotCustomizationPage: NextPageWithLayout = () => {
   if (!isChatbotLoaded) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center">
-        <Loader2 size={24} className="animate-spin" />
+        <Loader2Icon size={24} className="animate-spin" />
       </div>
     );
   }
@@ -56,7 +56,7 @@ const ChatbotCustomizationPage: NextPageWithLayout = () => {
           <Button variant="outline" asChild>
             <Link href={`/demo/c/${chatbot?.id}`} target="_blank">
               Demo
-              <ExternalLink size={18} className="-mr-1 ml-2" />
+              <ExternalLinkIcon size={18} className="-mr-1 ml-2" />
             </Link>
           </Button>
         </div>

@@ -1,5 +1,5 @@
 import { APP_NAME } from "@/utils/constants";
-import { ArrowRight } from "lucide-react";
+import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -24,7 +24,7 @@ const EndCTA = () => {
           >
             <Link href="/signin">
               Get Started Now!
-              <ArrowRight size={24} className="-mr-2 ml-4" />
+              <ArrowRightIcon size={24} className="-mr-2 ml-4" />
             </Link>
           </Button>
         </div>

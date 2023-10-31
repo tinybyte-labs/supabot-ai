@@ -20,7 +20,7 @@ import { useToast } from "@/components/ui/use-toast";
 import ChatbotSettingsLayout from "@/layouts/ChatbotSettingsLayout";
 import { NextPageWithLayout } from "@/types/next";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { Loader2Icon } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -138,7 +138,7 @@ const UpdateNameFrom = () => {
           <CardFooter>
             <Button type="submit" disabled={updateChatbot.isLoading}>
               {updateChatbot.isLoading && (
-                <Loader2
+                <Loader2Icon
                   size={18}
                   className="-ml-1 mr-2 h-4 w-4 animate-spin"
                 />

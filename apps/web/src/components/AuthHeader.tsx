@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "./ui/button";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeftIcon } from "lucide-react";
 import LoggedInUser from "./LoggedInUser";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
@@ -17,7 +17,7 @@ const AuthHeader = () => {
     <header className="flex h-24 items-center justify-between px-8">
       <Button asChild variant="outline">
         <Link href={status === "authenticated" ? "/dashboard" : "/home"}>
-          <ChevronLeft className="-ml-1 mr-2 h-4 w-4" />
+          <ChevronLeftIcon className="-ml-1 mr-2 h-4 w-4" />
           Back to {status === "authenticated" ? "Dashboard" : "Home"}
         </Link>
       </Button>

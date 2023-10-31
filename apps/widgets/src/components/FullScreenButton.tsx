@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import HeaderButton from "./HeaderButton";
 import { Maximize2Icon, Minimize2Icon } from "lucide-react";
 import { useAtom } from "jotai";

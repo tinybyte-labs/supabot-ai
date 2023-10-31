@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
-import { Computer, Moon, Sun } from "lucide-react";
+import { ComputerIcon, MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Skeleton } from "./ui/skeleton";
 
@@ -28,11 +28,11 @@ const ThemeTogglerIconButton = () => {
     >
       <p className="sr-only">Theme Switcher</p>
       {theme === "light" ? (
-        <Sun size={20} />
+        <SunIcon size={20} />
       ) : theme === "dark" ? (
-        <Moon size={20} />
+        <MoonIcon size={20} />
       ) : (
-        <Computer size={20} />
+        <ComputerIcon size={20} />
       )}
     </Button>
   );

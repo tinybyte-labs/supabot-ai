@@ -28,12 +28,12 @@ import {
 } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
 import {
-  Loader2,
-  MoreHorizontal,
-  Plus,
-  RefreshCw,
-  RotateCw,
-  Trash2,
+  Loader2Icon,
+  MoreHorizontalIcon,
+  PlusIcon,
+  RefreshCwIcon,
+  RotateCwIcon,
+  Trash2Icon,
 } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useState } from "react";
@@ -125,9 +125,9 @@ const LinksPage: NextPageWithLayout = () => {
               onClick={retrainSelectedLinks}
             >
               {isRetrainingLinks ? (
-                <Loader2 size={18} className="-ml-1 mr-2 animate-spin" />
+                <Loader2Icon size={18} className="-ml-1 mr-2 animate-spin" />
               ) : (
-                <RotateCw size={18} className="-ml-1 mr-2" />
+                <RotateCwIcon size={18} className="-ml-1 mr-2" />
               )}
               Retrain Link(s)
             </Button>
@@ -137,9 +137,9 @@ const LinksPage: NextPageWithLayout = () => {
               onClick={deleteSelectedLinks}
             >
               {isDeleteingLinks ? (
-                <Loader2 size={18} className="-ml-1 mr-2 animate-spin" />
+                <Loader2Icon size={18} className="-ml-1 mr-2 animate-spin" />
               ) : (
-                <Trash2 size={18} className="-ml-1 mr-2" />
+                <Trash2Icon size={18} className="-ml-1 mr-2" />
               )}
               Delete Link(s)
             </Button>
@@ -152,14 +152,14 @@ const LinksPage: NextPageWithLayout = () => {
               onClick={() => linksQuery.refetch()}
             >
               {linksQuery.isRefetching ? (
-                <Loader2 size={18} className="-ml-1 mr-2 animate-spin" />
+                <Loader2Icon size={18} className="-ml-1 mr-2 animate-spin" />
               ) : (
-                <RefreshCw size={18} className="-ml-1 mr-2" />
+                <RefreshCwIcon size={18} className="-ml-1 mr-2" />
               )}
               Refresh
             </Button>
             <Button onClick={openModal}>
-              <Plus size={18} className="-ml-1 mr-2" />
+              <PlusIcon size={18} className="-ml-1 mr-2" />
               Add Link
             </Button>
           </>
@@ -168,7 +168,7 @@ const LinksPage: NextPageWithLayout = () => {
       <div className="container">
         {linksQuery.isLoading ? (
           <div className="flex items-center justify-center rounded-lg border py-32">
-            <Loader2 size={24} className="animate-spin" />
+            <Loader2Icon size={24} className="animate-spin" />
           </div>
         ) : (
           <DataTable table={table} />
@@ -277,7 +277,7 @@ const ActionButton = ({ link }: { link: LinkTable }) => {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="h-8 w-8 p-0">
           <span className="sr-only">Open menu</span>
-          <MoreHorizontal className="h-4 w-4" />
+          <MoreHorizontalIcon className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

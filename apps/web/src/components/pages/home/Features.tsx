@@ -1,7 +1,7 @@
 "use client";
 
 import { APP_NAME } from "@/utils/constants";
-import { Bot, LineChart, Palette } from "lucide-react";
+import { BotIcon, LineChartIcon, PaletteIcon } from "lucide-react";
 import { useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -11,19 +11,19 @@ const features = [
   {
     id: "intuitive-analytics",
     title: "Intuitive Analytics",
-    icon: <LineChart size={24} />,
+    icon: <LineChartIcon size={24} />,
     screenshotUrl: "/assets/intuitive-analytics.png",
   },
   {
     id: "train-ai",
     title: "Train AI",
-    icon: <Bot size={24} />,
+    icon: <BotIcon size={24} />,
     screenshotUrl: "/assets/train-ai.png",
   },
   {
     id: "customize-the-look",
     title: "Customize the Look",
-    icon: <Palette size={24} />,
+    icon: <PaletteIcon size={24} />,
     screenshotUrl: "/assets/customize-the-look.png",
   },
 ];

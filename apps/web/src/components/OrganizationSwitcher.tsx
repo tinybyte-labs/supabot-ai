@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/popover";
 import { useOrganization } from "@/hooks/useOrganization";
 import { cn } from "@/lib/utils";
-import { Check, ChevronsUpDown, Plus } from "lucide-react";
+import { CheckIcon, ChevronsUpDownIcon, PlusIcon } from "lucide-react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import PlanBadge from "./PlanBadge";
@@ -50,7 +50,7 @@ const OrganizationSwitcher = ({ className }: { className?: string }) => {
           </Avatar>
           <div className="flex-1 truncate">{currentOrg.name}</div>
           <PlanBadge plan={plan} />
-          <ChevronsUpDown size={18} className="-mr-1 ml-2 opacity-50" />
+          <ChevronsUpDownIcon size={18} className="-mr-1 ml-2 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-56 p-0">
@@ -79,7 +79,7 @@ const OrganizationSwitcher = ({ className }: { className?: string }) => {
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 truncate">{org.name}</div>
-                  <Check
+                  <CheckIcon
                     className={cn(
                       "ml-2 h-4 w-4",
                       org.slug === currentOrg.slug
@@ -99,7 +99,7 @@ const OrganizationSwitcher = ({ className }: { className?: string }) => {
                 setOpen(false);
               }}
             >
-              <Plus className="mr-2 h-4 w-4" />
+              <PlusIcon className="mr-2 h-4 w-4" />
               Create Organization
             </CommandItem>
           </CommandGroup>

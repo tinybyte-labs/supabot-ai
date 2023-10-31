@@ -1,7 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { LogOut, Plus, Settings, HelpCircleIcon } from "lucide-react";
+import {
+  LogOutIcon,
+  PlusIcon,
+  SettingsIcon,
+  HelpCircleIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState } from "react";
@@ -45,7 +50,7 @@ const LoggedInUser = () => {
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
             <Link href="/settings/account">
-              <Settings size={18} className="mr-2" />
+              <SettingsIcon size={18} className="mr-2" />
               Account Settings
             </Link>
           </DropdownMenuItem>
@@ -81,7 +86,7 @@ const LoggedInUser = () => {
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
             <Link href="/create-org">
-              <Plus size={18} className="mr-2" />
+              <PlusIcon size={18} className="mr-2" />
               Create Organization
             </Link>
           </DropdownMenuItem>
@@ -96,7 +101,7 @@ const LoggedInUser = () => {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => signOut()}>
-          <LogOut size={18} className="mr-2" />
+          <LogOutIcon size={18} className="mr-2" />
           Log Out
         </DropdownMenuItem>
       </DropdownMenuContent>

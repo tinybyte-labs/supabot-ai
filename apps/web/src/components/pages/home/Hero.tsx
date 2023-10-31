@@ -1,5 +1,5 @@
 import { HERO_SUBTITLE, HERO_TITLE } from "@/utils/constants/strings";
-import { ArrowRight, Star } from "lucide-react";
+import { ArrowRightIcon, StarIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,7 @@ const Hero = () => {
             >
               <Link href="/signin">
                 Get Started
-                <ArrowRight size={24} className="-mr-2 ml-4" />
+                <ArrowRightIcon size={24} className="-mr-2 ml-4" />
               </Link>
             </Button>
             <Button
@@ -35,7 +35,7 @@ const Hero = () => {
               variant="outline"
             >
               <Link href="/github" target="_blank">
-                <Star size={24} className="-ml-2 mr-4" />
+                <StarIcon size={24} className="-ml-2 mr-4" />
                 Star on Github
               </Link>
             </Button>

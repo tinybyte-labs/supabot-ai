@@ -1,5 +1,4 @@
-import { Menu } from "lucide-react";
-import React from "react";
+import { MenuIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { useAtom } from "jotai";
 import { sidebarOpenAtom } from "@/atoms/sidebarOpen";
@@ -13,7 +12,7 @@ const ToggleSidebarButton = () => {
       onClick={() => setSidebarOpen(!sidebarOpen)}
       className="-ml-2 lg:hidden"
     >
-      <Menu />
+      <MenuIcon />
     </Button>
   );
 };

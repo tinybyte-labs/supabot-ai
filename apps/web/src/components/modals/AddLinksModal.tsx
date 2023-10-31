@@ -22,7 +22,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../ui/input";
-import { Loader2 } from "lucide-react";
+import { Loader2Icon } from "lucide-react";
 import { useToast } from "../ui/use-toast";
 import {
   ColumnDef,
@@ -169,7 +169,10 @@ const LinksFromWebsite = ({
             }
           >
             {fetchLinks.isLoading && (
-              <Loader2 size={18} className="-ml-1 mr-2 h-4 w-4 animate-spin" />
+              <Loader2Icon
+                size={18}
+                className="-ml-1 mr-2 h-4 w-4 animate-spin"
+              />
             )}
             Fetch Urls
           </Button>
@@ -245,7 +248,10 @@ const LinksFromSitemap = ({
             }
           >
             {fetchLinks.isLoading && (
-              <Loader2 size={18} className="-ml-1 mr-2 h-4 w-4 animate-spin" />
+              <Loader2Icon
+                size={18}
+                className="-ml-1 mr-2 h-4 w-4 animate-spin"
+              />
             )}
             Fetch Urls
           </Button>
@@ -303,7 +309,7 @@ const LinksFromUrl = ({
               disabled={isAdding || !form.formState.isValid}
             >
               {isAdding && (
-                <Loader2
+                <Loader2Icon
                   size={18}
                   className="-ml-1 mr-2 h-4 w-4 animate-spin"
                 />
@@ -393,7 +399,10 @@ const UrlsTable = ({
           }}
         >
           {isAdding && (
-            <Loader2 size={18} className="-ml-1 mr-2 h-4 w-4 animate-spin" />
+            <Loader2Icon
+              size={18}
+              className="-ml-1 mr-2 h-4 w-4 animate-spin"
+            />
           )}
           Add Links
         </Button>

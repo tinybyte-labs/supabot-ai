@@ -1,5 +1,5 @@
 import { useOrganization } from "@/hooks/useOrganization";
-import { ArrowLeft, RefreshCw } from "lucide-react";
+import { ArrowLeftIcon, RefreshCwIcon } from "lucide-react";
 import ErrorBox from "./ErrorBox";
 import { Button, ButtonLoader } from "./ui/button";
 import { ReactNode } from "react";
@@ -17,7 +17,7 @@ const OrgGuard = ({ children }: { children: ReactNode }) => {
         >
           <Button variant="outline" asChild>
             <Link href="/dashboard">
-              <ArrowLeft size={18} className="-ml-1 mr-2" />
+              <ArrowLeftIcon size={18} className="-ml-1 mr-2" />
               Back to Dashboard
             </Link>
           </Button>
@@ -29,7 +29,7 @@ const OrgGuard = ({ children }: { children: ReactNode }) => {
             {orgQuery.isRefetching ? (
               <ButtonLoader />
             ) : (
-              <RefreshCw size={18} className="-ml-1 mr-2" />
+              <RefreshCwIcon size={18} className="-ml-1 mr-2" />
             )}
             Retry
           </Button>

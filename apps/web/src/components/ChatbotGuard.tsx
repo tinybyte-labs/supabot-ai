@@ -1,5 +1,5 @@
 import { useChatbot } from "@/hooks/useChatbot";
-import { ArrowLeft, RefreshCw } from "lucide-react";
+import { ArrowLeftIcon, RefreshCwIcon } from "lucide-react";
 import { ReactNode } from "react";
 import ErrorBox from "./ErrorBox";
 import { Button, ButtonLoader } from "./ui/button";
@@ -19,7 +19,7 @@ const ChatbotGuard = ({ children }: { children: ReactNode }) => {
         >
           <Button variant="outline" asChild>
             <Link href="/dashboard">
-              <ArrowLeft size={18} className="-ml-1 mr-2" />
+              <ArrowLeftIcon size={18} className="-ml-1 mr-2" />
               Back to Dashboard
             </Link>
           </Button>
@@ -31,7 +31,7 @@ const ChatbotGuard = ({ children }: { children: ReactNode }) => {
             {chatbotQuery.isRefetching ? (
               <ButtonLoader />
             ) : (
-              <RefreshCw size={18} className="-ml-1 mr-2" />
+              <RefreshCwIcon size={18} className="-ml-1 mr-2" />
             )}
             Retry
           </Button>
@@ -50,7 +50,7 @@ const ChatbotGuard = ({ children }: { children: ReactNode }) => {
         <ErrorBox title="404" description="Chatbot not found!">
           <Button variant="outline" asChild>
             <Link href="/dashboard">
-              <ArrowLeft size={18} className="-ml-1 mr-2" />
+              <ArrowLeftIcon size={18} className="-ml-1 mr-2" />
               Back to Dashboard
             </Link>
           </Button>

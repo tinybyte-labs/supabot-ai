@@ -23,7 +23,7 @@ import { useToast } from "../ui/use-toast";
 import { useEffect } from "react";
 import { trpc } from "@/utils/trpc";
 import { useRouter } from "next/router";
-import { Loader2 } from "lucide-react";
+import { Loader2Icon } from "lucide-react";
 import { useOrganization } from "@/hooks/useOrganization";
 import {
   CreateChatbotDto,
@@ -101,7 +101,7 @@ const CreateChatbotModal: ModalFn = ({ onOpenChange, open }) => {
             <DialogFooter>
               <Button type="submit" disabled={createChatbot.isLoading}>
                 {createChatbot.isLoading && (
-                  <Loader2
+                  <Loader2Icon
                     size={18}
                     className="-ml-1 mr-2 h-4 w-4 animate-spin"
                   />

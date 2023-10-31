@@ -1,5 +1,5 @@
 import { APP_NAME, BASE_URL } from "@/utils/constants";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import {
   Card,
@@ -9,7 +9,7 @@ import {
   CardContent,
   CardFooter,
 } from "./ui/card";
-import { Check, Copy } from "lucide-react";
+import { CheckIcon, CopyIcon } from "lucide-react";
 
 const QuickInstallationCard = ({ chatbotId }: { chatbotId: string }) => {
   const [copied, setCopied] = useState(false);
@@ -45,7 +45,7 @@ const QuickInstallationCard = ({ chatbotId }: { chatbotId: string }) => {
       <CardFooter>
         <Button onClick={handleCopy} variant="outline" disabled={copied}>
           <span className="-ml-1 mr-2">
-            {copied ? <Check size={20} /> : <Copy size={20} />}
+            {copied ? <CheckIcon size={20} /> : <CopyIcon size={20} />}
           </span>
           Copy Code
         </Button>

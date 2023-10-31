@@ -21,7 +21,7 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Loader2, MoreHorizontal, RefreshCw } from "lucide-react";
+import { Loader2Icon, MoreHorizontalIcon, RefreshCwIcon } from "lucide-react";
 import { useMemo } from "react";
 
 type Data = ChatbotUser & { _count: { conversations: number } };
@@ -110,7 +110,7 @@ const ActionButton = ({ data }: { data: Data }) => {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="h-8 w-8 p-0">
           <span className="sr-only">Open menu</span>
-          <MoreHorizontal className="h-4 w-4" />
+          <MoreHorizontalIcon className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
@@ -154,9 +154,9 @@ const ChatbotUsersPage: NextPageWithLayout = () => {
           onClick={() => chatbotUsersQuery.refetch()}
         >
           {chatbotUsersQuery.isRefetching ? (
-            <Loader2 size={18} className="-ml-1 mr-2 animate-spin" />
+            <Loader2Icon size={18} className="-ml-1 mr-2 animate-spin" />
           ) : (
-            <RefreshCw size={18} className="-ml-1 mr-2" />
+            <RefreshCwIcon size={18} className="-ml-1 mr-2" />
           )}
           Refresh
         </Button>
@@ -165,7 +165,7 @@ const ChatbotUsersPage: NextPageWithLayout = () => {
       <div className="container">
         {chatbotUsersQuery.isLoading ? (
           <div className="flex items-center justify-center rounded-lg border py-32">
-            <Loader2 size={24} className="animate-spin" />
+            <Loader2Icon size={24} className="animate-spin" />
           </div>
         ) : (
           <DataTable table={table} />

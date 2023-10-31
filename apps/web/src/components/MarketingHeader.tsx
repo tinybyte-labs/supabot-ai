@@ -4,7 +4,7 @@ import Link from "next/link";
 import FullLogo from "./FullLogo";
 import { APP_NAME } from "@/utils/constants";
 import { Button } from "./ui/button";
-import { ArrowRight, Menu, X } from "lucide-react";
+import { ArrowRightIcon, MenuIcon, XIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import Logo from "./Logo";
@@ -108,7 +108,7 @@ export default function MarketingHeader() {
             <Button asChild variant="primary" className="rounded-full px-6">
               <Link href="/dashboard">
                 Dashboard
-                <ArrowRight size={18} className="-mr-1 ml-2" />
+                <ArrowRightIcon size={18} className="-mr-1 ml-2" />
               </Link>
             </Button>
           ) : (
@@ -119,7 +119,7 @@ export default function MarketingHeader() {
             >
               <Link href="/signin">
                 Get Started
-                <ArrowRight size={18} className="-mr-1 ml-2" />
+                <ArrowRightIcon size={18} className="-mr-1 ml-2" />
               </Link>
             </Button>
           )}
@@ -130,7 +130,7 @@ export default function MarketingHeader() {
             size="icon"
             onClick={() => setShowMenu(!showMenu)}
           >
-            {showMenu ? <X size={24} /> : <Menu size={24} />}
+            {showMenu ? <XIcon size={24} /> : <MenuIcon size={24} />}
           </Button>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import ToggleSidebarButton from "./ToggleSidebarButton";
 import { Button } from "./ui/button";
-import { MessageSquare, Sparkles } from "lucide-react";
+import { MessageSquareIcon, SparklesIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import FeedbackForm from "./forms/FeedbackForm";
 import { useState } from "react";
@@ -22,7 +22,7 @@ const AppBar = () => {
         {orgQuery.isSuccess && orgQuery.data.plan === freePlan.id && (
           <Button asChild>
             <Link href={`/${router.query.orgSlug}/plan-billing#plans`}>
-              <Sparkles size={18} className="-ml-1 mr-2" />
+              <SparklesIcon size={18} className="-ml-1 mr-2" />
               Upgrade
             </Link>
           </Button>
@@ -33,7 +33,7 @@ const AppBar = () => {
         >
           <PopoverTrigger asChild>
             <Button variant="outline">
-              <MessageSquare size={20} className="-ml-1 mr-2" />
+              <MessageSquareIcon size={20} className="-ml-1 mr-2" />
               Feedback
             </Button>
           </PopoverTrigger>

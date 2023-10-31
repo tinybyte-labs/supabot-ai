@@ -1,6 +1,5 @@
-import { AlertTriangle } from "lucide-react";
-import React, { ReactNode } from "react";
-import { Button, ButtonLoader } from "./ui/button";
+import { AlertTriangleIcon } from "lucide-react";
+import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 export type ErrorBoxProps = {
@@ -25,7 +24,7 @@ const ErrorBox = ({
       className,
     )}
   >
-    <AlertTriangle size={48} />
+    <AlertTriangleIcon size={48} />
     <p className="mt-6 text-lg font-semibold">{title}</p>
     <p className="text-muted-foreground mt-1 text-sm">{description}</p>
     <div className="mt-6 flex flex-wrap items-center justify-center gap-2">

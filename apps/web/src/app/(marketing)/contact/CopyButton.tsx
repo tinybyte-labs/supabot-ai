@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Check, Copy } from "lucide-react";
+import { CheckIcon, CopyIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 const CopyButton = ({ text }: { text: string }) => {
@@ -31,7 +31,7 @@ const CopyButton = ({ text }: { text: string }) => {
       onClick={onCopy}
       className="-my-2 h-8 w-8"
     >
-      {copied ? <Check size={16} /> : <Copy size={16} />}
+      {copied ? <CheckIcon size={16} /> : <CopyIcon size={16} />}
     </Button>
   );
 };
