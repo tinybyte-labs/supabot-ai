@@ -233,6 +233,14 @@ export const organizationRouter = router({
           teamMembersCount(),
         ]);
 
+      console.log({
+        chatbots,
+        messagesPerMonth,
+        documents,
+        links,
+        teamMembers,
+      });
+
       return {
         chatbots,
         messagesPerMonth,
