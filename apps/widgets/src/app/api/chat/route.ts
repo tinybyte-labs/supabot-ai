@@ -5,7 +5,7 @@ import { buildMessages, canSendMessage, getContextFromDocs } from "./utils";
 import { getDocuments } from "@acme/core/utils/vector-store";
 import { embedText, moderateText, openai } from "@acme/core/utils/openai";
 
-export const maxDuration = 300;
+export const maxDuration = 10; // TODO: Update this to 300 after upgrading vercel plan
 
 const bodySchema = z.object({
   conversationId: z.string(),
