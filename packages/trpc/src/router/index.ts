@@ -9,6 +9,7 @@ import { messageRouter } from "./message";
 import { organizationRouter } from "./organization";
 import { quickPromptRouter } from "./quickPrompt";
 import { stripeRouter } from "./stripe";
+import { userRouter } from "./user";
 import { utilsRouter } from "./utils";
 
 export const appRouter = router({
@@ -23,6 +24,7 @@ export const appRouter = router({
   stripe: stripeRouter,
   feedback: feedbackRouter,
   help: helpRouter,
+  user: userRouter,
 });
 
 export type AppRouter = typeof appRouter;
