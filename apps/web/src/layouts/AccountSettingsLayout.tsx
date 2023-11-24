@@ -1,32 +1,31 @@
 import { ReactNode, useMemo } from "react";
-import DashboardPageHeader from "@/components/DashboardPageHeader";
-import { useRouter } from "next/router";
-import ChatbotLayout from "./ChatbotLayout";
+import AuthLayout from "./AuthLayout";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/router";
+import DashboardPageHeader from "@/components/DashboardPageHeader";
 
-const ChatbotSettingsLayout = ({ children }: { children: ReactNode }) => {
+const AccountSettingsLayout = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
-
   const menu = useMemo(
     () => [
       {
-        href: `/${router.query.orgSlug}/chatbots/${router.query.chatbotId}/settings`,
+        href: `/settings/account`,
         label: "General",
         end: true,
       },
       {
-        href: `/${router.query.orgSlug}/chatbots/${router.query.chatbotId}/settings/advanced`,
+        href: `/settings/account/advanced`,
         label: "Advanced",
       },
     ],
-    [router.query.chatbotId, router.query.orgSlug],
+    [],
   );
 
   return (
-    <ChatbotLayout>
-      <DashboardPageHeader title="Settings" />
+    <AuthLayout>
+      <DashboardPageHeader title="Account Settings" />
       <div className="container">
         <div className="flex gap-8 max-xl:flex-col">
           <nav className="flex w-64 gap-1 xl:flex-col">
@@ -48,8 +47,8 @@ const ChatbotSettingsLayout = ({ children }: { children: ReactNode }) => {
           <div className="flex-1 space-y-8">{children}</div>
         </div>
       </div>
-    </ChatbotLayout>
+    </AuthLayout>
   );
 };
 
-export default ChatbotSettingsLayout;
+export default AccountSettingsLayout;

@@ -23,7 +23,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2Icon } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { APP_NAME } from "@/utils/constants";
 import { trpc } from "@/utils/trpc";
 import { useChatbot } from "@/hooks/useChatbot";
