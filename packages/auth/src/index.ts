@@ -1,12 +1,15 @@
 import { AuthOptions, getServerSession } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import GithubProvider from "next-auth/providers/github";
+import EmailProvider from "next-auth/providers/email";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { db } from "@acme/db";
 import { DefaultSession } from "next-auth";
 import "next-auth/jwt";
 export type { Session } from "next-auth";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { LogInLink, resend } from "@acme/emails";
+import { createHash } from "crypto";
 
 type User = {
   id: string;
@@ -37,6 +40,21 @@ export const authOptions: AuthOptions = {
       clientId: process.env.GITHUB_CLIENT_ID as string,
       clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
       allowDangerousEmailAccountLinking: true,
+    }),
+    EmailProvider({
+      sendVerificationRequest: async ({ url, identifier }) => {
+        if (process.env.NODE_ENV !== "production") {
+          console.log(`Log in Link: ${url}`);
+          return;
+        }
+
+        await resend.emails.send({
+          from: `SupaBot AI<no-reply@supabotai.com>`,
+          to: identifier,
+          subject: `Your SupaBot AI Login Link`,
+          react: LogInLink({ url, email: identifier }),
+        });
+      },
     }),
   ],
   callbacks: {
@@ -79,3 +97,16 @@ export const authOptions: AuthOptions = {
 
 export const getSession = (req: NextApiRequest, res: NextApiResponse) =>
   getServerSession(req, res, authOptions);
+
+export const hashToken = (
+  token: string,
+  {
+    noSecret = false,
+  }: {
+    noSecret?: boolean;
+  } = {},
+) => {
+  return createHash("sha256")
+    .update(`${token}${noSecret ? "" : process.env.NEXTAUTH_SECRET}`)
+    .digest("hex");
+};

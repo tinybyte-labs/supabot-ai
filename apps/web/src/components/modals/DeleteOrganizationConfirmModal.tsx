@@ -18,15 +18,14 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { useOrganization } from "@/hooks/useOrganization";
 import { ModalFn } from "@/types/modal";
 import { trpc } from "@/utils/trpc";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { useRouter } from "next/router";
+import { useCallback } from "react";
 import { useForm } from "react-hook-form";
 
 const DeleteOrganizationConfirmModal: ModalFn = ({ onOpenChange, open }) => {
-  const { data: org } = useOrganization();
   const form = useForm({
     defaultValues: {
       slug: "",
@@ -36,7 +35,8 @@ const DeleteOrganizationConfirmModal: ModalFn = ({ onOpenChange, open }) => {
 
   const { toast } = useToast();
   const router = useRouter();
-  const utils = trpc.useContext();
+  const utils = trpc.useUtils();
+  const orgSlug = router.query.orgSlug as string;
 
   const deleteOrgMutation = trpc.organization.delete.useMutation({
     onSuccess: async () => {
@@ -53,11 +53,10 @@ const DeleteOrganizationConfirmModal: ModalFn = ({ onOpenChange, open }) => {
     },
   });
 
-  const onDelete = () => (org ? deleteOrgMutation.mutate({ id: org.id }) : {});
-
-  if (!org) {
-    return null;
-  }
+  const onDelete = useCallback(
+    () => deleteOrgMutation.mutate({ orgSlug }),
+    [deleteOrgMutation, orgSlug],
+  );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -76,15 +75,14 @@ const DeleteOrganizationConfirmModal: ModalFn = ({ onOpenChange, open }) => {
                 name="slug"
                 rules={{
                   validate: (value) =>
-                    value !== org?.slug
+                    value !== orgSlug
                       ? "Please enter your organization name to continue"
                       : true,
                 }}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Enter the organization slug <b>{org?.slug}</b> to
-                      continue:
+                      Enter the organization slug <b>{orgSlug}</b> to continue:
                     </FormLabel>
                     <FormControl>
                       <Input {...field} />

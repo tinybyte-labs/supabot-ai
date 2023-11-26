@@ -60,6 +60,14 @@ model Session {
   @@index([userId])
 }
 
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
 model Organization {
   id                   String   @id @default(cuid())
   createdAt            DateTime @default(now())
@@ -73,20 +81,31 @@ model Organization {
   priceId              String?
   billingCycleStartDay Int      @default(1)
 
-  members  OrganizationMembership[]
   chatbots Chatbot[]
+  members  OrganizationMembership[]
+  invites  OrganizationInvite[]
 }
 
 enum OrganizationMembershipRole {
   OWNER
-  ADMIN
   MEMBER
+}
+
+model OrganizationInvite {
+  createdAt      DateTime     @default(now())
+  expires        DateTime
+  email          String
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([email, organizationId])
 }
 
 model OrganizationMembership {
   userId         String
   organizationId String
   role           OrganizationMembershipRole @default(MEMBER)
+  createdAt      DateTime                   @default(now())
 
   user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)

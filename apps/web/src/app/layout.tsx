@@ -9,6 +9,7 @@ import { TRPCReactProvider } from "@/trpc/client";
 import { headers } from "next/headers";
 import { Inter } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { authOptions } from "@acme/auth";
 
 export const metadata = {
   title: APP_NAME,
@@ -22,7 +23,8 @@ export default async function RootLayout({
 }: {
   children: ReactNode;
 }) {
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
+
   return (
     <html lang="en">
       <body className={cn(inter.className)}>

@@ -10,13 +10,14 @@ import SignInButtons from "./SignInButtons";
 import { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
+import { authOptions } from "@acme/auth";
 
 export const metadata: Metadata = {
   title: `Sign In - ${APP_NAME}`,
 };
 
 export default async function SignInPage() {
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
 
   if (session) {
     redirect("/dashboard");
