@@ -3,6 +3,7 @@ import { protectedProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { createOrgValidator, updateOrgValidator } from "@acme/core/validators";
 import { getFirstAndLastDay } from "@acme/core/utils/get-first-and-last-day";
+import { hasUserAccessToOrganization } from "./utils";
 
 export const organizationRouter = router({
   getById: protectedProcedure
@@ -120,43 +121,17 @@ export const organizationRouter = router({
       }
     }),
   delete: protectedProcedure
-    .input(z.object({ id: z.string() }))
+    .input(z.object({ orgSlug: z.string() }))
     .mutation(async (opts) => {
-      const org = await opts.ctx.db.organization.findUnique({
-        where: { id: opts.input.id },
-      });
-      if (!org) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Organization not found!",
-        });
-      }
-      const member = await opts.ctx.db.organizationMembership.findUnique({
-        where: {
-          userId_organizationId: {
-            userId: opts.ctx.session.user.id,
-            organizationId: org.id,
-          },
-        },
-      });
-
-      if (!member) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "You don't have access to this organization",
-        });
-      }
-
-      if (member.role !== "OWNER") {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "Only organization owner can delete their organization.",
-        });
-      }
+      const { organization } = await hasUserAccessToOrganization(
+        opts.input.orgSlug,
+        opts.ctx,
+        ["OWNER"],
+      );
 
       try {
         const deletedOrg = await opts.ctx.db.organization.delete({
-          where: { id: org.id },
+          where: { id: organization.id },
         });
         return deletedOrg;
       } catch (error: any) {
@@ -232,14 +207,6 @@ export const organizationRouter = router({
           linksCount(),
           teamMembersCount(),
         ]);
-
-      console.log({
-        chatbots,
-        messagesPerMonth,
-        documents,
-        links,
-        teamMembers,
-      });
 
       return {
         chatbots,

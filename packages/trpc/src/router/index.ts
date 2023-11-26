@@ -5,6 +5,7 @@ import { conversationRouter } from "./conversation";
 import { feedbackRouter } from "./feedback";
 import { helpRouter } from "./help";
 import { linkRouter } from "./link";
+import { membersRouter } from "./members";
 import { messageRouter } from "./message";
 import { organizationRouter } from "./organization";
 import { quickPromptRouter } from "./quickPrompt";
@@ -25,6 +26,7 @@ export const appRouter = router({
   feedback: feedbackRouter,
   help: helpRouter,
   user: userRouter,
+  members: membersRouter,
 });
 
 export type AppRouter = typeof appRouter;

@@ -1,10 +1,11 @@
+import { authOptions } from "@acme/auth";
 import { db } from "@acme/db";
 import { freePlan } from "@acme/plans";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
 export default async function DashboardPage() {
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
 
   if (!session) {
     redirect("/signin");
@@ -21,6 +22,8 @@ export default async function DashboardPage() {
       },
     },
   });
+
+  console.log({ org });
 
   if (!org) {
     redirect("/create-org");

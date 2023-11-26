@@ -108,7 +108,7 @@ export const chatbotRouter = router({
       const { chatbot } = await hasUserAccessToChatbot(
         otps.input.chatbotId,
         otps.ctx,
-        ["OWNER", "ADMIN"],
+        ["OWNER"],
       );
 
       const deletedChatbot = await otps.ctx.db.chatbot.delete({

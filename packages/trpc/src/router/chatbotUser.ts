@@ -99,7 +99,7 @@ export const chatbotUserRouter = router({
                 some: {
                   userId: opts.ctx.session.user.id,
                   role: {
-                    in: ["OWNER", "ADMIN"],
+                    in: ["OWNER"],
                   },
                 },
               },

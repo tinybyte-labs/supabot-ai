@@ -7,11 +7,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { freePlan } from "@acme/plans";
-import { useOrganization } from "@/hooks/useOrganization";
+import { usePlan } from "@/hooks/usePlan";
 
 const AppBar = () => {
   const [feedbackPopoverOpen, setFeedbackPopoverOpen] = useState(false);
-  const orgQuery = useOrganization();
+  const plan = usePlan();
   const router = useRouter();
 
   return (
@@ -19,7 +19,7 @@ const AppBar = () => {
       <div className="flex h-14 items-center justify-end gap-2 px-4">
         <ToggleSidebarButton />
         <div className="flex-1"></div>
-        {orgQuery.isSuccess && orgQuery.data.plan === freePlan.id && (
+        {plan.id === freePlan.id && (
           <Button asChild>
             <Link href={`/${router.query.orgSlug}/plan-billing#plans`}>
               <SparklesIcon size={18} className="-ml-1 mr-2" />

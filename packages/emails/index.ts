@@ -1,18 +1,8 @@
 import { Resend } from "resend";
 import WelcomeEmail from "./emails/welcome";
-import type { ReactElement } from "react";
+import OrganizationInvite from "./emails/organization-invite";
+import LogInLink from "./emails/login-link";
 
-export { WelcomeEmail };
+export { WelcomeEmail, OrganizationInvite, LogInLink };
 
 export const resend = new Resend(process.env.RESEND_API_KEY);
-
-export interface Emails {
-  react: ReactElement;
-  subject: "Welcome to SupaBot AI 👋";
-  to: string[];
-  from: "Rohid <rohid@supabotai.com>";
-}
-
-export const sendEmail = async (email: Emails) => {
-  await resend.emails.send(email);
-};
